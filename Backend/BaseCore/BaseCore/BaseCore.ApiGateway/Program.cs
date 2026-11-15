@@ -36,15 +36,4 @@ app.UseCors("AllowAll");
 // Ocelot must be last
 await app.UseOcelot();
 
-Console.WriteLine(@"
-╔══════════════════════════════════════════════════════════════╗
-║              BaseCore API Gateway                            ║
-║══════════════════════════════════════════════════════════════║
-║  Gateway:        http://localhost:5000                       ║
-║  User Service:   http://localhost:5003                       ║
-║  Product Service: http://localhost:5001                      ║
-║  Order Service:  http://localhost:5002                       ║
-╚══════════════════════════════════════════════════════════════╝
-");
-
 app.Run();

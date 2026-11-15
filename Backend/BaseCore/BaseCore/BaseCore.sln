@@ -23,8 +23,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseCore.Repository", "Base
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseCore.DTO", "BaseCore.DTO\BaseCore.DTO.csproj", "{748A2479-E8AC-453C-9FC2-AAE28B9F1AFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseCore.Services", "BaseCore.Services\BaseCore.Services.csproj", "{19540157-8E18-4C2D-A482-34832430B612}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseCore.AuthService", "BaseCore.AuthService\BaseCore.AuthService.csproj", "{FDA5D057-E608-4A17-B58B-FABEADC300D9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaseCore.ApiGateway", "BaseCore.ApiGateway\BaseCore.ApiGateway.csproj", "{3934463F-480E-4BE1-8796-E79F458CAEE7}"
