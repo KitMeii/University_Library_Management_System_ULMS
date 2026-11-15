@@ -1,0 +1,69 @@
+using BaseCore.Common.Auth;
+using BaseCore.Common.ThoiGian;
+using BaseCore.Migrator;
+using BaseCore.Repository;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
+// Migrator: chạy một lần khi `docker compose up` (các service chờ nó hoàn tất – file 14).
+var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+var moiTruong = config["DOTNET_ENVIRONMENT"] ?? config["ASPNETCORE_ENVIRONMENT"] ?? "Production";
+var chuoiKetNoi = config.GetConnectionString("QuanTriCsdl")
+    ?? throw new InvalidOperationException("Thiếu ConnectionStrings__QuanTriCsdl (kết nối quyền sa tới CSDL ThuVien).");
+
+Console.WriteLine($"[migrator] Môi trường: {moiTruong}");
+await ChoSqlServerAsync(chuoiKetNoi);
+
+var options = new DbContextOptionsBuilder<ThuVienDbContext>()
+    .UseSqlServer(chuoiKetNoi, sql => sql.MigrationsAssembly(typeof(Program).Assembly.GetName().Name))
+    .Options;
+
+await using (var db = new ThuVienDbContext(options))
+{
+    Console.WriteLine("[migrator] Áp dụng migration...");
+    await db.Database.MigrateAsync();
+
+    Console.WriteLine("[migrator] Tạo login/quyền SQL cho từng service...");
+    await BaoMatSql.ApDungAsync(db, config);
+
+    var hasher = new MatKhauHasher(config.GetValue("MatKhau:SoVongLap", 600_000));
+    var clock = new DongHoHeThong();
+
+    Console.WriteLine("[migrator] Nạp dữ liệu khởi tạo (nhóm, quyền, tài khoản quản trị)...");
+    await DuLieuKhoiTao.NapAsync(db, config, hasher, clock);
+
+    if (config.GetValue("ThuVien:NapDuLieuMau", false))
+    {
+        if (string.Equals(moiTruong, "Production", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Không được nạp dữ liệu mẫu ở Production (nguyên tắc 4, file 01).");
+        Console.WriteLine("[migrator] Nạp DỮ LIỆU MẪU (Development)...");
+        await DuLieuMau.NapAsync(db, hasher, clock);
+    }
+}
+
+Console.WriteLine("[migrator] Hoàn tất.");
+return 0;
+
+static async Task ChoSqlServerAsync(string chuoiKetNoi)
+{
+    var b = new SqlConnectionStringBuilder(chuoiKetNoi) { InitialCatalog = "master", ConnectTimeout = 5 };
+    for (var lan = 1; ; lan++)
+    {
+        try
+        {
+            await using var cn = new SqlConnection(b.ConnectionString);
+            await cn.OpenAsync();
+            return;
+        }
+        catch (SqlException) when (lan < 60)
+        {
+            Console.WriteLine($"[migrator] Chờ SQL Server sẵn sàng ({lan})...");
+            await Task.Delay(2000);
+        }
+    }
+}

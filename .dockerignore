@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/logs/
+**/.vs/
+**/.vscode/
+**/*.user
+.git/
+.env
+artifacts/
+Prompt/
+Backend/tests/
+Frontend/tests/
+Backend/BaseCore/

@@ -1,0 +1,36 @@
+# Phát triển (tự nạp khi chạy `docker compose up`): Development, DỮ LIỆU MẪU, mở cổng cho SSMS/gỡ lỗi,
+# mount wwwroot để sửa CSS/JS thấy ngay (file 14 mục 4).
+services:
+  sqlserver:
+    ports:
+      # SSMS: Server = localhost,<SQL_PORT> (mặc định 1434) – SQL Server Authentication – sa – mật khẩu trong .env (GIA_DINH D10)
+      - "${SQL_PORT:-1434}:1433"
+
+  migrator:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+      ThuVien__NapDuLieuMau: "true"
+
+  quantri:
+    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development, GioiHanTanSuat__DangNhapMoiPhut: "300" }
+  khosach:
+    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development }
+  muontra:
+    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development, GioiHanTanSuat__DangNhapMoiPhut: "300" }
+  vipham:
+    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development }
+
+  gateway:
+    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development }
+    ports:
+      - "5000:8080"
+
+  web:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+      ThuVien__HienNhanDuLieuMau: ${HIEN_NHAN_DU_LIEU_MAU:-true}
+    volumes:
+      - ./Frontend/ThuVien.Web/wwwroot/css:/app/wwwroot/css:ro
+      - ./Frontend/ThuVien.Web/wwwroot/js:/app/wwwroot/js:ro

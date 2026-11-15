@@ -1,0 +1,34 @@
+@model DoiMatKhauVm
+@{
+    ViewData["Title"] = "Đổi mật khẩu";
+    ViewData["NhomMenu"] = "Hệ thống";
+    string? Loi(string k) => Model.LoiTruong.TryGetValue(k, out var v) ? v : null;
+}
+<div class="qt-the">
+    <h1 class="fs-4">Đổi mật khẩu</h1>
+    @if (Model.BatBuoc)
+    {
+        <div class="qt-thong-bao qt-thong-bao--tin" role="status">
+            <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+            <span>Đây là lần đăng nhập đầu tiên của tài khoản quản trị. Vui lòng đổi mật khẩu trước khi sử dụng hệ thống.</span>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.ThongBaoLoi))
+    {
+        <div class="qt-thong-bao qt-thong-bao--loi" role="alert"><i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i><span>@Model.ThongBaoLoi</span></div>
+    }
+    <form method="post" asp-antiforgery="true" action="/quan-tri/doi-mat-khau" class="qt-form-hep" novalidate>
+        @foreach (var (id, ten, nhan, ac) in new[] { ("txtMatKhauCu", "MatKhauCu", "Mật khẩu hiện tại", "current-password"), ("txtMatKhauMoi", "MatKhauMoi", "Mật khẩu mới", "new-password"), ("txtNhapLai", "NhapLai", "Nhập lại mật khẩu mới", "new-password") })
+        {
+            var loi = Loi(char.ToLowerInvariant(ten[0]) + ten[1..]);
+            <div class="qt-truong">
+                <label class="qt-nhan" for="@id">@nhan<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" type="password" id="@id" name="@ten" autocomplete="@ac" required aria-required="true"
+                       aria-invalid="@(loi is null ? null : "true")" aria-describedby="@(loi is null ? null : id + "Loi")" />
+                @if (loi is not null) { <div class="qt-loi-truong" id="@(id)Loi"><i class="bi bi-exclamation-circle" aria-hidden="true"></i>@loi</div> }
+            </div>
+        }
+        <p class="small text-secondary">Mật khẩu tối thiểu 8 ký tự, gồm cả chữ và số.</p>
+        <button type="submit" class="qt-nut qt-nut--chinh" id="btnLuu"><i class="bi bi-check2" aria-hidden="true"></i> Lưu mật khẩu mới</button>
+    </form>
+</div>

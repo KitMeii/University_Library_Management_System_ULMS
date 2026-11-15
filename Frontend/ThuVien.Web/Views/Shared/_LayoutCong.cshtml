@@ -1,0 +1,92 @@
+@inject IOptions<ThuVienOptions> Opt
+@{
+    var tt = Opt.Value.ThongTin;
+    var laBanDoc = User.Identity?.IsAuthenticated == true && User.HasClaim(ThuVienClaims.Loai, LoaiTaiKhoan.BanDoc);
+    var duongDan = Context.Request.Path.Value ?? "/";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <partial name="_HeadChung" />
+    <title>@(ViewData["Title"] is string t ? t + " – " : "")@tt.TenThuVien</title>
+    <link rel="stylesheet" href="/css/tokens-cong.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/cong.css" asp-append-version="true" />
+    @await RenderSectionAsync("Css", required: false)
+</head>
+<body class="cong">
+    <a class="bo-qua-noi-dung" href="#noiDung">Bỏ qua, tới nội dung chính</a>
+
+    <header class="cong-header">
+        <div class="cong-container cong-header__tien-ich">
+            <a class="cong-logo" href="/" aria-label="@tt.TenThuVien – Trang chủ">
+                <span class="cong-logo__dau" aria-hidden="true"><i class="bi bi-book-half"></i></span>
+                <span class="cong-logo__ten">@tt.TenThuVien</span>
+            </a>
+            <div class="cong-header__phai">
+                @if (laBanDoc)
+                {
+                    <span class="cong-lien-ket" aria-label="Đang đăng nhập">
+                        <i class="bi bi-person-circle" aria-hidden="true"></i><span class="nhan-dai">@User.FindFirst(ThuVienClaims.Ten)?.Value</span>
+                    </span>
+                    <form method="post" asp-antiforgery="true" action="/dang-xuat">
+                        <button type="submit" class="cong-lien-ket"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span class="nhan-dai">Đăng xuất</span></button>
+                    </form>
+                }
+                else
+                {
+                    <a class="cong-lien-ket" href="/dang-nhap" aria-current="@(duongDan == "/dang-nhap" ? "page" : null)">
+                        <i class="bi bi-person-circle" aria-hidden="true"></i><span class="nhan-dai">Đăng nhập</span>
+                    </a>
+                }
+            </div>
+        </div>
+        <nav class="cong-nav" aria-label="Điều hướng chính">
+            <div class="cong-container">
+                <ul>
+                    <li><a href="/" aria-current="@(duongDan == "/" ? "page" : null)">Trang chủ</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="cong-tien-do-cuon" aria-hidden="true"></div>
+    </header>
+
+    <main id="noiDung" tabindex="-1">
+        @RenderBody()
+    </main>
+
+    <footer class="cong-footer">
+        <div class="cong-container cong-footer__tren">
+            <div>
+                <h2>@tt.TenThuVien</h2>
+                @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <p class="mb-1"><i class="bi bi-geo-alt" aria-hidden="true"></i> @tt.DiaChi</p> }
+                @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <p class="mb-1"><i class="bi bi-telephone" aria-hidden="true"></i> @tt.DienThoai</p> }
+                @if (!string.IsNullOrWhiteSpace(tt.Email)) { <p class="mb-1"><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:@tt.Email">@tt.Email</a></p> }
+            </div>
+            <div>
+                <h3>Tài khoản</h3>
+                <ul>
+                    <li><a href="/dang-nhap">Đăng nhập bạn đọc</a></li>
+                    <li><a href="/quan-tri/dang-nhap">Đăng nhập nhân viên</a></li>
+                </ul>
+            </div>
+            @if (tt.GioMoCua.Count > 0)
+            {
+                <div>
+                    <h3>Giờ mở cửa</h3>
+                    <ul>
+                        @foreach (var (thu, gio) in tt.GioMoCua) { <li>@thu: @gio</li> }
+                    </ul>
+                </div>
+            }
+        </div>
+        <div class="cong-footer__duoi">
+            <div class="cong-container">© @DateTime.Now.Year @tt.TenThuVien. Hệ thống quản lý mượn trả sách thư viện đại học.</div>
+        </div>
+    </footer>
+
+    <partial name="_ScriptChung" />
+    <script type="module" src="/js/cong/header.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

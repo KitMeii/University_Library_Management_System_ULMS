@@ -1,0 +1,116 @@
+@model DangNhapVm
+@inject IOptions<ThuVienOptions> Opt
+@{
+    Layout = null;
+    var tt = Opt.Value.ThongTin;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <partial name="_HeadChung" />
+    <title>Đăng nhập – Hệ thống nghiệp vụ thư viện</title>
+    <link rel="stylesheet" href="/css/tokens-quantri.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/dang-nhap.css" asp-append-version="true" />
+</head>
+<body class="qt-dn">
+    <div class="dn-khung">
+        <section class="dn-trai" aria-label="@tt.TenThuVien">
+            <div class="dn-thuong-hieu">
+                <span class="dn-thuong-hieu__dau" aria-hidden="true"><i class="bi bi-book-half"></i></span>
+                <span class="dn-thuong-hieu__chu">THƯ VIỆN<small>@tt.TenThuVien</small></span>
+            </div>
+            <svg class="dn-minh-hoa" viewBox="0 0 440 260" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 232h400" />
+                <rect x="44" y="70" width="34" height="162" rx="3" />
+                <path d="M52 92h18M52 210h18" />
+                <rect x="84" y="50" width="40" height="182" rx="3" />
+                <path d="M92 76h24M92 206h24" />
+                <rect x="130" y="96" width="30" height="136" rx="3" />
+                <path d="M137 116h16M137 214h16" />
+                <path d="M170 232l26-150 30 5-26 150z" />
+                <path d="M184 112l22 4M176 196l22 4" />
+                <rect x="240" y="60" width="38" height="172" rx="3" />
+                <path d="M248 84h22M248 208h22" />
+                <rect x="284" y="84" width="32" height="148" rx="3" />
+                <path d="M291 104h18M291 212h18" />
+                <path d="M330 232V140c0-8 6-14 14-14h44c8 0 14 6 14 14v92" />
+                <path d="M336 160c18-10 40-10 58 0M336 182c18-10 40-10 58 0" />
+                <circle cx="366" cy="102" r="12" />
+                <path d="M366 70v10M392 80l-7 7M340 80l7 7" />
+            </svg>
+            <div>
+                <p class="dn-khau-hieu">Hệ thống quản lý mượn trả sách thư viện đại học</p>
+                <p class="dn-mo-ta">Dành cho nhân viên các bộ phận: Mượn trả sách, Xử lý vi phạm, Kho sách và Quản trị.</p>
+            </div>
+        </section>
+
+        <main class="dn-phai">
+            <div class="dn-hop">
+                <h1>Đăng nhập</h1>
+                <p class="dn-phu">Nhập tên đăng nhập và mật khẩu do Quản trị cấp.</p>
+
+                @if (!string.IsNullOrEmpty(Model.ThongBaoLoi))
+                {
+                    <div class="qt-thong-bao qt-thong-bao--loi" role="alert" id="thongBaoLoi">
+                        <i class="bi bi-exclamation-octagon-fill" aria-hidden="true"></i><span>@Model.ThongBaoLoi</span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(Model.ThongBao))
+                {
+                    <div class="qt-thong-bao qt-thong-bao--tin" role="status">
+                        <i class="bi bi-info-circle-fill" aria-hidden="true"></i><span>@Model.ThongBao</span>
+                    </div>
+                }
+
+                <form method="post" asp-antiforgery="true" action="/quan-tri/dang-nhap" id="frmDangNhap" novalidate>
+                    <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                    <div class="qt-truong">
+                        <label class="qt-nhan" for="txtTenDangNhap">Tên đăng nhập<span class="bat-buoc" aria-hidden="true">*</span></label>
+                        <input class="qt-o" id="txtTenDangNhap" name="TenDangNhap" value="@Model.TenDangNhap" maxlength="30"
+                               autocomplete="username" required aria-required="true" />
+                    </div>
+                    <div class="qt-truong">
+                        <label class="qt-nhan" for="txtMatKhau">Mật khẩu<span class="bat-buoc" aria-hidden="true">*</span></label>
+                        <div class="dn-o-mat-khau">
+                            <input class="qt-o" id="txtMatKhau" name="MatKhau" type="password" autocomplete="current-password"
+                                   required aria-required="true" />
+                            <button type="button" class="dn-hien-mk" id="btnHienMatKhau" aria-label="Hiện mật khẩu" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="dn-hang-nut">
+                        <button type="submit" class="qt-nut qt-nut--chinh" id="btnDangNhap" disabled aria-disabled="true">
+                            <span class="spinner-border" role="status" aria-hidden="true" hidden></span>
+                            <span class="nhan">Đăng nhập</span>
+                        </button>
+                        <button type="button" class="qt-nut qt-nut--phu" id="btnThoat">Thoát</button>
+                    </div>
+                </form>
+                <p class="dn-chan">Bạn là sinh viên, học viên, cán bộ? <a href="/dang-nhap">Đăng nhập cổng bạn đọc</a></p>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal fade" id="modalThoat" tabindex="-1" aria-labelledby="modalThoatTieuDe" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="modalThoatTieuDe">Thoát</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">Bạn có chắc muốn thoát khỏi màn hình đăng nhập hệ thống nghiệp vụ?</div>
+                <div class="modal-footer">
+                    <button type="button" class="qt-nut qt-nut--phu" data-bs-dismiss="modal">Ở lại</button>
+                    <a class="qt-nut qt-nut--chinh" href="/" id="btnXacNhanThoat">Thoát</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_ScriptChung" />
+    <script type="module" src="/js/quantri/dang-nhap.js" asp-append-version="true"></script>
+</body>
+</html>

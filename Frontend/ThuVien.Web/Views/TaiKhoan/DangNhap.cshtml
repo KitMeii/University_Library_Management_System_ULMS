@@ -1,0 +1,40 @@
+@model ThuVien.Web.Controllers.DangNhapBanDocVm
+@{
+    ViewData["Title"] = "Đăng nhập bạn đọc";
+}
+@section Css {
+    <link rel="stylesheet" href="/css/account.css" asp-append-version="true" />
+}
+<div class="nen-pastel">
+    <div class="cong-container">
+        <div class="glass-card hop-dang-nhap">
+            <h1>Đăng nhập bạn đọc</h1>
+            <p class="phu">Dùng mã sinh viên / học viên / cán bộ và mật khẩu đã kích hoạt.</p>
+
+            @if (!string.IsNullOrEmpty(Model.ThongBaoLoi))
+            {
+                <div class="cong-loi" role="alert" id="thongBaoLoi">
+                    <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i><span>@Model.ThongBaoLoi</span>
+                </div>
+            }
+
+            <form method="post" asp-antiforgery="true" action="/dang-nhap" id="frmDangNhapBanDoc" novalidate>
+                <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+                <div class="cong-truong">
+                    <label for="maSvHvCb">Mã SV/HV/CB</label>
+                    <input class="cong-o" id="maSvHvCb" name="MaSvHvCb" value="@Model.MaSvHvCb" autocomplete="username"
+                           maxlength="15" required autofocus />
+                </div>
+                <div class="cong-truong">
+                    <label for="matKhau">Mật khẩu</label>
+                    <input class="cong-o" id="matKhau" name="MatKhau" type="password" autocomplete="current-password" required />
+                </div>
+                <label class="cong-ghi-nho">
+                    <input type="checkbox" name="GhiNho" value="true" @(Model.GhiNho ? "checked" : null) />
+                    Ghi nhớ đăng nhập (tối đa 14 ngày)
+                </label>
+                <button type="submit" class="cong-nut cong-nut--chinh"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+</div>

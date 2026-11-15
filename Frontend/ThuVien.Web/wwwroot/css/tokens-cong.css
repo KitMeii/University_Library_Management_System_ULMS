@@ -1,0 +1,64 @@
+/* Design tokens – CỔNG BẠN ĐỌC “Light Academic Emerald” (file 03 mục A, C). */
+:root {
+  /* Header */
+  --hdr-bg: #287A5A;
+  --hdr-text: #FFFFFF;
+  --hdr-hover: #F0D69A;
+  --hdr-hover-bg: rgba(255, 255, 255, .12);
+  --hdr-accent: #D2AD68;
+  /* Nền */
+  --bg: #F7F8F5;
+  --surface: #FFFFFF;
+  --sage-1: #EDF3EE;
+  --sage-2: #E5EEE8;
+  --paper: #F3EBDD;
+  --footer-cuoi: #E4ECE6;
+  /* Thương hiệu */
+  --forest: #123F35;
+  --emerald: #176B54;
+  --midnight: #0B2A25;
+  --jade: #4A9B84;
+  /* Điểm nhấn */
+  --gold: #C6A15B;
+  --champagne: #E3C98B;
+  --bronze: #806126;
+  --warm-bronze: #A9793E;
+  /* Chữ */
+  --text: #24322D;
+  --text-2: #6A7770;
+  --border: #DFE7E1;
+  /* Trạng thái */
+  --error: #B94040;
+  --success: #267A55;
+  --warning: #A9793E;
+  --error-nen: rgba(185, 64, 64, .08);
+  --error-vien: rgba(185, 64, 64, .25);
+
+  /* Pill “DỮ LIỆU MẪU” */
+  --pill-mau-nen: #FEF3C7;
+  --pill-mau-chu: #92400E;
+  --pill-mau-vien: #FCD34D;
+  /* Kệ coverflow */
+  --shelf-bg: #EFEBE3;
+  --shelf-deco: rgba(23, 107, 84, .16);
+  --shelf-title: #123F35;
+  /* Khu tài khoản kính mờ (mục C) */
+  --glass-bg: rgba(255, 255, 255, .58);
+  --glass-bg-dac: rgba(255, 255, 255, .86);
+  --glass-vien: rgba(255, 255, 255, .72);
+  --glass-bong: 0 8px 24px rgba(12, 91, 69, .08);
+  --mesh-1: #E5EEE8;
+  --mesh-2: #EDF3EE;
+  --mesh-3: #F3EBDD;
+  --mesh-4: #E3EFE9;
+  --mesh-vang: rgba(198, 161, 91, .18);
+
+  --container: 1280px;
+  --gutter: 24px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+  --focus: 0 0 0 3px rgba(198, 161, 91, .55);
+
+  --font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-header: 'Times New Roman', Times, serif;
+}

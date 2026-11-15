@@ -1,0 +1,9 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml" />
+<link rel="preload" href="/fonts/be-vietnam-pro/be-vietnam-pro-vietnamese-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="/lib/bootstrap/5.3.3/bootstrap.min.css" />
+<link rel="stylesheet" href="/lib/bootstrap-icons/1.11.3/bootstrap-icons.min.css" />
+<link rel="stylesheet" href="/css/fonts.css" asp-append-version="true" />

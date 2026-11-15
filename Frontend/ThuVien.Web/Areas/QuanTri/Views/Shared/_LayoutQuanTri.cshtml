@@ -1,0 +1,116 @@
+@inject IOptions<ThuVienOptions> Opt
+@inject IWebHostEnvironment Env
+@{
+    var tt = Opt.Value.ThongTin;
+    var hienMau = Env.IsDevelopment() && Opt.Value.HienNhanDuLieuMau;
+    var duongDanHienTai = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    var menu = MenuQuanTri.ChoNguoiDung(User).ToList();
+    var ten = User.FindFirst(ThuVienClaims.Ten)?.Value ?? "";
+    var tenNhom = User.FindFirst(ThuVienClaims.TenNhom)?.Value ?? "";
+    var maNhom = User.FindFirst(ThuVienClaims.MaNhom)?.Value ?? "";
+    var tieuDe = ViewData["Title"] as string ?? "Tổng quan";
+    var nhomHienTai = ViewData["NhomMenu"] as string;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <partial name="_HeadChung" />
+    <title>@tieuDe – Hệ thống nghiệp vụ thư viện</title>
+    <link rel="stylesheet" href="/css/tokens-quantri.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/dashboard.css" asp-append-version="true" />
+    @await RenderSectionAsync("Css", required: false)
+</head>
+<body class="qt">
+    <a class="bo-qua-noi-dung" href="#noiDung">Bỏ qua, tới nội dung chính</a>
+    <div class="qt-khung">
+        <aside class="qt-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="qtSidebar" aria-label="Menu chức năng">
+            <div class="offcanvas-header d-lg-none">
+                <span class="fw-bold">Menu chức năng</span>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#qtSidebar" aria-label="Đóng menu"></button>
+            </div>
+            <a class="qt-logo d-none d-lg-flex" href="/quan-tri">
+                <span class="qt-logo__dau" aria-hidden="true"><i class="bi bi-book-half"></i></span>
+                <span class="qt-logo__chu">THƯ VIỆN<small>Hệ thống nghiệp vụ</small></span>
+            </a>
+            <nav class="qt-nav" aria-label="Chức năng nghiệp vụ">
+                <a class="qt-nav__muc" href="/quan-tri" aria-current="@(duongDanHienTai == "/quan-tri" ? "page" : null)" title="Tổng quan">
+                    <i class="bi bi-grid-1x2" aria-hidden="true"></i><span>Tổng quan</span>
+                </a>
+                @{ var i = 0; }
+                @foreach (var nhom in menu)
+                {
+                    i++;
+                    <div class="qt-nav__nhom">
+                        <button type="button" class="qt-nav__tieu-de" aria-expanded="true" aria-controls="qtNhom@(i)" data-nhom="@nhom.Ten" title="@nhom.Ten">
+                            <i class="bi @nhom.Icon" aria-hidden="true"></i><span>@nhom.Ten</span><i class="bi bi-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <ul class="qt-nav__ds" id="qtNhom@(i)">
+                            @foreach (var m in nhom.Muc)
+                            {
+                                var dangChon = string.Equals(m.DuongDan, duongDanHienTai, StringComparison.OrdinalIgnoreCase);
+                                <li>
+                                    <a class="qt-nav__muc" href="@m.DuongDan" aria-current="@(dangChon ? "page" : null)" title="@m.Ten">
+                                        <i class="bi @m.Icon" aria-hidden="true"></i><span>@m.Ten</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </nav>
+        </aside>
+
+        <div class="qt-chinh">
+            <header class="qt-topbar">
+                <button type="button" class="qt-nut-bieu-tuong d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#qtSidebar" aria-controls="qtSidebar" aria-label="Mở menu">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="qt-nut-bieu-tuong d-none d-lg-inline-grid" id="btnThuGonMenu" aria-label="Thu gọn / mở rộng menu">
+                    <i class="bi bi-layout-sidebar" aria-hidden="true"></i>
+                </button>
+                <div class="qt-topbar__tieu-de">@tieuDe</div>
+                <div class="qt-topbar__phai">
+                    @if (hienMau)
+                    {
+                        <span class="pill-du-lieu-mau" title="Môi trường thử nghiệm – dữ liệu là dữ liệu mẫu"><i class="bi bi-flask" aria-hidden="true"></i>DỮ LIỆU MẪU</span>
+                    }
+                    <div class="dropdown">
+                        <button class="qt-nguoi-dung" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="qt-nguoi-dung__anh" aria-hidden="true">@(ten.Length > 0 ? ten.Split(' ')[^1][0] : '?')</span>
+                            <span class="qt-nguoi-dung__ten">@ten<small>@maNhom – @tenNhom</small></span>
+                            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><span class="dropdown-item-text small text-secondary">@User.FindFirst(ThuVienClaims.TenDangNhap)?.Value</span></li>
+                            <li><a class="dropdown-item" href="/quan-tri/doi-mat-khau"><i class="bi bi-key me-2" aria-hidden="true"></i>Đổi mật khẩu</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form method="post" asp-antiforgery="true" action="/quan-tri/dang-xuat">
+                                    <button type="submit" class="dropdown-item" id="btnDangXuat"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Đăng xuất</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <nav class="qt-breadcrumb" aria-label="Vị trí trang">
+                <ol>
+                    <li><a href="/quan-tri">Hệ thống nghiệp vụ</a></li>
+                    @if (!string.IsNullOrEmpty(nhomHienTai)) { <li>@nhomHienTai</li> }
+                    <li aria-current="page">@tieuDe</li>
+                </ol>
+            </nav>
+
+            <main class="qt-noi-dung" id="noiDung" tabindex="-1">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <partial name="_ScriptChung" />
+    <script type="module" src="/js/quantri/layout.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

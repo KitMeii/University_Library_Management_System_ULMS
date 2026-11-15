@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+<section class="cong-gioi-thieu">
+    <div class="cong-container">
+        <h1>Tri thức mở lối – Tương lai rộng mở.</h1>
+        <p>Cổng bạn đọc của hệ thống quản lý mượn trả sách thư viện đại học.</p>
+        <div class="cong-the">
+            <h2><i class="bi bi-cone-striped" aria-hidden="true"></i> Cổng bạn đọc đang được xây dựng</h2>
+            <p class="mb-3">
+                Kệ sách nổi bật, khám phá sách, mở xem sách và đặt chỗ giữ sách 24 giờ sẽ hoàn thiện ở các pha 5–7.
+                Hiện bạn có thể đăng nhập tài khoản bạn đọc đã kích hoạt.
+            </p>
+            @if (!(User.Identity?.IsAuthenticated == true && User.HasClaim(ThuVienClaims.Loai, LoaiTaiKhoan.BanDoc)))
+            {
+                <a class="cong-nut cong-nut--chinh" href="/dang-nhap"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Đăng nhập bạn đọc</a>
+            }
+            else
+            {
+                <p class="mb-0">Xin chào <strong>@User.FindFirst(ThuVienClaims.Ten)?.Value</strong> (@User.FindFirst(ThuVienClaims.MaSvHvCb)?.Value).</p>
+            }
+        </div>
+    </div>
+</section>

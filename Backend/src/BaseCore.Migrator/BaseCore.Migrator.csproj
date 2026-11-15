@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Chạy một lần trong docker compose: migration + login/quyền SQL + dữ liệu khởi tạo (+ dữ liệu mẫu ở Development) -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaseCore.Common\BaseCore.Common.csproj" />
+    <ProjectReference Include="..\BaseCore.Repository\BaseCore.Repository.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

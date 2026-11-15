@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/Backend/" />
+  <Folder Name="/Backend/src/">
+    <Project Path="Backend/src/BaseCore.ApiGateway/BaseCore.ApiGateway.csproj" />
+    <Project Path="Backend/src/BaseCore.Common/BaseCore.Common.csproj" />
+    <Project Path="Backend/src/BaseCore.DTO/BaseCore.DTO.csproj" />
+    <Project Path="Backend/src/BaseCore.Entities/BaseCore.Entities.csproj" />
+    <Project Path="Backend/src/BaseCore.KhoSachService/BaseCore.KhoSachService.csproj" />
+    <Project Path="Backend/src/BaseCore.Libs/BaseCore.Libs.csproj" />
+    <Project Path="Backend/src/BaseCore.Migrator/BaseCore.Migrator.csproj" />
+    <Project Path="Backend/src/BaseCore.MuonTraService/BaseCore.MuonTraService.csproj" />
+    <Project Path="Backend/src/BaseCore.QuanTriService/BaseCore.QuanTriService.csproj" />
+    <Project Path="Backend/src/BaseCore.Repository/BaseCore.Repository.csproj" />
+    <Project Path="Backend/src/BaseCore.ViPhamService/BaseCore.ViPhamService.csproj" />
+  </Folder>
+  <Folder Name="/Backend/tests/">
+    <Project Path="Backend/tests/BaseCore.IntegrationTests/BaseCore.IntegrationTests.csproj" />
+    <Project Path="Backend/tests/BaseCore.UnitTests/BaseCore.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Frontend/">
+    <Project Path="Frontend/ThuVien.Web/ThuVien.Web.csproj" />
+  </Folder>
+  <Folder Name="/Frontend/tests/">
+    <Project Path="Frontend/tests/ThuVien.E2E/ThuVien.E2E.csproj" />
+  </Folder>
+</Solution>

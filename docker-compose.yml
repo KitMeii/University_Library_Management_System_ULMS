@@ -1,0 +1,142 @@
+# ULMS – toàn hệ thống bằng một lệnh (file 14):  docker compose up -d --build
+# Bí mật đọc từ .env (chép từ .env.example). Cấu hình phát triển nằm ở docker-compose.override.yml (tự nạp).
+name: ulms
+
+x-dotnet-env: &dotnet-env
+  TZ: Asia/Ho_Chi_Minh
+  ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+  DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+  Jwt__SecretKey: ${JWT_SECRET_KEY:?Thiếu JWT_SECRET_KEY trong .env}
+  MatKhau__SoVongLap: ${MATKHAU_SO_VONG_LAP:-600000}
+
+x-service: &service
+  restart: unless-stopped
+  networks: [thuvien-net]
+  mem_limit: 512m
+
+x-sau-migrator: &sau-migrator
+  depends_on:
+    migrator:
+      condition: service_completed_successfully
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-CU27-GDR2-ubuntu-22.04
+    restart: unless-stopped
+    networks: [thuvien-net]
+    mem_limit: 2g
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: ${MSSQL_PID:-Developer}
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Thiếu MSSQL_SA_PASSWORD trong .env}
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - thuvien-sql-data:/var/opt/mssql
+      - thuvien-backup:/var/opt/mssql/backup
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -b -Q \"SELECT 1\" -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 40s
+      retries: 10
+
+  migrator:
+    build: { context: ., dockerfile: Backend/src/BaseCore.Migrator/Dockerfile }
+    image: ulms/migrator:local
+    networks: [thuvien-net]
+    restart: "no"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__QuanTriCsdl: "Server=sqlserver;Database=ThuVien;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      MatKhauDichVu__quantri: ${SVC_QUANTRI_PASSWORD:?}
+      MatKhauDichVu__khosach: ${SVC_KHOSACH_PASSWORD:?}
+      MatKhauDichVu__muontra: ${SVC_MUONTRA_PASSWORD:?}
+      MatKhauDichVu__vipham: ${SVC_VIPHAM_PASSWORD:?}
+      ThuVien__KhoiTao__MatKhauAdmin: ${ADMIN_PASSWORD:?Thiếu ADMIN_PASSWORD trong .env}
+      ThuVien__NapDuLieuMau: ${NAP_DU_LIEU_MAU:-false}
+
+  quantri:
+    <<: [*service, *sau-migrator]
+    build: { context: ., dockerfile: Backend/src/BaseCore.QuanTriService/Dockerfile }
+    image: ulms/quantri:local
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_quantri;Password=${SVC_QUANTRI_PASSWORD};TrustServerCertificate=True"
+      Jwt__ThoiHanPhut: "720"
+    volumes:
+      - thuvien-logs:/app/logs
+
+  khosach:
+    <<: [*service, *sau-migrator]
+    build: { context: ., dockerfile: Backend/src/BaseCore.KhoSachService/Dockerfile }
+    image: ulms/khosach:local
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_khosach;Password=${SVC_KHOSACH_PASSWORD};TrustServerCertificate=True"
+    volumes:
+      - thuvien-logs:/app/logs
+
+  muontra:
+    <<: [*service, *sau-migrator]
+    build: { context: ., dockerfile: Backend/src/BaseCore.MuonTraService/Dockerfile }
+    image: ulms/muontra:local
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_muontra;Password=${SVC_MUONTRA_PASSWORD};TrustServerCertificate=True"
+    volumes:
+      - thuvien-logs:/app/logs
+
+  vipham:
+    <<: [*service, *sau-migrator]
+    build: { context: ., dockerfile: Backend/src/BaseCore.ViPhamService/Dockerfile }
+    image: ulms/vipham:local
+    environment:
+      <<: *dotnet-env
+      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_vipham;Password=${SVC_VIPHAM_PASSWORD};TrustServerCertificate=True"
+    volumes:
+      - thuvien-logs:/app/logs
+
+  gateway:
+    <<: *service
+    build: { context: ., dockerfile: Backend/src/BaseCore.ApiGateway/Dockerfile }
+    image: ulms/gateway:local
+    environment:
+      <<: *dotnet-env
+    depends_on:
+      quantri: { condition: service_healthy }
+      khosach: { condition: service_healthy }
+      muontra: { condition: service_healthy }
+      vipham: { condition: service_healthy }
+    volumes:
+      - thuvien-logs:/app/logs
+
+  web:
+    <<: *service
+    build: { context: ., dockerfile: Frontend/ThuVien.Web/Dockerfile }
+    image: ulms/web:local
+    environment:
+      <<: *dotnet-env
+      Gateway__Url: http://gateway:8080
+      ThuVien__HienNhanDuLieuMau: ${HIEN_NHAN_DU_LIEU_MAU:-false}
+    depends_on:
+      gateway: { condition: service_healthy }
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    volumes:
+      - thuvien-uploads:/app/wwwroot/uploads
+      - thuvien-web-keys:/app/keys
+      - thuvien-logs:/app/logs
+
+networks:
+  thuvien-net:
+    name: thuvien-net
+
+volumes:
+  thuvien-sql-data:
+  thuvien-backup:
+  thuvien-uploads:
+  thuvien-web-keys:
+  thuvien-logs:

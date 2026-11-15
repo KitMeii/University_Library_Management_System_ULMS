@@ -1,0 +1,11 @@
+@model (NhomMenu Nhom, MucMenu Muc)
+@{
+    ViewData["Title"] = Model.Muc.Ten;
+    ViewData["NhomMenu"] = Model.Nhom.Ten;
+}
+<div class="qt-the qt-trong">
+    <div class="qt-trong__bieu-tuong" aria-hidden="true"><i class="bi @Model.Muc.Icon"></i></div>
+    <h2>@Model.Muc.Ten</h2>
+    <p>Giao diện này được xây dựng ở <strong>Pha @Model.Muc.Pha</strong> theo kế hoạch đã duyệt.</p>
+    <p>Bạn đã có quyền truy cập chức năng này; dữ liệu và thao tác sẽ dùng được khi pha tương ứng hoàn thành.</p>
+</div>

@@ -1,0 +1,15 @@
+@{
+    var ma = ViewData["MaLoi"] as int? ?? 500;
+    ViewData["Title"] = ma == 404 ? "Không tìm thấy trang" : "Có lỗi xảy ra";
+    var laQuanTri = ViewData["LaQuanTri"] as bool? ?? false;
+}
+<section class="cong-gioi-thieu">
+    <div class="cong-container">
+        <h1>@(ma == 404 ? "Không tìm thấy trang" : ma == 403 ? "Không có quyền truy cập" : "Có lỗi xảy ra")</h1>
+        <p>
+            @(ma == 404 ? "Đường dẫn bạn mở không tồn tại hoặc đã được thay đổi."
+                         : "Hệ thống chưa xử lý được yêu cầu. Vui lòng thử lại sau ít phút.")
+        </p>
+        <a class="cong-nut cong-nut--chinh" href="@(laQuanTri ? "/quan-tri" : "/")"><i class="bi bi-house" aria-hidden="true"></i> Về trang chính</a>
+    </div>
+</section>

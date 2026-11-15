@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Ánh xạ EF Core (Fluent API) cho toàn bộ lược đồ ULMS + Repository<T> / Unit of Work -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BaseCore.Entities\BaseCore.Entities.csproj" />
+    <ProjectReference Include="..\BaseCore.Libs\BaseCore.Libs.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+@{
+    ViewData["Title"] = "Không có quyền truy cập";
+    Layout = User.HasClaim(ThuVienClaims.Loai, LoaiTaiKhoan.NhanVien) ? "_LayoutQuanTri" : "/Views/Shared/_LayoutCong.cshtml";
+}
+<div class="qt-the qt-trong">
+    <div class="qt-trong__bieu-tuong" aria-hidden="true"><i class="bi bi-shield-lock"></i></div>
+    <h2>Không có quyền truy cập</h2>
+    <p>Tài khoản của bạn không được cấp quyền dùng chức năng này. Vui lòng liên hệ Quản trị nếu cần.</p>
+    <p><a class="qt-nut qt-nut--phu" href="/quan-tri">Về trang tổng quan</a></p>
+</div>

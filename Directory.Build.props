@@ -1,0 +1,19 @@
+<Project>
+  <!-- Cấu hình build chung cho mọi project của ULMS (GIA_DINH D6: .NET 10 LTS) -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <!-- Khi build trong container trên thư mục mount (ULMS_BUILD_OUT=/tmp/ulms), bin/obj để ngoài cây mã nguồn -->
+  <PropertyGroup Condition="'$(ULMS_BUILD_OUT)' != ''">
+    <BaseIntermediateOutputPath>$(ULMS_BUILD_OUT)/obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(ULMS_BUILD_OUT)/bin/$(MSBuildProjectName)/</BaseOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);bin/**;obj/**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

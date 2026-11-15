@@ -1,0 +1,46 @@
+/* Nền tảng chung cho cả hai mặt. Không dùng `transition: all` (nguyên tắc 6, file 01). */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+@view-transition { navigation: auto; }
+
+img, svg { max-width: 100%; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+.bo-qua-noi-dung {
+  position: absolute; left: 12px; top: -48px; z-index: 2000;
+  padding: 8px 14px; border-radius: 8px;
+  background: var(--bo-qua-nen, #000); color: var(--bo-qua-chu, #fff); text-decoration: none;
+  transform: translateY(0);
+}
+.bo-qua-noi-dung:focus { top: 12px; }
+
+.so-lieu { font-variant-numeric: tabular-nums; }
+
+/* Pill “DỮ LIỆU MẪU” (nguyên tắc 4) – ẩn được khi chụp ảnh (GIA_DINH D23) */
+.pill-du-lieu-mau {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  background: var(--pill-mau-nen); color: var(--pill-mau-chu); border: 1px solid var(--pill-mau-vien);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}

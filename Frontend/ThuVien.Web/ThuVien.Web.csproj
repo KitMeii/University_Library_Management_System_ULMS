@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Cổng bạn đọc (/) + Hệ thống nghiệp vụ (/quan-tri) – ASP.NET Core MVC, gọi backend qua gateway -->
+  <ItemGroup>
+    <PackageReference Include="Yarp.ReverseProxy" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Backend\src\BaseCore.Common\BaseCore.Common.csproj" />
+  </ItemGroup>
+</Project>

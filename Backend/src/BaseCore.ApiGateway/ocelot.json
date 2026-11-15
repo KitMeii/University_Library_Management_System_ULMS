@@ -1,0 +1,1419 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/xac-thuc",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/xac-thuc",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/xac-thuc/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/xac-thuc/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/nhom-nguoi-dung",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/nhom-nguoi-dung",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/nhom-nguoi-dung/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/nhom-nguoi-dung/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/tai-khoan",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/tai-khoan",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/tai-khoan/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/tai-khoan/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phan-quyen",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phan-quyen",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phan-quyen/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phan-quyen/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/nhat-ky",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/nhat-ky",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/nhat-ky/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/nhat-ky/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/sao-luu",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/sao-luu",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/sao-luu/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/sao-luu/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n4",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n4",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n4/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n4/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "quantri",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/sach",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/sach",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/sach/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/sach/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/khu-vuc",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/khu-vuc",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/khu-vuc/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/khu-vuc/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/dau-sach",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/dau-sach",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/dau-sach/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/dau-sach/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/the-loai",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/the-loai",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/the-loai/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/the-loai/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n3",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n3",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n3/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n3/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/sach",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/sach",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/sach/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/sach/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/ke-sach",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/ke-sach",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/ke-sach/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/ke-sach/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/the-loai",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/the-loai",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/the-loai/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/the-loai/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "khosach",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/ban-doc",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/ban-doc",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/ban-doc/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/ban-doc/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phieu-muon",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phieu-muon",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phieu-muon/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phieu-muon/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phieu-gia-han",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phieu-gia-han",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phieu-gia-han/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phieu-gia-han/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phieu-tra",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phieu-tra",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/phieu-tra/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/phieu-tra/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/dat-cho",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/dat-cho",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/dat-cho/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/dat-cho/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/bao-cao/muon-tra",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/bao-cao/muon-tra",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/bao-cao/muon-tra/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/bao-cao/muon-tra/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n1",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n1",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n1/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n1/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/dang-nhap",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/dang-nhap",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/dang-nhap/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/dang-nhap/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/kich-hoat",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/kich-hoat",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/kich-hoat/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/kich-hoat/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ]
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/tai-khoan",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/tai-khoan",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/tai-khoan/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/tai-khoan/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/dat-cho",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/dat-cho",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/dat-cho/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/dat-cho/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/thong-bao",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/thong-bao",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/thong-bao/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/thong-bao/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/yeu-thich",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/yeu-thich",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/cong/yeu-thich/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/cong/yeu-thich/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "muontra",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/khoan-thu",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/khoan-thu",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/khoan-thu/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/khoan-thu/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/bien-ban",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/bien-ban",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/bien-ban/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/bien-ban/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/bao-cao/vi-pham",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/bao-cao/vi-pham",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/bao-cao/vi-pham/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/bao-cao/vi-pham/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n2",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n2",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    },
+    {
+      "UpstreamPathTemplate": "/api/quan-tri/thong-ke/n2/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH"
+      ],
+      "DownstreamPathTemplate": "/api/quan-tri/thong-ke/n2/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "vipham",
+          "Port": 8080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKeys": [
+          "Bearer"
+        ]
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "X-Request-Id"
+  }
+}

@@ -1,0 +1,42 @@
+/* Design tokens – HỆ THỐNG NGHIỆP VỤ trắng – đỏ (file 03 mục B). Không viết mã màu trực tiếp trong component. */
+:root {
+  --red-900: #7F1D1D;
+  --red-700: #B91C1C;
+  --red-600: #DC2626;
+  --red-500: #EF4444;
+  --red-300: #FCA5A5;
+  --red-100: #FEE2E2;
+  --red-50: #FEF2F2;
+  --white: #FFFFFF;
+  --bg: #FAFAFA;
+  --surface-2: #F5F5F5;
+  --line: #ECECEC;
+  --ink: #1F1F1F;
+  --ink-2: #5C5C5C;
+  --ink-3: #8A8A8A;
+  --ok: #15803D;
+  --warn: #B45309;
+  --info: #1D4ED8;
+  --danger: #B91C1C;
+  --info-50: #EFF6FF;
+  --info-100: #DBEAFE;
+  --ok-50: #F0FDF4;
+  --ok-100: #DCFCE7;
+  --line-dam: #D4D4D4;
+
+  /* Pill “DỮ LIỆU MẪU” */
+  --pill-mau-nen: #FEF3C7;
+  --pill-mau-chu: #92400E;
+  --pill-mau-vien: #FCD34D;
+
+  --qt-sidebar-w: 264px;
+  --qt-sidebar-w-thu: 76px;
+  --qt-topbar-h: 64px;
+  --qt-radius-card: 14px;
+  --qt-radius-btn: 8px;
+  --qt-shadow-card: 0 1px 2px rgba(0, 0, 0, .04), 0 8px 24px rgba(0, 0, 0, .04);
+  --qt-shadow-card-hover: 0 2px 4px rgba(0, 0, 0, .06), 0 16px 32px rgba(0, 0, 0, .08);
+  --qt-focus: 0 0 0 3px var(--red-300);
+
+  --font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}

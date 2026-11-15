@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- E2E + chụp ảnh giao diện bằng Playwright .NET; chạy trong container playwright/dotnet (scripts/test-docker.sh) -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Playwright" />
+    <PackageReference Include="Deque.AxeCore.Playwright" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Microsoft.Playwright" />
+  </ItemGroup>
+</Project>

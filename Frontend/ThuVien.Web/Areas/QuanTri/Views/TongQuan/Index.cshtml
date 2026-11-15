@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Tổng quan";
+    var menu = MenuQuanTri.ChoNguoiDung(User).ToList();
+}
+<h1>Xin chào, @User.FindFirst(ThuVienClaims.Ten)?.Value</h1>
+<div class="qt-the mb-3">
+    <p class="mb-1">Nhóm người dùng: <strong>@User.FindFirst(ThuVienClaims.MaNhom)?.Value – @User.FindFirst(ThuVienClaims.TenNhom)?.Value</strong></p>
+    <p class="mb-0 text-secondary">Thẻ số liệu và biểu đồ thống kê của nhóm sẽ hiển thị tại đây từ Pha 4.</p>
+</div>
+<h2 class="fs-5 fw-semibold mb-3">Chức năng của bạn</h2>
+<div class="qt-luoi-the">
+    @foreach (var m in menu.SelectMany(n => n.Muc))
+    {
+        <a class="qt-the qt-the--nang qt-loi-tat" href="@m.DuongDan">
+            <i class="bi @m.Icon" aria-hidden="true"></i><span>@m.Ten</span>
+        </a>
+    }
+</div>
