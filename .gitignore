@@ -1,0 +1,26 @@
+# Build
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+.vs/
+.idea/
+*.swp
+
+# Node
+node_modules/
+
+# Bí mật / môi trường
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+
+# Kết quả kiểm thử, log
+artifacts/
+TestResults/
+logs/
+*.log
+playwright-report/

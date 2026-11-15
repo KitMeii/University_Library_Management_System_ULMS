@@ -1,0 +1,30 @@
+# GIẢ ĐỊNH VÀ QUYẾT ĐỊNH ĐÃ DUYỆT
+
+Chỉ ghi các quyết định đã được chủ dự án duyệt. Mỗi mục: ngày, nội dung, lý do.
+
+| # | Ngày | Quyết định | Nguồn |
+|---|---|---|---|
+| D1 | 15/11/2026 | Ánh xạ đường dẫn: `basecore/` = `Backend/`; `docs/` = `Prompt/Prompt_ClaudeCode_HeThong/docs/`; ứng dụng web MVC đặt ở `Frontend/`; file compose, `.env.example`, `README.md`, `.gitignore` ở gốc | Yêu cầu khởi động của chủ dự án |
+| D3 | 15/11/2026 | **Bí mật (R1):** trước commit đầu tiên thay toàn bộ MongoDB/Redis URI, Secret GUID, khóa JWT, chuỗi kết nối trong `Backend/**/appsettings*.json` và hằng số trong code bằng chỗ trống/biến môi trường. Không cần kiểm tra máy chủ 178.128.26.135 (không thuộc chủ dự án) | Duyệt Pha 0A |
+| D4 | 15/11/2026 | **Số chứng từ giữ C(10):** `PMyyMM####`, `GHyyMM####`, `PTyyMM####`, `BByyMM####`, đánh lại từ 0001 mỗi tháng (ví dụ `PM26110001`). Đã cập nhật SPEC mục 4, file 02 (mục 1, X08: `SOCHUNGTU.ngay` = ngày đầu tháng) | Duyệt Pha 0A (giải R9) |
+| D5 | 15/11/2026 | **Mật khẩu giữ C(64):** không dùng `PasswordHasher<T>`; hasher tự viết `Rfc2898DeriveBytes.Pbkdf2` – HMAC-SHA256, salt 16 byte ngẫu nhiên, khóa 32 byte, số vòng lặp trong cấu hình (mặc định 600.000) → lưu `Base64(salt‖hash)` = 48 byte = đúng 64 ký tự; so sánh bằng `CryptographicOperations.FixedTimeEquals`. Dùng chung cho NGUOIDUNG và TAIKHOAN_BANDOC. Đã cập nhật file 01, 02, 11 | Duyệt Pha 0A (giải R8) |
+| D6 | 15/11/2026 | **.NET 10 LTS** cho mọi project; Docker dùng `mcr.microsoft.com/dotnet/sdk:10.0` / `aspnet:10.0`; chủ dự án tự cài SDK 10 trên máy | Duyệt Pha 0A (giải R3) |
+| D7 | 15/11/2026 | Sửa `AuthController.Login` không in mật khẩu ra console (Pha 1) | Duyệt Pha 0A (R2) |
+| D8 | 15/11/2026 | **Duyệt XÓA toàn bộ mục 9** của `BASECORE_PHAN_TICH.md` (AuditLog, LogService, UnitTest, IOTService, WebClient, Test, Examples/ và các file/gói liệt kê). Xóa trong **một commit riêng** ở Pha 1. Nhật ký nghiệp vụ: bảng NHATKY_DANGNHAP / NHATKY_HOATDONG theo SPEC; log kỹ thuật: Serilog; test viết mới | Duyệt Pha 0A |
+| D9 | 15/11/2026 | **Ưu tiên giao diện Bài 4:** đăng nhập + danh mục + quản trị (Pha 2), 4 form chứng từ + mẫu in MB02–MB05 (Pha 3), báo cáo MB06–MB07 (Pha 4) xong và có ảnh chụp **trước** phần cổng bạn đọc | Yêu cầu chủ dự án |
+| D10 | 15/11/2026 | **CSDL:** SQL Server 2022 trong Docker, **một database, mỗi service một schema riêng, chỉ ghi vào bảng của mình**. Container map cổng **1434** ra máy (`localhost,1434`) để mở bằng SSMS, không đụng 1433 của bản cài sẵn. README ghi cách kết nối SSMS: Server `localhost,1434`, SQL Server Authentication, `sa`, mật khẩu trong `.env`, tích Trust server certificate | Yêu cầu chủ dự án |
+| D11 | 15/11/2026 | **4 service nghiệp vụ** (schema cùng tên): `quantri` (NHOMNGUOIDUNG, NGUOIDUNG, QUYEN, PHANQUYEN, NHATKY_DANGNHAP, NHATKY_HOATDONG; sao lưu), `khosach` (SACH, KHUVUC, DAUSACH, DAUSACH_BANSACH, THELOAI), `muontra` (BANDOC, PHIEUMUON, CT_PHIEUMUON, PHIEUGIAHAN, CT_PHIEUGIAHAN, PHIEUTRA, CT_PHIEUTRA, PHIEUDATCHO, SOCHUNGTU, YEUTHICH, THONGBAO, TAIKHOAN_BANDOC), `vipham` (KHOANTHU, BIENBAN, CT_BIENBAN) | Q1 |
+| D12 | 15/11/2026 | **TAIKHOAN_BANDOC thuộc muontra** (khác gợi ý file 12). Lý do: file 07 yêu cầu tạo tài khoản “Chưa kích hoạt” **trong cùng transaction** khi N1 lưu thẻ BANDOC (01.01.01); BANDOC thuộc muontra, mà mỗi service chỉ ghi bảng của mình → đặt cùng service mới bảo đảm nguyên tử, không cần giao dịch phân tán. muontra cấp JWT cho bạn đọc | Q2 |
+| D13 | 15/11/2026 | **Không dùng message bus.** Các bước “chuyển cho bộ phận …” hiện thực bằng đọc chéo schema (quyền SELECT) + INSERT trực tiếp NHATKY_HOATDONG, THONGBAO trong transaction nghiệp vụ (mọi service chỉ có quyền INSERT trên 2 bảng này) | Q3 |
+| D14 | 15/11/2026 | **Giữ khóa ngoại vật lý giữa các schema** đúng SPEC. Ranh giới ghi được ép bằng login SQL riêng từng service | Q4 |
+| D15 | 15/11/2026 | Danh sách “chuyển đến” (dgvChuyenDen) và “trường hợp vi phạm chờ lập biên bản” **suy ra từ dữ liệu** theo `KE_HOACH_PHA_0.md` mục 4, không thêm bảng | Q5 |
+| D16 | 15/11/2026 | **Bản sách có thể mượn/đặt chỗ** = `SACH.tinhtrang = 'Sẵn sàng'` và **không thuộc phiếu mượn chưa trả** và không đang được giữ chỗ (còn hạn) cho người khác. Chỉ là quy tắc trong code, không đổi bảng; áp dụng cho cả lập phiếu mượn và đặt chỗ | Q6 |
+| D17 | 15/11/2026 | Duyệt thêm gói **Yarp.ReverseProxy** (web làm BFF chuyển `/api/**` → gateway, gắn JWT từ cookie) và **Deque.AxeCore.Playwright** (kiểm accessibility) | Q7 |
+| D18 | 15/11/2026 | Làm phẳng `Backend/BaseCore/BaseCore` → `Backend/`; project `BaseCore.QuanTriService` (từ AuthService), `BaseCore.KhoSachService` (từ APIService), `BaseCore.MuonTraService`, `BaseCore.ViPhamService`; một solution `ULMS.slnx` ở gốc | Q8 |
+| D19 | 15/11/2026 | Mã tự sinh: `ma_nd` = `ND####` (6 ký tự ≤ C(10)); `ma_dangnhap` = `DN` + yyMMdd + 7 số = 15 ký tự = C(15); `ma_hoatdong` = `HD` + yyMMdd + 7 số = 15 = C(15). Đã kiểm độ dài khớp SPEC | Q9 |
+| D20 | 15/11/2026 | 04.00.09 giữ đúng control SPEC; **không** thêm nút tải tệp sao lưu về / tải lên. `btnChon` chọn thư mục/tệp trong thư mục sao lưu của máy chủ | Q10 |
+| D21 | 15/11/2026 | `appsettings` mục `ThuVien:ThongTin`: `TenTruong` = “[TÊN TRƯỜNG CỦA BẠN]”; địa chỉ, giờ mở cửa, email, điện thoại, nội quy để trống (chủ dự án bổ sung sau). Khu vực không có dữ liệu thì không hiển thị | Q11 |
+| D22 | 15/11/2026 | Development: `admin/Thuvien@123` không bắt đổi mật khẩu lần đầu; Production bắt đổi | Q12 |
+| D23 | 15/11/2026 | **Chế độ chụp ảnh** ẩn nhãn “DỮ LIỆU MẪU”: cấu hình `ThuVien:HienNhanDuLieuMau` (mặc định true ở Development), đặt false khi chụp bộ ảnh Bài 4 | Q13 |
+| D24 | 15/11/2026 | Chủ dự án có điện thoại thật để kiểm thử cổng bạn đọc (loại máy: chưa ghi rõ – “[iPhone / Android]”) | Q14 |
+| D2 | 15/11/2026 | Git: remote `https://github.com/KitMeii/University_Library_Management_System_ULMS.git`, nhánh `main`; kiểm tra bí mật trước commit đầu; xóa phần thừa trong commit riêng; commit + push sau mỗi pha được duyệt | Yêu cầu khởi động của chủ dự án |
