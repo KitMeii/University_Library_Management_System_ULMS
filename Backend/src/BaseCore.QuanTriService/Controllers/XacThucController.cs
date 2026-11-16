@@ -32,6 +32,14 @@ public sealed class XacThucController(XacThucNhanVienService service) : Controll
         return NoContent();
     }
 
+    /// <summary>
+    /// Web kiểm tra định kỳ phiên còn hiệu lực (nhân viên hoặc bạn đọc). Token bị thu hồi sau phục hồi dữ liệu (D36)
+    /// bị JwtBearer từ chối với mã PHIEN_DA_BI_HUY trước khi tới đây.
+    /// </summary>
+    [HttpGet("kiem-tra-phien")]
+    [Authorize]
+    public IActionResult KiemTraPhien() => NoContent();
+
     [HttpPost("doi-mat-khau")]
     [Authorize(Policy = ChinhSach.NhanVien)]
     public async Task<IActionResult> DoiMatKhau(YeuCauDoiMatKhau yc, CancellationToken ct)

@@ -25,6 +25,10 @@ public sealed class GatewayClient(HttpClient http, IHttpContextAccessor? accesso
     public Task<KetQuaApi<object>> DangXuatNhanVienAsync(string token, CancellationToken ct) =>
         GuiAsync<object>(HttpMethod.Post, "/api/quan-tri/xac-thuc/dang-xuat", token, null, ct);
 
+    /// <summary>D36: phiên (token) còn hiệu lực không – 401 khi đã bị thu hồi sau phục hồi dữ liệu.</summary>
+    public Task<KetQuaApi<object>> KiemTraPhienAsync(string token, CancellationToken ct) =>
+        GuiAsync<object>(HttpMethod.Get, "/api/quan-tri/xac-thuc/kiem-tra-phien", token, null, ct);
+
     public Task<KetQuaApi<object>> DoiMatKhauAsync(string token, string matKhauCu, string matKhauMoi, CancellationToken ct) =>
         GuiAsync<object>(HttpMethod.Post, "/api/quan-tri/xac-thuc/doi-mat-khau", token, new { matKhauCu, matKhauMoi }, ct);
 

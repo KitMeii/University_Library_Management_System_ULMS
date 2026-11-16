@@ -1,0 +1,10 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.QuyenBang
+@* SPEC 6.1.x: nhóm chỉ có quyền R (theo PHANQUYEN) thì btnThem, btnSua, btnXoa, btnLuu → Visible = False *@
+<div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+    @if (Model.Them) { <button type="button" class="qt-nut qt-nut--chinh" id="btnThem"><i class="bi bi-plus-lg" aria-hidden="true"></i>Thêm</button> }
+    @if (Model.Sua) { <button type="button" class="qt-nut qt-nut--phu" id="btnSua"><i class="bi bi-pencil" aria-hidden="true"></i>Sửa</button> }
+    @if (Model.Xoa) { <button type="button" class="qt-nut qt-nut--phu" id="btnXoa"><i class="bi bi-trash3" aria-hidden="true"></i>Xóa</button> }
+    @if (Model.Them || Model.Sua) { <button type="button" class="qt-nut qt-nut--chinh" id="btnLuu"><i class="bi bi-check2" aria-hidden="true"></i>Lưu</button> }
+    <button type="button" class="qt-nut qt-nut--phu" id="btnHuy"><i class="bi bi-x-lg" aria-hidden="true"></i>Hủy</button>
+    <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+</div>

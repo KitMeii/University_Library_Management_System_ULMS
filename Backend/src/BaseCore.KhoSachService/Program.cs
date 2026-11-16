@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddThuVienService("khosach").AddDbContextCheck<KhoSachDbContext>("csdl");
 builder.Services.AddDbContext<KhoSachDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure()));
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.KhuVucService>();
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.SachService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

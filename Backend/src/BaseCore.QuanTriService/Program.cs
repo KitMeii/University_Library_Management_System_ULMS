@@ -13,6 +13,12 @@ builder.Services.AddDbContext<QuanTriDbContext>(o =>
 builder.Services.AddMemoryCache();
 builder.Services.AddThuVienRateLimit(builder.Configuration);
 builder.Services.AddScoped<XacThucNhanVienService>();
+builder.Services.AddScoped<TaiKhoanService>();
+builder.Services.AddScoped<PhanQuyenService>();
+builder.Services.AddScoped<NhatKyService>();
+builder.Services.Configure<SaoLuuOptions>(builder.Configuration.GetSection(SaoLuuOptions.Muc));
+builder.Services.AddSingleton<SaoLuuService>();
+builder.Services.AddHostedService<SaoLuuTuDongService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

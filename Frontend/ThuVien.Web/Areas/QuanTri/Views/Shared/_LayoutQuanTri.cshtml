@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/css/tokens-quantri.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/base.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/forms.css" asp-append-version="true" />
     @await RenderSectionAsync("Css", required: false)
 </head>
 <body class="qt">
@@ -77,7 +78,7 @@
                     }
                     <div class="dropdown">
                         <button class="qt-nguoi-dung" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="qt-nguoi-dung__anh" aria-hidden="true">@(ten.Length > 0 ? ten.Split(' ')[^1][0] : '?')</span>
+                            <span class="qt-nguoi-dung__anh" aria-hidden="true">@(ten.Length > 0 ? char.ToUpper(ten.Split(' ')[^1][0]) : '?')</span>
                             <span class="qt-nguoi-dung__ten">@ten<small>@maNhom – @tenNhom</small></span>
                             <i class="bi bi-chevron-down" aria-hidden="true"></i>
                         </button>

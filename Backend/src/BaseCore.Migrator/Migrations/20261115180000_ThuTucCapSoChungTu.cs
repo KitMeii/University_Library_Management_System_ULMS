@@ -17,7 +17,12 @@ namespace BaseCore.Migrator.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("""
+            // Bọc EXEC(N'...') để kịch bản idempotent (Database/01_CSDL_LuocDo.sql) chạy được: CREATE PROCEDURE phải
+            // đứng đầu batch nên không thể nằm trực tiếp trong khối IF NOT EXISTS của EF (GIA_DINH D44).
+            migrationBuilder.Sql("EXEC(N'" + ThuTuc.Replace("'", "''") + "');");
+        }
+
+        private const string ThuTuc = """
                 CREATE OR ALTER PROCEDURE [muontra].[usp_CapSoChungTu]
                     @loai nvarchar(4),
                     @ngay date,
@@ -44,8 +49,7 @@ namespace BaseCore.Migrator.Migrations
                     IF @loai <> N'DC' AND @so > 9999
                         THROW 50002, N'Đã hết số chứng từ trong tháng (tối đa 9999).', 1;
                 END
-                """);
-        }
+                """;
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {

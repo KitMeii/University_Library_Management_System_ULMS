@@ -4,13 +4,14 @@ Gồm hai mặt:
 - **Cổng bạn đọc** (`/`): sinh viên, học viên, cán bộ xem kệ sách, đặt chỗ giữ sách 24 giờ, theo dõi tài khoản.
 - **Hệ thống nghiệp vụ** (`/quan-tri`): nhân viên N1–N4 (mượn trả, xử lý vi phạm, kho sách, quản trị) theo đặc tả BT4.
 
-Toàn bộ hệ thống chạy bằng **Docker Compose**: SQL Server 2022, 4 service nghiệp vụ, API Gateway và ứng dụng web.
+Toàn bộ hệ thống chạy bằng **Docker Compose**: 4 service nghiệp vụ, API Gateway và ứng dụng web. CSDL là SQL Server 2022 – chọn **SQL Server cài sẵn trên máy** (mở bằng SSMS) hoặc **SQL Server trong Docker** (mục 2.1).
 
 ## 1. Yêu cầu
 
 | Thành phần | Ghi chú |
 |---|---|
-| Docker Desktop (Windows: bật WSL 2) | Cấp cho Docker ≥ 4 GB RAM (SQL Server cần ≥ 2 GB). Mac chip Apple: bật “Use Rosetta for x86/amd64 emulation” (image SQL Server chỉ có bản x64) |
+| Docker Desktop (Windows: bật WSL 2) | Chạy SQL Server trong Docker thì cấp ≥ 4 GB RAM. Mac chip Apple: bật “Use Rosetta for x86/amd64 emulation” (image SQL Server chỉ có bản x64) |
+| SQL Server 2022 + SSMS (tùy chọn) | Khi dùng SQL Server cài sẵn trên máy (mục 2.1) |
 | .NET SDK 10 (tùy chọn) | Chỉ cần khi build/gỡ lỗi ngoài container. Không có SDK vẫn build/test được bằng `scripts/build-docker.sh`, `scripts/test-docker.sh` |
 | Git | |
 
@@ -24,6 +25,17 @@ docker compose up -d --build  # lần đầu mất vài phút
 Mở **http://localhost:8080** (cổng bạn đọc) và **http://localhost:8080/quan-tri/dang-nhap** (nhân viên).
 
 `docker-compose.override.yml` được nạp tự động khi chạy dev: môi trường Development, nạp **DỮ LIỆU MẪU**, mở cổng SQL Server cho SSMS và gateway (5000).
+
+### 2.1. Chọn SQL Server (GIA_DINH D44)
+
+| | Cách 1 – SQL Server cài sẵn trên máy (SSMS) | Cách 2 – SQL Server trong Docker |
+|---|---|---|
+| `.env` | `COMPOSE_PROFILES=` (trống)<br>`DB_SERVER=host.docker.internal,1433`<br>`MSSQL_SA_PASSWORD=<mật khẩu sa của máy>`<br>`SAO_LUU_THU_MUC=` (trống) | `COMPOSE_PROFILES=sql-docker`<br>`DB_SERVER=sqlserver`<br>`MSSQL_SA_PASSWORD=<tự đặt>`<br>`SAO_LUU_THU_MUC=/var/opt/mssql/backup` |
+| Yêu cầu | Bật TCP/IP cổng 1433 (SQL Server Configuration Manager) và SQL Server Authentication | Docker cấp ≥ 4 GB RAM |
+| SSMS | Server name: tên máy (ví dụ `TunKittt`) hoặc `localhost` | `localhost,1434` (hoặc cổng `SQL_PORT`) |
+
+Container `migrator` tự tạo CSDL `ThuVien`, login service và dữ liệu khởi tạo trên SQL Server đã chọn; không đụng các CSDL khác.
+Muốn tạo bằng SSMS: chạy các tệp trong [`Database/`](Database/README.md) (sinh tự động từ migration bằng `sh scripts/xuat-sql.sh`).
 
 ### Tài khoản dữ liệu mẫu (chỉ Development)
 
@@ -41,7 +53,7 @@ Mở **http://localhost:8080** (cổng bạn đọc) và **http://localhost:8080
 
 | Mục | Giá trị |
 |---|---|
-| Server name | `localhost,1434` (hoặc cổng `SQL_PORT` trong `.env` nếu 1434 đã bị dùng) |
+| Server name | Cách 1: tên máy / `localhost`. Cách 2: `localhost,1434` (hoặc cổng `SQL_PORT`) |
 | Authentication | SQL Server Authentication |
 | Login | `sa` |
 | Password | giá trị `MSSQL_SA_PASSWORD` trong `.env` |
@@ -58,11 +70,17 @@ CSDL `ThuVien` có 4 schema: `quantri`, `khosach`, `muontra`, `vipham` – mỗi
 | Xem log | `docker compose logs -f web muontra` |
 | Build toàn solution (không cần SDK) | `sh scripts/build-docker.sh` |
 | Kiểm thử (đơn vị + tích hợp + E2E/ảnh) | `sh scripts/test-docker.sh` (hoặc `unit`, `integration`, `e2e`) |
-| Chụp bộ ảnh Bài 4 không có nhãn DỮ LIỆU MẪU | `HIEN_NHAN_DU_LIEU_MAU=false docker compose up -d web` rồi `sh scripts/test-docker.sh e2e` |
+| Chụp bộ ảnh Bài 4 (CSDL sạch, không nhãn DỮ LIỆU MẪU) | Xóa CSDL `ThuVien` (Cách 1: SSMS, xem `Database/README.md`; Cách 2: `docker compose down -v`) → `HIEN_NHAN_DU_LIEU_MAU=false docker compose up -d --build` → `sh scripts/test-docker.sh anh` |
+| Xuất lại kịch bản SQL sau khi thêm migration | `sh scripts/xuat-sql.sh` |
 | Dừng | `docker compose down` |
-| **Xóa sạch môi trường dev, kể cả dữ liệu** | `docker compose down -v` ⚠️ mất toàn bộ CSDL, ảnh bìa, bản sao lưu |
+| **Xóa sạch môi trường dev, kể cả dữ liệu** | `docker compose down -v` ⚠️ mất ảnh tải lên, khóa cookie; Cách 2 mất cả CSDL và bản sao lưu |
 
 Kết quả kiểm thử: `artifacts/test-results/*.trx`. Ảnh giao diện: `Prompt/Prompt_ClaudeCode_HeThong/docs/anh_giao_dien/`.
+
+### Sao lưu – phục hồi (04.00.09)
+- Cách 1: tệp sao lưu nằm trong thư mục Backup mặc định của SQL Server (ví dụ `C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\Backup`). Cách 2: volume `thuvien-backup` (`/var/opt/mssql/backup`), chép ra bằng `docker compose cp sqlserver:/var/opt/mssql/backup ./sao-luu`.
+- Hệ thống tự sao lưu lúc 23:00 hằng ngày, giữ 14 bản `TuDong_*.bak`.
+- Phục hồi ghi đè toàn bộ dữ liệu; hệ thống tự sao lưu bản hiện tại (`TruocPhucHoi_*.bak`) trước khi phục hồi. Sau phục hồi **mọi phiên đăng nhập khác (nhân viên, bạn đọc) bị hủy ngay**, phải đăng nhập lại (D36).
 
 ## 4. Kiến trúc
 
@@ -79,14 +97,16 @@ migrator: chạy một lần – migration, login/quyền SQL, dữ liệu khở
 | `Frontend/ThuVien.Web/` | Ứng dụng web (cổng + dashboard) |
 | `Frontend/tests/ThuVien.E2E/` | Playwright E2E + chụp ảnh |
 | `Prompt/Prompt_ClaudeCode_HeThong/docs/` | Đặc tả, kế hoạch, tiến độ, giả định |
-| `scripts/` | Build/test trong Docker, sinh dữ liệu quyền từ SPEC, sinh cấu hình gateway, tải thư viện frontend |
+| `Database/` | Kịch bản `.sql` tạo CSDL bằng SSMS (sinh từ migrator) |
+| `scripts/` | Build/test trong Docker, sinh dữ liệu quyền từ SPEC, sinh cấu hình gateway, xuất kịch bản SQL, tải thư viện frontend |
 
 ## 5. Phiên bản
 
 | Thành phần | Phiên bản |
 |---|---|
 | .NET / ASP.NET Core / EF Core | 10 (image `mcr.microsoft.com/dotnet/sdk:10.0`, `aspnet:10.0`), EF Core 10.0.14 |
-| SQL Server | `mcr.microsoft.com/mssql/server:2022-CU27-GDR2-ubuntu-22.04` |
+| SQL Server | 2022 – cài sẵn trên máy, hoặc image `mcr.microsoft.com/mssql/server:2022-CU27-GDR2-ubuntu-22.04` |
+| SkiaSharp | 3.119.2 (ảnh thẻ → WebP) |
 | Ocelot | 25.0.2 |
 | YARP | 2.3.0 |
 | Serilog.AspNetCore | 10.0.0 |

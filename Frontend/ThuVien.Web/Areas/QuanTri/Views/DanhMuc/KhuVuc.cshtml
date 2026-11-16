@@ -1,0 +1,46 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.QuyenBang
+@{
+    ViewData["Title"] = "Danh mục khu vực lưu trữ";
+    ViewData["NhomMenu"] = "Danh mục";
+}
+<section class="qt-giao-dien" id="frmDanhMucKhuVuc" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Danh mục khu vực lưu trữ</h1>
+            <p class="qt-giao-dien__phu">Khu vực lưu trữ sách: kệ mở và kho.@(Model.ChiXem ? " Bạn chỉ có quyền xem." : "")</p>
+        </div>
+    </div>
+
+    <div class="qt-the">
+        <form id="frmChiTiet" class="qt-khu-nhap" novalidate>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaKhuVuc">Mã khu vực<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtMaKhuVuc" maxlength="10" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtViTri">Vị trí<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtViTri" maxlength="50" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="cboLoaiKhuVuc">Loại khu vực<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <select class="qt-o" id="cboLoaiKhuVuc" disabled>
+                    <option value="Kệ mở">Kệ mở</option>
+                    <option value="Kho">Kho</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="qt-thanh-tim">
+            <label class="sr-only" for="txtTimKiem">Từ khóa tìm kiếm</label>
+            <input class="qt-o" id="txtTimKiem" type="search" placeholder="Tìm theo mã, vị trí, loại khu vực" autocomplete="off" />
+            <button type="button" class="qt-nut qt-nut--phu" id="btnTimKiem"><i class="bi bi-search" aria-hidden="true"></i>Tìm kiếm</button>
+        </div>
+
+        <div class="qt-luoi mt-3" id="dgvKhuVuc" aria-label="Danh sách khu vực lưu trữ"></div>
+
+        <partial name="_HangNutDanhMuc" model="Model" />
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/khu-vuc.js" asp-append-version="true"></script>
+}

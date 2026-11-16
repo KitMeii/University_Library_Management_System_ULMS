@@ -1,0 +1,53 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.NhatKyVm
+@{
+    var dn = Model.The == "dang-nhap";
+    ViewData["Title"] = dn ? "04.00.03 Theo dõi lịch sử đăng nhập" : "04.00.08 Theo dõi nhật ký hoạt động";
+    ViewData["NhomMenu"] = "Quản trị";
+}
+<section class="qt-giao-dien" id="frmNhatKy" data-the="@Model.The" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Theo dõi nhật ký hệ thống</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh">04.00.03</span><span class="qt-ma-tien-trinh">04.00.08</span>Xem, lọc nhật ký theo người dùng và khoảng thời gian để truy vết. Giao diện chỉ đọc.</p>
+        </div>
+    </div>
+    <div class="qt-the">
+        <ul class="nav qt-the-tab" id="tabNhatKy" role="tablist">
+            @if (Model.XemDangNhap)
+            {
+                <li role="presentation"><a class="qt-the-tab__muc" id="tabDangNhap" href="/quan-tri/nhat-ky/dang-nhap" role="tab" aria-selected="@(dn ? "true" : "false")" aria-controls="khuNhatKy">Lịch sử đăng nhập</a></li>
+            }
+            @if (Model.XemHoatDong)
+            {
+                <li role="presentation"><a class="qt-the-tab__muc" id="tabHoatDong" href="/quan-tri/nhat-ky/hoat-dong" role="tab" aria-selected="@(!dn ? "true" : "false")" aria-controls="khuNhatKy">Nhật ký hoạt động</a></li>
+            }
+        </ul>
+        <div id="khuNhatKy" role="tabpanel" aria-labelledby="@(dn ? "tabDangNhap" : "tabHoatDong")">
+            <div class="qt-khu-nhap mt-3">
+                <div class="qt-truong">
+                    <label class="qt-nhan" for="cboNguoiDung">Người dùng</label>
+                    <select class="qt-o" id="cboNguoiDung"><option value="">Tất cả</option></select>
+                </div>
+                <div class="qt-truong">
+                    <label class="qt-nhan" for="dtpTuNgay">Từ ngày</label>
+                    <input class="qt-o" id="dtpTuNgay" type="date" />
+                </div>
+                <div class="qt-truong">
+                    <label class="qt-nhan" for="dtpDenNgay">Đến ngày</label>
+                    <input class="qt-o" id="dtpDenNgay" type="date" />
+                </div>
+                <div class="qt-truong d-flex align-items-end">
+                    <button type="button" class="qt-nut qt-nut--chinh" id="btnLoc"><i class="bi bi-funnel" aria-hidden="true"></i>Lọc</button>
+                </div>
+            </div>
+            <p class="mb-0"><span class="qt-thong-ke-nho__o">Số lượt <strong class="so-lieu" id="soLuot">0</strong></span></p>
+            <div class="qt-luoi mt-3" id="@(dn ? "dgvDangNhap" : "dgvHoatDong")" aria-label="@(dn ? "Lịch sử đăng nhập" : "Nhật ký hoạt động")"></div>
+        </div>
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/nhat-ky.js" asp-append-version="true"></script>
+}

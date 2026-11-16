@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "04.00.09 Sao lưu và phục hồi dữ liệu";
+    ViewData["NhomMenu"] = "Quản trị";
+}
+<section class="qt-giao-dien" id="frmSaoLuu" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Sao lưu và phục hồi dữ liệu</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh">04.00.09</span>Sao lưu toàn bộ CSDL ra tệp; phục hồi CSDL từ tệp sao lưu khi dữ liệu bị lỗi, mất. Hệ thống còn tự sao lưu hằng ngày lúc 23:00.</p>
+        </div>
+    </div>
+    <div class="qt-the qt-the--hep">
+        <fieldset class="mb-3">
+            <legend class="qt-nhan">Thao tác</legend>
+            <div class="qt-lua-chon">
+                <label class="qt-lua-chon__muc"><input type="radio" name="thaoTac" id="rdoSaoLuu" value="sao-luu" checked /> <span><strong>Sao lưu</strong><small>Tạo tệp sao lưu toàn bộ CSDL tại thư mục đã chọn</small></span></label>
+                <label class="qt-lua-chon__muc"><input type="radio" name="thaoTac" id="rdoPhucHoi" value="phuc-hoi" /> <span><strong>Phục hồi</strong><small>Ghi đè toàn bộ dữ liệu bằng tệp sao lưu đã chọn</small></span></label>
+            </div>
+        </fieldset>
+        <div class="qt-truong">
+            <label class="qt-nhan" for="txtDuongDan" id="nhanDuongDan">Thư mục lưu tệp sao lưu</label>
+            <div class="d-flex gap-2">
+                <input class="qt-o" id="txtDuongDan" readonly placeholder="Bấm “Chọn…” để chọn" />
+                <button type="button" class="qt-nut qt-nut--phu" id="btnChon"><i class="bi bi-folder2-open" aria-hidden="true"></i><span>Chọn thư mục…</span></button>
+            </div>
+        </div>
+        <div id="canhBaoPhien" class="qt-thong-bao qt-thong-bao--loi" hidden role="status"></div>
+        <div class="qt-tien-trinh" id="khuTienTrinh" hidden>
+            <div class="d-flex justify-content-between small mb-1"><span id="moTaTienTrinh">Đang thực hiện…</span><span class="so-lieu" id="phanTram">0%</span></div>
+            <div class="qt-tien-trinh__nen" role="progressbar" aria-labelledby="moTaTienTrinh" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="thanhTienTrinh">
+                <div class="qt-tien-trinh__thanh"></div>
+            </div>
+        </div>
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnThucHien" disabled><i class="bi bi-play-fill" aria-hidden="true"></i>Thực hiện</button>
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modalChon" tabindex="-1" aria-labelledby="modalChonTieuDe" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content qt-modal">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="modalChonTieuDe">Chọn thư mục</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <nav aria-label="Đường dẫn thư mục" class="small mb-2" id="duongDanDuyet"></nav>
+                <ul class="qt-duyet" id="dsDuyet" role="listbox" aria-label="Thư mục và tệp sao lưu"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="qt-nut qt-nut--phu" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="qt-nut qt-nut--chinh" id="btnChonXong" disabled>Chọn</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/sao-luu.js" asp-append-version="true"></script>
+}

@@ -6,5 +6,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BaseCore.Entities\BaseCore.Entities.csproj" />
     <ProjectReference Include="..\BaseCore.Libs\BaseCore.Libs.csproj" />
+    <ProjectReference Include="..\BaseCore.DTO\BaseCore.DTO.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "04.00.02 Cấp quyền cho tài khoản";
+    ViewData["NhomMenu"] = "Quản trị";
+}
+<section class="qt-giao-dien" id="frmPhanQuyen" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Cấp quyền cho tài khoản</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh">04.00.02</span>Cấp hoặc thu hồi quyền theo nhóm người dùng (quyền C, E, R, D trên bảng – 2.2 và quyền thực hiện tiến trình – 2.3). Quyền mới có hiệu lực từ lần đăng nhập tiếp theo.</p>
+        </div>
+    </div>
+    <div class="qt-the">
+        <div class="qt-thanh-tim">
+            <label class="qt-nhan mb-0" for="cboNhom">Nhóm người dùng</label>
+            <select class="qt-o" id="cboNhom"></select>
+            <div class="qt-thanh-tim__phai">
+                <label class="sr-only" for="txtLocQuyen">Lọc quyền theo mã hoặc tên</label>
+                <input class="qt-o" id="txtLocQuyen" type="search" placeholder="Lọc theo mã hoặc tên quyền" autocomplete="off" />
+                <select class="qt-o" id="cboLoaiQuyen" aria-label="Loại quyền">
+                    <option value="">Tất cả loại quyền</option>
+                </select>
+            </div>
+        </div>
+        <p class="small text-secondary mt-2 mb-0" id="tomTatQuyen" aria-live="polite"></p>
+        <div class="qt-luoi mt-3 qt-luoi--cao" id="dgvQuyen" aria-label="Danh sách quyền"></div>
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnLuu" disabled><i class="bi bi-check2" aria-hidden="true"></i>Lưu</button>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnHuy" disabled><i class="bi bi-x-lg" aria-hidden="true"></i>Hủy</button>
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/phan-quyen.js" asp-append-version="true"></script>
+}

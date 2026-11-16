@@ -13,11 +13,12 @@ Chỉ dùng thư viện đã duyệt (file 01, 13, GIA_DINH D17). Phiên bản �
 | System.Security.Cryptography.Pkcs | 10.0.14 | MIT | Ghim phụ thuộc gián tiếp – bản 9.0.11 có lỗ hổng GHSA-846f-f764-76mx, GHSA-2fmv-rv2c-59x7 |
 | Ocelot | 25.0.2 | MIT | API Gateway (giữ từ basecore) |
 | Yarp.ReverseProxy | 2.3.0 | MIT | BFF trong web (D17) |
+| SkiaSharp / SkiaSharp.NativeAssets.Linux.NoDependencies | 3.119.2 | MIT | Ảnh thẻ bạn đọc → WebP, thu nhỏ, xoay EXIF (D35). Bản NoDependencies không cần cài fontconfig/libfreetype trong image aspnet |
 | Serilog.AspNetCore / Serilog.Sinks.File | 10.0.0 / 7.0.0 | Apache-2.0 | Log kỹ thuật ghi file xoay vòng |
 | Swashbuckle.AspNetCore | 10.3.1 | MIT | Swagger (chỉ Development) |
 | Microsoft.Extensions.Hosting | 10.0.0 | MIT | Migrator |
 | xunit / xunit.runner.visualstudio / Microsoft.NET.Test.Sdk | 2.9.3 / 3.1.5 / 18.11.1 | Apache-2.0 / MIT | Kiểm thử |
-| Microsoft.Data.SqlClient | 7.1.1 | MIT | Kiểm thử tích hợp |
+| Microsoft.Data.SqlClient | 7.1.1 | MIT | Đọc mốc thu hồi phiên (D36), sao lưu/phục hồi, kiểm thử tích hợp |
 | Microsoft.Playwright | 1.64.1 | Apache-2.0 | E2E, chụp ảnh |
 | Deque.AxeCore.Playwright | 4.14.0 | MPL-2.0 | Kiểm tra accessibility (D17) |
 

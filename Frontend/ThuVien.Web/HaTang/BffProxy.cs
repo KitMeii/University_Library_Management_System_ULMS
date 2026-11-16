@@ -48,6 +48,17 @@ public static class BffProxy
                     if (token is not null)
                         t.ProxyRequest.Headers.TryAddWithoutValidation("Authorization", "Bearer " + token);
                 });
+                // D36: backend từ chối token (phiên bị hủy/hết hạn) → xóa luôn cookie để trang đăng nhập không quay vòng
+                ctx.AddResponseTransform(async t =>
+                {
+                    if (t.ProxyResponse?.StatusCode != System.Net.HttpStatusCode.Unauthorized) return;
+                    var path = t.HttpContext.Request.Path;
+                    var scheme = path.StartsWithSegments("/api/quan-tri") ? XacThucWeb.NhanVien
+                        : path.StartsWithSegments("/api/cong") ? XacThucWeb.BanDoc
+                        : null;
+                    if (scheme is not null && path != "/api/quan-tri/xac-thuc/dang-nhap" && path != "/api/cong/dang-nhap")
+                        await t.HttpContext.SignOutAsync(scheme);
+                });
             });
         return services;
     }

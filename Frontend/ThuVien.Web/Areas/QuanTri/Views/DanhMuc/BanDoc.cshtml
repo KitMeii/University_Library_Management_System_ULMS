@@ -1,0 +1,100 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.QuyenBang
+@{
+    var laN1 = User.CoQuyen("TT001");
+    ViewData["Title"] = laN1 ? "01.01.01 Lưu thông tin Thẻ Bạn đọc" : "Danh mục Bạn đọc";
+    ViewData["NhomMenu"] = laN1 ? "Mượn trả sách" : "Danh mục";
+}
+<section class="qt-giao-dien" id="frmDanhMucBanDoc" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Danh mục Bạn đọc</h1>
+            <p class="qt-giao-dien__phu">
+                @if (laN1) { <span class="qt-ma-tien-trinh">01.01.01</span><text>Lưu thông tin Thẻ Bạn đọc: tìm theo mã SV/HV/CB, lưu thẻ mới, kiểm tra điều kiện mượn.</text> }
+                else { <text>Thông tin Thẻ Bạn đọc.</text> }
+                @if (Model.ChiXem) { <text>Bạn chỉ có quyền xem.</text> }
+            </p>
+        </div>
+    </div>
+
+    <div class="qt-the">
+        <div class="qt-thanh-tim mb-3">
+            <label class="qt-nhan mb-0" for="txtMaSV">Mã SV/HV/CB</label>
+            <input class="qt-o" id="txtMaSV" maxlength="15" placeholder="Nhập mã sinh viên / học viên / cán bộ trên thẻ" autocomplete="off" />
+            <button type="button" class="qt-nut qt-nut--phu" id="btnTimKiem"><i class="bi bi-search" aria-hidden="true"></i>Tìm Bạn đọc</button>
+            <div class="qt-thanh-tim__phai">
+                <button type="button" class="qt-nut qt-nut--vien" id="btnKiemTraDK"><i class="bi bi-clipboard-check" aria-hidden="true"></i>Kiểm tra điều kiện mượn</button>
+            </div>
+        </div>
+
+        <form id="frmChiTiet" class="qt-khu-nhap" novalidate>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaBanDoc">Mã bạn đọc<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtMaBanDoc" maxlength="10" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtHoTen">Họ và tên<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtHoTen" maxlength="50" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="cboDoiTuong">Đối tượng<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <select class="qt-o" id="cboDoiTuong" disabled>
+                    <option value="Sinh viên">Sinh viên</option>
+                    <option value="Học viên">Học viên</option>
+                    <option value="Cán bộ">Cán bộ</option>
+                </select>
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaSvHvCb">Mã SV/HV/CB<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtMaSvHvCb" maxlength="15" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtLopDonVi">Lớp/Đơn vị<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtLopDonVi" maxlength="50" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpNgaySinh">Ngày sinh<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="dtpNgaySinh" type="date" readonly />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtSoTheBD">Số thẻ bạn đọc<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtSoTheBD" maxlength="15" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtDienThoaiEmail">Điện thoại/Email</label>
+                <input class="qt-o" id="txtDienThoaiEmail" maxlength="50" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpHsdTuNgay">Hạn sử dụng từ ngày<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="dtpHsdTuNgay" type="date" readonly />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpHsdDenNgay">Hạn sử dụng đến ngày<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="dtpHsdDenNgay" type="date" readonly />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <span class="qt-nhan">Ảnh (JPG, PNG, WebP ≤ 2 MB)</span>
+                <div class="qt-anh-the">
+                    <img id="imgAnh" alt="Ảnh thẻ bạn đọc" width="72" height="96" hidden />
+                    <input type="hidden" id="txtAnh" />
+                    <input class="sr-only qt-tep" id="fileAnh" type="file" accept="image/jpeg,image/png,image/webp" disabled aria-describedby="tenTepAnh" />
+                    <label for="fileAnh" class="qt-nut qt-nut--phu qt-nut--nho qt-tep__nut"><i class="bi bi-image" aria-hidden="true"></i>Chọn ảnh…</label>
+                    <span class="small text-secondary" id="tenTepAnh">Chưa chọn ảnh</span>
+                </div>
+            </div>
+        </form>
+
+        <div id="khuDieuKien" class="mt-2" hidden aria-live="polite"></div>
+
+        <div class="qt-luoi mt-3" id="dgvBanDoc" aria-label="Danh sách Bạn đọc"></div>
+
+        <partial name="_HangNutDanhMuc" model="Model" />
+    </div>
+
+    <div class="qt-the" id="khuSachDangMuon" hidden>
+        <h2 class="qt-the__tieu-de">Sách Bạn đọc đang mượn</h2>
+        <div class="qt-luoi" id="dgvSachDangMuon" aria-label="Sách Bạn đọc đang mượn"></div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/ban-doc.js" asp-append-version="true"></script>
+}

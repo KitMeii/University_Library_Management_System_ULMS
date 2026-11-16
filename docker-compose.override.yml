@@ -2,6 +2,7 @@
 # mount wwwroot để sửa CSS/JS thấy ngay (file 14 mục 4).
 services:
   sqlserver:
+    profiles: ["sql-docker"]
     ports:
       # SSMS: Server = localhost,<SQL_PORT> (mặc định 1434) – SQL Server Authentication – sa – mật khẩu trong .env (GIA_DINH D10)
       - "${SQL_PORT:-1434}:1433"

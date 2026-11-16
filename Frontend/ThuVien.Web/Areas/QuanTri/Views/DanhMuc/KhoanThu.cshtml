@@ -1,0 +1,39 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.QuyenBang
+@{
+    ViewData["Title"] = "Danh mục khoản thu";
+    ViewData["NhomMenu"] = "Danh mục";
+}
+<section class="qt-giao-dien" id="frmDanhMucKhoanThu" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Danh mục khoản thu</h1>
+            <p class="qt-giao-dien__phu">Các khoản thu khi xử lý vi phạm: phạt quá hạn, bồi thường mất, hư hỏng sách.@(Model.ChiXem ? " Bạn chỉ có quyền xem." : "")</p>
+        </div>
+    </div>
+    <div class="qt-the">
+        <form id="frmChiTiet" class="qt-khu-nhap" novalidate>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaKhoanThu">Mã khoản thu<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtMaKhoanThu" maxlength="10" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtNoiDungTT">Nội dung thanh toán<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtNoiDungTT" maxlength="100" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtDonGia">Đơn giá (đ)<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o so-lieu" id="txtDonGia" inputmode="numeric" maxlength="13" readonly autocomplete="off" />
+            </div>
+        </form>
+        <div class="qt-thanh-tim">
+            <label class="sr-only" for="txtTimKiem">Từ khóa tìm kiếm</label>
+            <input class="qt-o" id="txtTimKiem" type="search" placeholder="Tìm theo mã, nội dung khoản thu" autocomplete="off" />
+            <button type="button" class="qt-nut qt-nut--phu" id="btnTimKiem"><i class="bi bi-search" aria-hidden="true"></i>Tìm kiếm</button>
+        </div>
+        <div class="qt-luoi mt-3" id="dgvKhoanThu" aria-label="Danh sách khoản thu"></div>
+        <partial name="_HangNutDanhMuc" model="Model" />
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/khoan-thu.js" asp-append-version="true"></script>
+}

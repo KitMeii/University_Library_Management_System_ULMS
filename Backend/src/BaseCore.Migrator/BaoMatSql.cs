@@ -28,14 +28,26 @@ public static class BaoMatSql
 
     public static async Task ApDungAsync(ThuVienDbContext db, IConfiguration config)
     {
+        var sql = TaoSql(schema =>
+        {
+            var mk = config["MatKhauDichVu:" + schema];
+            if (string.IsNullOrWhiteSpace(mk))
+                throw new InvalidOperationException($"Thiếu mật khẩu login svc_{schema} (biến môi trường MatKhauDichVu__{schema}).");
+            return mk.Replace("'", "''");
+        });
+        await db.Database.ExecuteSqlRawAsync(sql);
+    }
+
+    /// <summary>Biến sqlcmd chứa mật khẩu login của service (Database/03_LoginDichVu.sql).</summary>
+    public static string BienSqlCmd(string schema) => $"SVC_{schema.ToUpperInvariant()}_PASSWORD";
+
+    /// <summary>Sinh lệnh tạo login/user/quyền; <paramref name="matKhauSql"/> trả mật khẩu đã escape (hoặc $(biến sqlcmd)).</summary>
+    public static string TaoSql(Func<string, string> matKhauSql)
+    {
         var sql = new StringBuilder();
         foreach (var dv in DanhSach)
         {
-            var bien = "MatKhauDichVu:" + dv.Schema;
-            var mk = config[bien];
-            if (string.IsNullOrWhiteSpace(mk))
-                throw new InvalidOperationException($"Thiếu mật khẩu login {dv.Ten} (biến môi trường MatKhauDichVu__{dv.Schema}).");
-            var mkSql = mk.Replace("'", "''");
+            var mkSql = matKhauSql(dv.Schema);
 
             sql.AppendLine($"""
                 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = N'{dv.Ten}')
@@ -66,7 +78,6 @@ public static class BaoMatSql
         sql.AppendLine($"GRANT EXECUTE ON [{LuocDo.MuonTra}].[usp_CapSoChungTu] TO [svc_vipham];");
         // Sao lưu 04.00.09 (SPEC 6.3.5). Phục hồi dùng kết nối quản trị riêng (Pha 2).
         sql.AppendLine("GRANT BACKUP DATABASE TO [svc_quantri];");
-
-        await db.Database.ExecuteSqlRawAsync(sql.ToString());
+        return sql.ToString();
     }
 }

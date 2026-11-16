@@ -12,6 +12,8 @@ builder.Services.AddDbContext<MuonTraDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure()));
 builder.Services.AddThuVienRateLimit(builder.Configuration);
 builder.Services.AddScoped<XacThucBanDocService>();
+builder.Services.AddScoped<TraCuuMuonTra>();
+builder.Services.AddScoped<BanDocService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

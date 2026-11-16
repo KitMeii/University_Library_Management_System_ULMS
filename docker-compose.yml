@@ -1,5 +1,7 @@
 # ULMS – toàn hệ thống bằng một lệnh (file 14):  docker compose up -d --build
 # Bí mật đọc từ .env (chép từ .env.example). Cấu hình phát triển nằm ở docker-compose.override.yml (tự nạp).
+# CSDL: DB_SERVER trỏ tới SQL Server có sẵn (vd host.docker.internal,1433) hoặc container `sqlserver`
+#       (bật bằng COMPOSE_PROFILES=sql-docker – GIA_DINH D44).
 name: ulms
 
 x-dotnet-env: &dotnet-env
@@ -20,9 +22,24 @@ x-sau-migrator: &sau-migrator
       condition: service_completed_successfully
 
 services:
+  # Cấp quyền ghi volume sao lưu cho user mssql (uid 10001) – volume mới tạo thuộc root
+  sqlserver-quyen:
+    profiles: ["sql-docker"]
+    image: mcr.microsoft.com/mssql/server:2022-CU27-GDR2-ubuntu-22.04
+    user: "0"
+    entrypoint: ["sh", "-c", "chown -R 10001:10001 /var/opt/mssql/backup && chmod 770 /var/opt/mssql/backup"]
+    restart: "no"
+    network_mode: none
+    volumes:
+      - thuvien-backup:/var/opt/mssql/backup
+
   sqlserver:
+    profiles: ["sql-docker"]
     image: mcr.microsoft.com/mssql/server:2022-CU27-GDR2-ubuntu-22.04
     restart: unless-stopped
+    depends_on:
+      sqlserver-quyen:
+        condition: service_completed_successfully
     networks: [thuvien-net]
     mem_limit: 2g
     environment:
@@ -46,11 +63,13 @@ services:
     networks: [thuvien-net]
     restart: "no"
     depends_on:
+      # Chỉ chờ khi dùng SQL Server trong Docker (profile sql-docker); SQL Server ngoài: migrator tự chờ kết nối
       sqlserver:
         condition: service_healthy
+        required: false
     environment:
       <<: *dotnet-env
-      ConnectionStrings__QuanTriCsdl: "Server=sqlserver;Database=ThuVien;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__QuanTriCsdl: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
       MatKhauDichVu__quantri: ${SVC_QUANTRI_PASSWORD:?}
       MatKhauDichVu__khosach: ${SVC_KHOSACH_PASSWORD:?}
       MatKhauDichVu__muontra: ${SVC_MUONTRA_PASSWORD:?}
@@ -64,7 +83,11 @@ services:
     image: ulms/quantri:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_quantri;Password=${SVC_QUANTRI_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_quantri;Password=${SVC_QUANTRI_PASSWORD};TrustServerCertificate=True"
+      # 04.00.09 Sao lưu – phục hồi: kết nối quản trị CSDL (BACKUP/RESTORE, duyệt thư mục sao lưu)
+      ConnectionStrings__QuanTriCsdl: "Server=${DB_SERVER:-sqlserver};Database=master;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      # Trống = thư mục sao lưu mặc định của SQL Server (InstanceDefaultBackupPath)
+      SaoLuu__ThuMuc: ${SAO_LUU_THU_MUC:-}
       Jwt__ThoiHanPhut: "720"
     volumes:
       - thuvien-logs:/app/logs
@@ -75,7 +98,7 @@ services:
     image: ulms/khosach:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_khosach;Password=${SVC_KHOSACH_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_khosach;Password=${SVC_KHOSACH_PASSWORD};TrustServerCertificate=True"
     volumes:
       - thuvien-logs:/app/logs
 
@@ -85,7 +108,7 @@ services:
     image: ulms/muontra:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_muontra;Password=${SVC_MUONTRA_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_muontra;Password=${SVC_MUONTRA_PASSWORD};TrustServerCertificate=True"
     volumes:
       - thuvien-logs:/app/logs
 
@@ -95,7 +118,7 @@ services:
     image: ulms/vipham:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=sqlserver;Database=ThuVien;User Id=svc_vipham;Password=${SVC_VIPHAM_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_vipham;Password=${SVC_VIPHAM_PASSWORD};TrustServerCertificate=True"
     volumes:
       - thuvien-logs:/app/logs
 

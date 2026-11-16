@@ -45,7 +45,9 @@ public static class ThuVienServiceExtensions
 
         services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Muc));
         services.Configure<MatKhauOptions>(builder.Configuration.GetSection(MatKhauOptions.Muc));
+        services.Configure<BaseCore.Common.NghiepVu.QuyDinhOptions>(builder.Configuration.GetSection(BaseCore.Common.NghiepVu.QuyDinhOptions.Muc));
         services.AddSingleton<IClock, DongHoHeThong>();
+        services.AddSingleton<MocThuHoiPhien>();
         services.AddSingleton(sp => new MatKhauHasher(sp.GetRequiredService<IOptions<MatKhauOptions>>().Value.SoVongLap));
 
         var jwt = builder.Configuration.GetSection(JwtOptions.Muc).Get<JwtOptions>() ?? new JwtOptions();
@@ -57,11 +59,20 @@ public static class ThuVienServiceExtensions
                 o.TokenValidationParameters = jwt.TaoThamSoKiemTra();
                 o.Events = new JwtBearerEvents
                 {
+                    // D36: từ chối token cấp trước mốc thu hồi phiên (sau phục hồi dữ liệu)
+                    OnTokenValidated = async ctx =>
+                    {
+                        var moc = await ctx.HttpContext.RequestServices.GetRequiredService<MocThuHoiPhien>().LayAsync(ctx.HttpContext.RequestAborted);
+                        if (MocThuHoiPhien.BiThuHoi(moc, ctx.Principal!, MocThuHoiPhien.CapLuc(ctx.Principal!)))
+                            ctx.Fail(MocThuHoiPhien.MaLoi);
+                    },
                     OnChallenge = async ctx =>
                     {
                         ctx.HandleResponse();
                         await XuLyLoiMiddleware.GhiAsync(ctx.HttpContext, StatusCodes.Status401Unauthorized,
-                            new LoiApi("CHUA_DANG_NHAP", "Phiên đăng nhập không hợp lệ hoặc đã hết hạn, vui lòng đăng nhập lại."));
+                            ctx.AuthenticateFailure?.Message == MocThuHoiPhien.MaLoi
+                                ? new LoiApi(MocThuHoiPhien.MaLoi, MocThuHoiPhien.ThongBao)
+                                : new LoiApi("CHUA_DANG_NHAP", "Phiên đăng nhập không hợp lệ hoặc đã hết hạn, vui lòng đăng nhập lại."));
                     },
                     OnForbidden = ctx => XuLyLoiMiddleware.GhiAsync(ctx.HttpContext, StatusCodes.Status403Forbidden,
                         new LoiApi("KHONG_CO_QUYEN", "Tài khoản không có quyền thực hiện chức năng này."))

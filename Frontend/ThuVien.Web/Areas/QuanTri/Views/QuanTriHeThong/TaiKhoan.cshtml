@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "04.00.01 Quản lý tài khoản người dùng";
+    ViewData["NhomMenu"] = "Quản trị";
+}
+<section class="qt-giao-dien" id="frmTaiKhoan" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Quản lý tài khoản người dùng</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh">04.00.01</span>Thêm, sửa, khóa/mở khóa, đặt lại mật khẩu; gán tài khoản vào nhóm N1–N4. Không xóa tài khoản (chỉ khóa).</p>
+        </div>
+    </div>
+    <div class="qt-the">
+        <form id="frmChiTiet" class="qt-khu-nhap" novalidate>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaND">Mã người dùng</label>
+                <input class="qt-o" id="txtMaND" maxlength="10" readonly aria-describedby="txtMaNDGoiY" />
+                <small class="text-secondary" id="txtMaNDGoiY">Hệ thống tự sinh.</small>
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtTenND">Tên người dùng<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtTenND" maxlength="50" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtTenDangNhap">Tên đăng nhập<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtTenDangNhap" maxlength="30" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtSDT">Số điện thoại</label>
+                <input class="qt-o" id="txtSDT" maxlength="15" inputmode="tel" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtChucVu">Chức vụ</label>
+                <input class="qt-o" id="txtChucVu" maxlength="50" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="cboNhom">Nhóm người dùng<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <select class="qt-o" id="cboNhom" disabled></select>
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="cboTinhTrang">Tình trạng</label>
+                <select class="qt-o" id="cboTinhTrang" disabled>
+                    <option value="Hoạt động">Hoạt động</option>
+                    <option value="Khóa">Khóa</option>
+                </select>
+            </div>
+        </form>
+        <p class="small text-secondary mb-2"><i class="bi bi-info-circle" aria-hidden="true"></i> Tài khoản mới và tài khoản được đặt lại mật khẩu dùng mật khẩu mặc định của thư viện.</p>
+        <div class="qt-thanh-tim">
+            <label class="sr-only" for="txtTimKiem">Từ khóa tìm kiếm</label>
+            <input class="qt-o" id="txtTimKiem" type="search" placeholder="Tìm theo mã, tên, tên đăng nhập, nhóm, tình trạng" autocomplete="off" />
+            <button type="button" class="qt-nut qt-nut--phu" id="btnTimKiem"><i class="bi bi-search" aria-hidden="true"></i>Tìm kiếm</button>
+        </div>
+        <div class="qt-luoi mt-3" id="dgvNguoiDung" aria-label="Danh sách tài khoản người dùng"></div>
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnThem"><i class="bi bi-plus-lg" aria-hidden="true"></i>Thêm</button>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnSua"><i class="bi bi-pencil" aria-hidden="true"></i>Sửa</button>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnKhoa"><i class="bi bi-lock" aria-hidden="true"></i><span>Khóa</span></button>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnDatLaiMK"><i class="bi bi-key" aria-hidden="true"></i>Đặt lại mật khẩu</button>
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnLuu"><i class="bi bi-check2" aria-hidden="true"></i>Lưu</button>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnHuy"><i class="bi bi-x-lg" aria-hidden="true"></i>Hủy</button>
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/tai-khoan.js" asp-append-version="true"></script>
+}

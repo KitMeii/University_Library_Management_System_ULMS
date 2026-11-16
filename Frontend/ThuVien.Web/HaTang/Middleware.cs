@@ -3,6 +3,24 @@ using Microsoft.AspNetCore.Antiforgery;
 
 namespace ThuVien.Web.HaTang;
 
+/// <summary>
+/// Đặt HttpContext.User theo đúng cookie của khu vực: /quan-tri, /api/quan-tri → NhanVien; còn lại → BanDoc (mặc định).
+/// Cần cho AntiForgery (token gắn với danh tính khi sinh) và cho layout biết người đang đăng nhập.
+/// </summary>
+public sealed class ChonDanhTinhMiddleware(RequestDelegate next)
+{
+    public async Task InvokeAsync(HttpContext ctx)
+    {
+        var p = ctx.Request.Path;
+        if (p.StartsWithSegments("/quan-tri") || p.StartsWithSegments("/api/quan-tri"))
+        {
+            var kq = await Microsoft.AspNetCore.Authentication.AuthenticationHttpContextExtensions.AuthenticateAsync(ctx, XacThucWeb.NhanVien);
+            ctx.User = kq.Succeeded ? kq.Principal! : new System.Security.Claims.ClaimsPrincipal(new System.Security.Claims.ClaimsIdentity());
+        }
+        await next(ctx);
+    }
+}
+
 /// <summary>Mọi request ghi tới /api/** phải có AntiForgery token ở header "RequestVerificationToken" (file 11).</summary>
 public sealed class KiemTraAntiforgeryApiMiddleware(RequestDelegate next, IAntiforgery antiforgery)
 {

@@ -1,5 +1,9 @@
 // Khung dashboard: thu/mở nhóm menu, thu gọn sidebar (desktop), hiệu ứng vào trang (file 10 mục 4).
 import { motion, giamChuyenDong } from '../motion.config.js';
+import { ganTatCa } from '../chon-ngay.js';
+
+// DatePicker dd/MM/yyyy cho mọi ô ngày (chạy trước script của trang)
+ganTatCa();
 
 const khung = document.querySelector('.qt-khung');
 

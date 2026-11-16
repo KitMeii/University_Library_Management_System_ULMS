@@ -8,7 +8,8 @@ namespace BaseCore.IntegrationTests;
 public static class MoiTruong
 {
     public static string Gateway => Environment.GetEnvironmentVariable("ULMS_GATEWAY") ?? "http://gateway:8080";
-    public static string SqlServer => Environment.GetEnvironmentVariable("ULMS_SQL_SERVER") ?? "sqlserver";
+    /// <summary>Máy chủ SQL đang dùng (DB_SERVER trong .env – GIA_DINH D44): "sqlserver" (container) hoặc "host.docker.internal,1433".</summary>
+    public static string SqlServer => Environment.GetEnvironmentVariable("ULMS_SQL_SERVER") ?? Environment.GetEnvironmentVariable("DB_SERVER") ?? "sqlserver";
     public static string MatKhauSa => Bat("MSSQL_SA_PASSWORD");
     public static string MatKhauDichVu(string schema) => Bat("SVC_" + schema.ToUpperInvariant() + "_PASSWORD");
     public const string MatKhauMau = "Thuvien@123";

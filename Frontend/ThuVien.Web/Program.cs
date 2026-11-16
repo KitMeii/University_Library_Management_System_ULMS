@@ -63,6 +63,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<ChonDanhTinhMiddleware>();
 app.UseAuthorization();
 app.UseMiddleware<KiemTraAntiforgeryApiMiddleware>();
 

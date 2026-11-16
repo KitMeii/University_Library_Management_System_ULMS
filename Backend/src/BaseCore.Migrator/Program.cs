@@ -12,6 +12,23 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+// Công cụ phụ (GIA_DINH D44): xuất bộ .sql cho SSMS; băm mật khẩu admin cho Database/03_LoginDichVu.sql
+if (args is ["--xuat-sql", var thuMucSql])
+{
+    await XuatSql.ChayAsync(thuMucSql);
+    return 0;
+}
+if (args is ["--bam-mat-khau", var mkCanBam])
+{
+    if (!MatKhauHasher.DatChinhSach(mkCanBam))
+    {
+        Console.Error.WriteLine("Mật khẩu chưa đạt chính sách (≥ 8 ký tự, có chữ và số).");
+        return 1;
+    }
+    Console.WriteLine(new MatKhauHasher(config.GetValue("MatKhau:SoVongLap", 600_000)).Bam(mkCanBam));
+    return 0;
+}
+
 var moiTruong = config["DOTNET_ENVIRONMENT"] ?? config["ASPNETCORE_ENVIRONMENT"] ?? "Production";
 var chuoiKetNoi = config.GetConnectionString("QuanTriCsdl")
     ?? throw new InvalidOperationException("Thiếu ConnectionStrings__QuanTriCsdl (kết nối quyền sa tới CSDL ThuVien).");

@@ -26,7 +26,7 @@ public sealed class TrinhDuyet : IAsyncLifetime
     /// <summary>Máy tính 1366×768 (file 11 mục 4).</summary>
     public Task<IBrowserContext> MayTinhAsync() => Browser.NewContextAsync(new()
     {
-        ViewportSize = new() { Width = 1366, Height = 768 }, Locale = "vi-VN", TimezoneId = "Asia/Ho_Chi_Minh"
+        ViewportSize = new() { Width = 1366, Height = 768 }, Locale = "vi-VN", TimezoneId = "Asia/Ho_Chi_Minh", BypassCSP = true
     });
 
     /// <summary>Điện thoại: thiết bị mô phỏng của Playwright (iPhone 13 = 390×844, Pixel 7).</summary>
@@ -36,7 +36,7 @@ public sealed class TrinhDuyet : IAsyncLifetime
         return Browser.NewContextAsync(new()
         {
             ViewportSize = d.ViewportSize, UserAgent = d.UserAgent, DeviceScaleFactor = d.DeviceScaleFactor,
-            IsMobile = d.IsMobile, HasTouch = d.HasTouch, Locale = "vi-VN", TimezoneId = "Asia/Ho_Chi_Minh"
+            IsMobile = d.IsMobile, HasTouch = d.HasTouch, Locale = "vi-VN", TimezoneId = "Asia/Ho_Chi_Minh", BypassCSP = true
         });
     }
 
@@ -54,6 +54,8 @@ public sealed class TrinhDuyet : IAsyncLifetime
     {
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.EvaluateAsync("() => document.fonts.ready");
+        // Ảnh toàn trang: hàng nút “dính đáy” được đặt về vị trí tĩnh để không đè lên lưới trong ảnh ghép
+        if (toanTrang) await page.AddStyleTagAsync(new() { Content = ".qt-hang-nut{position:static!important}" });
         await page.WaitForTimeoutAsync(700);
         await page.ScreenshotAsync(new() { Path = Path.Combine(ThuMucAnh, ten + ".png"), FullPage = toanTrang });
     }
