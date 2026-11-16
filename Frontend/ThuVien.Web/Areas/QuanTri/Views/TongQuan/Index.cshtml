@@ -1,18 +1,102 @@
+@using ThuVien.Web.Areas.QuanTri.Models
 @{
     ViewData["Title"] = "Tổng quan";
     var menu = MenuQuanTri.ChoNguoiDung(User).ToList();
-}
-<h1>Xin chào, @User.FindFirst(ThuVienClaims.Ten)?.Value</h1>
-<div class="qt-the mb-3">
-    <p class="mb-1">Nhóm người dùng: <strong>@User.FindFirst(ThuVienClaims.MaNhom)?.Value – @User.FindFirst(ThuVienClaims.TenNhom)?.Value</strong></p>
-    <p class="mb-0 text-secondary">Thẻ số liệu và biểu đồ thống kê của nhóm sẽ hiển thị tại đây từ Pha 4.</p>
-</div>
-<h2 class="fs-5 fw-semibold mb-3">Chức năng của bạn</h2>
-<div class="qt-luoi-the">
-    @foreach (var m in menu.SelectMany(n => n.Muc))
+    var maNhom = User.FindFirst(ThuVienClaims.MaNhom)?.Value ?? "";
+    // Mỗi nhóm một trang tổng quan (file 09 mục 3); API kiểm tra lại quyền
+    var nhom = maNhom switch
     {
-        <a class="qt-the qt-the--nang qt-loi-tat" href="@m.DuongDan">
-            <i class="bi @m.Icon" aria-hidden="true"></i><span>@m.Ten</span>
-        </a>
+        "N1" when User.CoQuyen("TT057") => "N1",
+        "N2" when User.CoQuyen("TT090") => "N2",
+        "N3" when User.CoQuyen("TT117") => "N3",
+        "N4" when User.CoQuyen("QT040003") || User.CoQuyen("QT040008") => "N4",
+        _ => ""
+    };
+    string Loc(string tinhTrang) => "/quan-tri/danh-muc/sach?tinhTrang=" + Uri.EscapeDataString(tinhTrang);
+}
+@section Css {
+    <link rel="stylesheet" href="/css/thong-ke.css" asp-append-version="true" />
+}
+<section class="qt-tong-quan" id="trangTongQuan" data-nhom="@nhom" aria-labelledby="tieuDeTongQuan">
+    <div class="qt-tong-quan__dau">
+        <div>
+            <h1 id="tieuDeTongQuan">Xin chào, @User.FindFirst(ThuVienClaims.Ten)?.Value</h1>
+            <p class="qt-giao-dien__phu mb-0">@maNhom – @User.FindFirst(ThuVienClaims.TenNhom)?.Value · Số liệu cập nhật lúc <span id="thoiDiemCapNhat" class="so-lieu">–</span></p>
+        </div>
+        @if (nhom != "")
+        {
+            <button type="button" class="qt-nut qt-nut--phu" id="btnLamMoi"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i>Làm mới</button>
+        }
+    </div>
+
+    @if (nhom == "N1")
+    {
+        <div class="qt-luoi-kpi">
+            <partial name="_Kpi" model='new KpiVm("kpiLuotMuonHomNay", "Lượt mượn hôm nay", "bi-journal-arrow-up", Href: "/quan-tri/bao-cao/muon-tra?ky=hom-nay")' />
+            <partial name="_Kpi" model='new KpiVm("kpiDangMuon", "Đang mượn", "bi-book", ChiTiet: "dang-muon", MoTa: "bản sách chưa trả")' />
+            <partial name="_Kpi" model='new KpiVm("kpiQuaHan", "Quá hạn", "bi-alarm", ChiTiet: "qua-han", MoTa: "bản sách quá hạn trả")' />
+        </div>
+        <div class="qt-luoi-bieu-do">
+            <partial name="_BieuDo" model='new BieuDoVm("bdMuonTra30", "Lượt mượn – trả 30 ngày", Lop: "qt-bieu-do--rong")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdTop10", "Top 10 sách được mượn nhiều", "12 tháng gần nhất · gộp theo tên sách")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdLichMuon", "Lượt mượn theo ngày trong năm", "365 ngày gần nhất")' />
+        </div>
     }
-</div>
+    else if (nhom == "N2")
+    {
+        <div class="qt-luoi-kpi">
+            <partial name="_Kpi" model='new KpiVm("kpiBienBanThang", "Biên bản tháng này", "bi-file-earmark-ruled", Href: "/quan-tri/bao-cao/vi-pham?ky=thang-nay")' />
+            <partial name="_Kpi" model='new KpiVm("kpiTienThu", "Tiền đã thu tháng này", "bi-cash-coin", Href: "/quan-tri/bao-cao/vi-pham?ky=thang-nay")' />
+            <partial name="_Kpi" model='new KpiVm("kpiChuaThanhToan", "Chưa thanh toán", "bi-hourglass-split", ChiTiet: "chua-thanh-toan")' />
+        </div>
+        <div class="qt-luoi-bieu-do">
+            <partial name="_BieuDo" model='new BieuDoVm("bdViPhamTheoThang", "Vi phạm theo loại theo tháng", "12 tháng gần nhất · số trường hợp theo khoản thu", Lop: "qt-bieu-do--rong")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdTienThu", "Tiền thu theo tháng", "12 tháng gần nhất · biên bản đã thanh toán")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdHinhThuc", "Hình thức thanh toán", "12 tháng gần nhất · số biên bản")' />
+        </div>
+    }
+    else if (nhom == "N3")
+    {
+        <div class="qt-luoi-kpi">
+            <partial name="_Kpi" model='new KpiVm("kpiTongBanSach", "Tổng bản sách", "bi-collection", Href: "/quan-tri/danh-muc/sach")' />
+            <partial name="_Kpi" model='new KpiVm("kpiSanSang", "Sẵn sàng", "bi-check2-circle", Href: Loc("Sẵn sàng"))' />
+            <partial name="_Kpi" model='new KpiVm("kpiDangDuocMuon", "Đang được mượn", "bi-arrow-left-right", Href: Loc("Đang được mượn"))' />
+            <partial name="_Kpi" model='new KpiVm("kpiHuHongMat", "Hư hỏng / Mất", "bi-bandaid", Href: Loc("Hư hỏng"))' />
+        </div>
+        <div class="qt-luoi-bieu-do">
+            <partial name="_BieuDo" model='new BieuDoVm("bdTinhTrang", "Bản sách theo tình trạng", "Hiện tại · 03.04.01")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdKhuVuc", "Bản sách theo khu vực lưu trữ", "Hiện tại")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdHuHongMat", "Sách hư hỏng, mất theo tháng", "12 tháng gần nhất · theo ngày trả", Lop: "qt-bieu-do--rong")' />
+        </div>
+    }
+    else if (nhom == "N4")
+    {
+        <div class="qt-luoi-kpi">
+            <partial name="_Kpi" model='new KpiVm("kpiTaiKhoan", "Tài khoản hoạt động", "bi-person-check", Href: "/quan-tri/tai-khoan")' />
+            <partial name="_Kpi" model='new KpiVm("kpiDangNhapHomNay", "Lượt đăng nhập hôm nay", "bi-box-arrow-in-right", Href: "/quan-tri/nhat-ky/dang-nhap")' />
+            <partial name="_Kpi" model='new KpiVm("kpiThaoTacHomNay", "Thao tác hôm nay", "bi-list-check", Href: "/quan-tri/nhat-ky/hoat-dong")' />
+            <partial name="_Kpi" model='new KpiVm("kpiSaoLuu", "Lần sao lưu gần nhất", "bi-database-down", Href: "/quan-tri/sao-luu")' />
+        </div>
+        <div class="qt-luoi-bieu-do">
+            <partial name="_BieuDo" model='new BieuDoVm("bdDangNhap30", "Lượt đăng nhập 30 ngày", Lop: "qt-bieu-do--rong")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdThaoTacNhom", "Thao tác theo nhóm người dùng", "14 ngày gần nhất", Lop: "qt-bieu-do--rong")' />
+        </div>
+    }
+
+    <h2 class="fs-5 fw-semibold mt-4 mb-3">Chức năng của bạn</h2>
+    <div class="qt-luoi-the">
+        @foreach (var m in menu.SelectMany(n => n.Muc))
+        {
+            <a class="qt-the qt-the--nang qt-loi-tat" href="@m.DuongDan">
+                <i class="bi @m.Icon" aria-hidden="true"></i><span>@m.Ten</span>
+            </a>
+        }
+    </div>
+</section>
+@section Scripts {
+    @if (nhom != "")
+    {
+        <script src="/lib/echarts/5.6.0/echarts.min.js"></script>
+        <script type="module" src="/js/quantri/trang/tong-quan.js" asp-append-version="true"></script>
+    }
+}

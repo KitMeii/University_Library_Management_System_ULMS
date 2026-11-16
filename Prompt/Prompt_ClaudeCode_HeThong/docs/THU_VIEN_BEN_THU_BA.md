@@ -30,8 +30,9 @@ Chỉ dùng thư viện đã duyệt (file 01, 13, GIA_DINH D17). Phiên bản �
 | Bootstrap Icons | 1.11.3 | MIT | Biểu tượng |
 | GSAP (core, Flip, ScrollTrigger, Observer, Draggable) | 3.13.0 | GSAP Standard License (miễn phí từ 3.13) | Chuyển động |
 | Be Vietnam Pro (@fontsource/be-vietnam-pro) | 5.2.8 | SIL OFL 1.1 | Font chữ |
+| Apache ECharts (`dist/echarts.min.js`) | 5.6.0 | Apache-2.0 | Biểu đồ tổng quan N1–N4, báo cáo MB06/MB07 (canvas trên màn hình, SVG khi in – file 09) |
 
-Sẽ thêm ở các pha sau (đã duyệt trong file 01/13): Apache ECharts 5.6.0 (Pha 4), page-flip 2.0.7, Lenis 1.3.x (Pha 5–6), JsBarcode (Pha 6).
+Sẽ thêm ở các pha sau (đã duyệt trong file 01/13): page-flip 2.0.7, Lenis 1.3.x (Pha 5–6), JsBarcode (Pha 6).
 
 ## Image Docker
 

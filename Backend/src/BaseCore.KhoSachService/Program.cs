@@ -11,6 +11,7 @@ builder.Services.AddDbContext<KhoSachDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure()));
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.KhuVucService>();
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.SachService>();
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.ThongKeN3Service>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

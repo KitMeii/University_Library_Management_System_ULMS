@@ -14,4 +14,11 @@
     </div>
 </header>
 <h1 class="in-tieu-de">@k.TenMau</h1>
-<p class="in-so">Số: <strong>@k.So</strong> <span aria-hidden="true">·</span> @Model.DongNgay</p>
+@if (string.IsNullOrEmpty(k.So))
+{
+    <p class="in-so">@Model.DongNgay</p>
+}
+else
+{
+    <p class="in-so">Số: <strong>@k.So</strong> <span aria-hidden="true">·</span> @Model.DongNgay</p>
+}

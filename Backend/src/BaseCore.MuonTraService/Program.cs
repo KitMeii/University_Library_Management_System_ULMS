@@ -18,6 +18,8 @@ builder.Services.AddScoped<ChungTuChung>();
 builder.Services.AddScoped<PhieuMuonService>();
 builder.Services.AddScoped<PhieuGiaHanService>();
 builder.Services.AddScoped<PhieuTraService>();
+builder.Services.AddScoped<BaoCaoMuonTraService>();
+builder.Services.AddScoped<ThongKeN1Service>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

@@ -1,0 +1,84 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@using ThuVien.Web.Areas.QuanTri.Models
+@{
+    Layout = "_LayoutIn";
+    var d = (BaoCaoViPhamIn)Model.DuLieu;
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    var ngayLap = (DateOnly)ViewData["NgayLap"]!;
+    var nguoiLap = ViewData["NguoiLap"] as string;
+    string N(decimal v) => v.ToString("N0", vn);
+    string D(DateOnly v) => v.ToString("dd/MM/yyyy");
+    var dau = new DauIn(Model, 0, "Bộ phận xử lý vi phạm", $"Kỳ báo cáo: từ ngày {D(d.TuNgay)} đến ngày {D(d.DenNgay)} · Ngày lập: {D(ngayLap)}");
+    var coSo = d.TheoKhoanThu.Where(x => x.SoTruongHop > 0).ToList();
+    var bieuDo = System.Text.Json.JsonSerializer.Serialize(new
+    {
+        loai = "MB07",
+        khoanThu = d.TheoKhoanThu.Select(x => x.MaKhoanThu),
+        daThanhToan = d.TheoKhoanThu.Select(x => x.SoTruongHopDaThanhToan),
+        chuaThanhToan = d.TheoKhoanThu.Select(x => x.SoTruongHopChuaThanhToan),
+        tyLe = coSo.Select(x => new { name = x.NoiDungTt, value = x.SoTruongHop })
+    });
+}
+@* SPEC 6.4.6 – MB07 Báo cáo tình hình vi phạm mượn trả sách: A4, 01 bản, nơi nhận Ban giám đốc thư viện *@
+<article class="in-to" id="baoCaoMB07">
+    <partial name="_DauIn" model="dau" />
+
+    <h2 class="in-muc">I. Số liệu tổng hợp</h2>
+    <div class="in-tong-hop">
+        <div><span>Số biên bản vi phạm</span><strong>@N(d.SoBienBan)</strong></div>
+        <div><span>Số trường hợp vi phạm</span><strong>@N(d.SoTruongHop)</strong></div>
+        <div><span>Tổng tiền vi phạm (đ)</span><strong>@N(d.TongTienViPham)</strong></div>
+        <div><span>Tổng tiền thu trong kỳ (đ)</span><strong>@N(d.TongTienDaThu)</strong></div>
+        <div><span>Chưa thanh toán (đ)</span><strong>@N(d.TongTienChuaThu)</strong></div>
+    </div>
+
+    <h2 class="in-muc">II. Tổng hợp theo nội dung vi phạm (khoản thu)</h2>
+    <table class="in-bang">
+        <thead><tr><th>STT</th><th>Mã khoản thu</th><th>Nội dung</th><th>Đơn giá (đ)</th><th>Số trường hợp</th><th>Tổng số lượng</th><th>Tổng tiền (đ)</th></tr></thead>
+        <tbody>
+            @for (var i = 0; i < d.TheoKhoanThu.Count; i++)
+            {
+                var x = d.TheoKhoanThu[i];
+                <tr><td class="giua">@(i + 1)</td><td>@x.MaKhoanThu</td><td>@x.NoiDungTt</td><td class="phai">@N(x.DonGia)</td><td class="phai">@N(x.SoTruongHop)</td><td class="phai">@N(x.SoLuong)</td><td class="phai">@N(x.TongTien)</td></tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr><td colspan="4" class="phai">Tổng cộng</td><td class="phai"><strong>@N(d.SoTruongHop)</strong></td><td class="phai">@N(d.TheoKhoanThu.Sum(x => x.SoLuong))</td><td class="phai"><strong>@N(d.TongTienViPham)</strong></td></tr>
+        </tfoot>
+    </table>
+    @if (d.SoTruongHop > 0)
+    {
+        <div class="in-bieu-do in-bieu-do--doi">
+            <div id="inBieuDoKhoanThu" role="img" aria-label="Biểu đồ số trường hợp vi phạm theo khoản thu, chồng theo tình trạng thanh toán"></div>
+            <div id="inBieuDoTyLe" role="img" aria-label="Biểu đồ tỷ lệ trường hợp vi phạm theo khoản thu"></div>
+        </div>
+    }
+    <p class="in-ghi-chu">Số trường hợp vi phạm = COUNT(CT_BIENBAN.ma_bansach) theo khoản thu; tổng tiền theo khoản thu = SUM(thành tiền);
+        tổng tiền thu trong kỳ = SUM(tổng tiền) của các biên bản đã thanh toán (tiền mặt, chuyển khoản).</p>
+
+    <h2 class="in-muc">III. Bạn đọc vi phạm và tình trạng thanh toán <small>(@N(d.BienBan.Count) biên bản)</small></h2>
+    @if (d.BienBan.Count == 0) { <p class="in-trong">Không có biên bản vi phạm trong kỳ.</p> }
+    else
+    {
+        <table class="in-bang">
+            <thead><tr><th>STT</th><th>Số biên bản</th><th>Ngày lập</th><th>Bạn đọc</th><th>Lớp/Đơn vị</th><th>Số trường hợp</th><th>Tổng tiền (đ)</th><th>Thanh toán</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < d.BienBan.Count; i++)
+                {
+                    var x = d.BienBan[i];
+                    <tr><td class="giua">@(i + 1)</td><td>@x.SoBienBan</td><td class="giua">@x.ThoiGianLap.ToString("dd/MM/yyyy")</td><td>@x.MaBanDoc – @x.HoTen</td><td>@x.LopDonVi</td><td class="phai">@N(x.SoTruongHop)</td><td class="phai">@N(x.TongTien)</td><td>@x.HtThanhToan</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="in-ky">
+        <div><span>Xác nhận của Ban giám đốc thư viện</span><em>(Ký, ghi rõ họ tên)</em><b>&nbsp;</b></div>
+        <div><span>Người lập báo cáo</span><em>Ngày @ngayLap.Day.ToString("00") tháng @ngayLap.Month.ToString("00") năm @ngayLap.Year · (Ký, ghi rõ họ tên)</em><b>@nguoiLap</b></div>
+    </div>
+</article>
+<script type="application/json" id="duLieuBieuDoIn">@Html.Raw(bieuDo)</script>
+@section Scripts {
+    <script src="/lib/echarts/5.6.0/echarts.min.js"></script>
+    <script type="module" src="/js/in-bao-cao.js" asp-append-version="true"></script>
+}

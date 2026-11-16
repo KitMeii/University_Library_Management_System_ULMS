@@ -56,10 +56,24 @@ main { display: grid; gap: 16px; justify-items: center; padding: 16px; }
 .in-ky em { color: var(--in-mo); font-size: 10.5px; }
 .in-ky b { margin-top: 42px; font-weight: 600; }
 
+/* Báo cáo MB06/MB07 (SPEC 6.4.5–6.4.6): khối số liệu tổng hợp, biểu đồ SVG, các mục chi tiết */
+.in-muc { margin: 12px 0 4px; font-size: 13px; font-weight: 700; }
+.in-muc small { font-weight: 400; color: var(--in-mo); }
+.in-tong-hop { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 6px 0 8px; }
+.in-tong-hop > div { border: 1px solid var(--in-vien); border-radius: 4px; padding: 6px 8px; display: grid; gap: 2px; }
+.in-tong-hop span { color: var(--in-mo); font-size: 10.5px; line-height: 1.25; }
+.in-tong-hop strong { font-size: 16px; }
+.in-bieu-do { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 4px 0 6px; }
+.in-bieu-do--doi { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.in-bieu-do > div { height: 62mm; min-width: 0; }
+.in-trong { color: var(--in-mo); font-style: italic; text-align: center; }
+
 @media (max-width: 640px) {
   main { padding: 8px; }
   .in-to { padding: 16px 12px; }
   .in-thong-tin { grid-template-columns: 1fr; }
+  .in-tong-hop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .in-bieu-do--doi { grid-template-columns: minmax(0, 1fr); }
   .in-bang { display: block; overflow-x: auto; }
 }
 

@@ -1,0 +1,112 @@
+/* Tổng quan theo nhóm + báo cáo MB06/MB07 (file 08 mục 4, file 09, file 10 mục 4). Màu chỉ dùng token file 03. */
+
+/* ---------- Trang tổng quan ---------- */
+.qt-tong-quan { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+.qt-tong-quan__dau { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.qt-tong-quan__dau h1 { margin: 0 0 4px; }
+
+/* ---------- Thẻ KPI ---------- */
+.qt-luoi-kpi { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.qt-kpi {
+  display: flex; flex-direction: column; gap: 4px; text-align: left; color: var(--ink); text-decoration: none;
+  border: 1px solid transparent; padding: 18px 20px 14px; width: 100%; font: inherit;
+}
+.qt-kpi--bam { cursor: pointer; transition: transform .25s ease, border-color .25s ease; }
+.qt-kpi--bam:hover { transform: translateY(-2px); border-color: var(--red-100); color: var(--ink); }
+.qt-kpi--bam:focus-visible { outline: none; box-shadow: var(--qt-focus); }
+.qt-kpi__dau { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.qt-kpi__nhan { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.qt-kpi__icon {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  background: var(--red-50); color: var(--red-600); font-size: 17px;
+}
+.qt-kpi__so { font-size: 30px; font-weight: 700; line-height: 1.15; color: var(--ink); letter-spacing: -.01em; }
+.qt-kpi__so--chu { font-size: 22px; padding: 4px 0; }
+.qt-kpi__phu { font-size: 12.5px; color: var(--ink-2); min-height: 1.2em; }
+.qt-kpi__thanh { display: block; height: 3px; border-radius: 3px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+.qt-kpi__thanh span { display: block; height: 100%; background: var(--red-600); transform-origin: left center; transform: scaleX(0); }
+
+/* ---------- Biểu đồ ---------- */
+.qt-luoi-bieu-do { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.qt-bieu-do { margin: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.qt-bieu-do--rong { grid-column: 1 / -1; }
+.qt-bieu-do__dau { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.qt-bieu-do__chu { min-width: 0; }
+.qt-bieu-do__tieu-de { font-size: 16px; font-weight: 600; margin: 0; color: var(--ink); }
+.qt-bieu-do__ky { display: block; font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+.qt-bieu-do__nut { display: flex; gap: 6px; flex-shrink: 0; }
+.qt-nut--chi-bieu-tuong { padding: 0 10px; }
+.qt-bieu-do__khung { height: 300px; width: 100%; min-width: 0; }
+.qt-bieu-do__rong {
+  margin: 0; height: 300px; display: grid; place-items: center; color: var(--ink-2);
+  background: var(--surface-2); border-radius: 10px; font-size: 14px;
+}
+.qt-bieu-do__bang { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; }
+.qt-bang--gon { width: 100%; font-size: 13px; }
+.qt-bang--gon th, .qt-bang--gon td { padding: 6px 10px; }
+/* Đang tải: khung vẽ thành skeleton quét sáng */
+.qt-bieu-do.dang-tai .qt-bieu-do__khung {
+  position: relative; overflow: hidden; border-radius: 10px; background: var(--surface-2);
+}
+.qt-bieu-do.dang-tai .qt-bieu-do__khung::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .8), transparent);
+  transform: translateX(-100%); animation: qt-quet 1.2s ease-in-out infinite;
+}
+.qt-bieu-do.dang-tai .qt-bieu-do__nut button { visibility: hidden; }
+
+/* Chấm màu trong tooltip biểu đồ – cùng bảng màu theme “thuvien-do” (file 09 mục 2) */
+.qt-dau-mau { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: var(--ink-3); }
+.qt-dau-mau--0 { background: var(--red-600); }
+.qt-dau-mau--1 { background: #F87171; }
+.qt-dau-mau--2 { background: var(--red-900); }
+.qt-dau-mau--3 { background: var(--red-300); }
+.qt-dau-mau--4 { background: #525252; }
+.qt-dau-mau--5 { background: #A3A3A3; }
+.qt-dau-mau--6 { background: var(--warn); }
+
+/* ---------- Trang báo cáo (01.04.02/01.04.03, 02.05.01/02.05.02) ---------- */
+.qt-ky-bao-cao { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; }
+.qt-ky-bao-cao .qt-truong { margin-bottom: 0; min-width: 180px; }
+.qt-ky-bao-cao__nhanh { display: flex; flex-wrap: wrap; gap: 6px; }
+.qt-ky-bao-cao__nhanh .qt-nut[aria-pressed="true"] { border-color: var(--red-600); color: var(--red-700); background: var(--red-50); }
+.qt-ket-qua-tong-hop[hidden] { display: none; }
+/* Báo cáo có 5 số liệu → 5 cột trên máy tính */
+.qt-ket-qua-tong-hop .qt-luoi-kpi { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+/* Số tiền (365.000 đ) không xuống dòng trong thẻ hẹp */
+.qt-kpi__so { white-space: nowrap; }
+.qt-ket-qua-tong-hop .qt-kpi__so { font-size: 24px; }
+/* Thẻ (tab) dùng <button>: bỏ khung mặc định của nút */
+button.qt-the-tab__muc { background: none; border: 0; border-bottom: 2px solid transparent; font: inherit; font-weight: 600; cursor: pointer; }
+button.qt-the-tab__muc:focus-visible { outline: none; box-shadow: var(--qt-focus); border-radius: 6px; }
+/* Thẻ chỉ chứa hàng nút: không chừa khoảng trống phía trên */
+.qt-the--chi-nut { padding-top: 0; padding-bottom: 20px; }
+.qt-the--chi-nut > .qt-hang-nut { margin-top: 0; border-top: 0; }
+.qt-xem-truoc-in {
+  width: 100%; height: 78vh; min-height: 520px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2);
+}
+.qt-xem-truoc-trong {
+  display: grid; place-items: center; height: 240px; color: var(--ink-2); background: var(--surface-2); border-radius: 10px; text-align: center; padding: 16px;
+}
+
+@media (max-width: 991.98px) {
+  .qt-luoi-bieu-do { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 575.98px) {
+  .qt-luoi-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .qt-kpi { padding: 14px 14px 12px; }
+  .qt-kpi__so { font-size: 24px; }
+  .qt-kpi__so--chu { font-size: 16px; }
+  .qt-kpi__icon { width: 28px; height: 28px; font-size: 14px; }
+  .qt-bieu-do__khung, .qt-bieu-do__rong { height: 260px; }
+  /* Điện thoại: nút “Xem bảng số liệu” chỉ còn biểu tượng, chữ vẫn đọc được bằng trình đọc màn hình */
+  .qt-bieu-do__nut [data-hanh-dong="bang"] span {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .qt-ky-bao-cao .qt-truong { min-width: 0; flex: 1 1 140px; }
+  .qt-xem-truoc-in { height: 70vh; min-height: 420px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qt-kpi--bam, .qt-kpi--bam:hover { transition: none; transform: none; }
+  .qt-bieu-do.dang-tai .qt-bieu-do__khung::after { animation: none; }
+}

@@ -9,7 +9,7 @@ Tạo đúng 18 bảng ở `SPEC_NGHIEP_VU_BT4.md` mục 2: **tên bảng, tên 
 - Tạo chỉ mục cho mọi khóa ngoại và các cột tìm kiếm (`ten_sach`, `tacgia`, `ma_svhvcb`, `hoten`, `ngaymuon`, `hantra`, `ngaytra`, `thoigian_lap`).
 - Kiểm thử tự động `SchemaMatchesSpecTests`: đọc metadata SQL Server, so với danh sách bảng/cột trích từ SPEC mục 2 → phải khớp 100%.
 
-## 2. Bảng mở rộng (chỉ có trong hệ thống, KHÔNG đưa vào hồ sơ Word BT1–BT4)
+## 2. 9 bảng mở rộng X01–X09 (chỉ có trong hệ thống, KHÔNG đưa vào hồ sơ Word BT1–BT4)
 Đặt tiền tố mã bảng `X` trong tài liệu nội bộ. Không sửa bất kỳ cột nào của 18 bảng gốc.
 
 ### X01. THELOAI – thể loại sách (dùng cho danh mục ở cổng bạn đọc)
@@ -93,6 +93,20 @@ Chỉ mục duy nhất có điều kiện:
 
 ### X08. SOCHUNGTU – bộ đếm số chứng từ theo tháng
 (`loai` nvarchar(4), `ngay` date, `so_cuoi` int) – PK kép (`loai`, `ngay`). **`ngay` luôn là ngày đầu tháng** (đánh số lại mỗi tháng – GIA_DINH D4). Cấp số trong cùng transaction bằng `UPDATE … WITH (UPDLOCK, HOLDLOCK)`. Loại `DC` (đặt chỗ) vẫn đếm theo ngày, `ngay` = ngày đặt.
+
+### X09. XULY_CHUYENDEN – Bộ phận kho sách đã xử lý thông tin chuyển đến (bổ sung 16/11/2026 – GIA_DINH D47)
+Chỉ có trong hệ thống, **không đưa vào hồ sơ Word**. Ghi lại việc N3 đã xử lý một dòng “chuyển đến” của `dgvChuyenDen` (SPEC 6.1.1 “thông tin chuyển đến được đánh dấu đã xử lý”). Với 03.03.02: bản sách trả Mất/Hư hỏng chỉ bị chặn cho mượn tới khi có dòng này; sau đó N3 sửa sách xong đặt “Sẵn sàng” thì mượn lại bình thường.
+
+| Cột | Kiểu | Ràng buộc |
+|---|---|---|
+| **ma_bansach** | nvarchar(10) | PK, FK → SACH |
+| **so_chungtu** | nvarchar(10) | PK – với 03.03.02 là `so_ptra` của dòng CT_PHIEUTRA trả Mất/Hư hỏng |
+| **tientrinh** | nvarchar(10) | PK – mã tiến trình (`03.03.02`) |
+| tinhtrang_moi | nvarchar(30) | ∈ {Sẵn sàng, Đang được mượn, Mất, Hư hỏng} |
+| ma_nd | nvarchar(10) | FK → NGUOIDUNG (nhân viên N3 xử lý) |
+| thoigian_xuly | datetime2(0) | |
+
+Ghi khi N3 bấm `btnCapNhatTT` trên dòng 03.03.02 hoặc đổi tình trạng bản sách bằng `btnSua`. Tổng cộng **9 bảng mở rộng** (X01–X09).
 
 ## 3. Dữ liệu khởi tạo (mọi môi trường)
 - `NHOMNGUOIDUNG`: N1–N4 đúng tên SPEC 3.1.

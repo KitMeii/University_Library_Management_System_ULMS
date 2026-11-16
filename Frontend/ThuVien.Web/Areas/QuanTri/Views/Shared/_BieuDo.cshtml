@@ -1,0 +1,17 @@
+@model ThuVien.Web.Areas.QuanTri.Models.BieuDoVm
+@* Khung biểu đồ dùng chung (file 09 mục 2) – vẽ bằng js/charts/chart-factory.js (class BieuDo). *@
+<figure class="qt-the qt-bieu-do @Model.Lop" id="@Model.Id" data-ten-tep="@(Model.TenTep ?? Model.Id)">
+    <figcaption class="qt-bieu-do__dau">
+        <div class="qt-bieu-do__chu">
+            <h3 class="qt-bieu-do__tieu-de">@Model.TieuDe</h3>
+            <span class="qt-bieu-do__ky">@Model.Ky</span>
+        </div>
+        <div class="qt-bieu-do__nut">
+            <button type="button" class="qt-nut qt-nut--phu qt-nut--nho" data-hanh-dong="bang" aria-expanded="false"><i class="bi bi-table" aria-hidden="true"></i><span>Xem bảng số liệu</span></button>
+            <button type="button" class="qt-nut qt-nut--phu qt-nut--nho qt-nut--chi-bieu-tuong" data-hanh-dong="anh" title="Tải ảnh"><i class="bi bi-download" aria-hidden="true"></i><span class="sr-only">Tải ảnh biểu đồ @Model.TieuDe</span></button>
+        </div>
+    </figcaption>
+    <div class="qt-bieu-do__khung" role="img" aria-label="Biểu đồ @Model.TieuDe"></div>
+    <p class="qt-bieu-do__rong" role="status" hidden></p>
+    <div class="qt-bieu-do__bang" hidden></div>
+</figure>

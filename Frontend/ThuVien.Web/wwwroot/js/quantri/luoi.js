@@ -206,6 +206,12 @@ export class LuoiDuLieu {
   }
 
   vePhanTrang() {
+    if (this.tc.duLieuTinh) {
+      // Dữ liệu tĩnh hiển thị đủ mọi dòng (không phân trang)
+      this.el.querySelector('.qt-luoi__dem').textContent = `${this.tongSo.toLocaleString('vi-VN')} dòng`;
+      this.el.querySelector('.qt-luoi__trang').replaceChildren();
+      return;
+    }
     const soTrang = Math.max(1, Math.ceil(this.tongSo / this.tc.coTrang));
     const tu = this.tongSo ? (this.trang - 1) * this.tc.coTrang + 1 : 0;
     const den = Math.min(this.trang * this.tc.coTrang, this.tongSo);

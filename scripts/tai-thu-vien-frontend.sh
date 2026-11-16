@@ -11,6 +11,8 @@ tai $J/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css lib/bootstrap-icons/1
 tai $J/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2 lib/bootstrap-icons/1.11.3/fonts/bootstrap-icons.woff2
 tai $J/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff lib/bootstrap-icons/1.11.3/fonts/bootstrap-icons.woff
 for f in gsap Flip ScrollTrigger Observer Draggable; do tai $J/gsap@3.13.0/dist/$f.min.js lib/gsap/3.13.0/$f.min.js; done
+# Pha 4 – biểu đồ thống kê (file 09)
+tai $J/echarts@5.6.0/dist/echarts.min.js lib/echarts/5.6.0/echarts.min.js
 for w in 400 500 600 700; do for s in vietnamese latin latin-ext; do
   tai $J/@fontsource/be-vietnam-pro@5.2.8/files/be-vietnam-pro-$s-$w-normal.woff2 fonts/be-vietnam-pro/be-vietnam-pro-$s-$w-normal.woff2
 done; done

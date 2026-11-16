@@ -41,20 +41,29 @@ public sealed class KiemTraAntiforgeryApiMiddleware(RequestDelegate next, IAntif
     }
 }
 
-/// <summary>Header bảo mật (file 11): CSP chỉ nguồn nội bộ, chống nhúng khung, không đoán kiểu tệp.</summary>
+/// <summary>
+/// Header bảo mật (file 11): CSP chỉ nguồn nội bộ, chống nhúng khung, không đoán kiểu tệp.
+/// Ngoại lệ duy nhất: trang in chứng từ/báo cáo <c>/quan-tri/in/…</c> được nhúng khung bởi CHÍNH trang web này
+/// (in trong khung ẩn của btnIn, xem trước MB06/MB07) – frame-ancestors 'self', X-Frame-Options SAMEORIGIN.
+/// </summary>
 public sealed class HeaderBaoMatMiddleware(RequestDelegate next)
 {
-    private const string Csp =
+    private const string CspGoc =
         "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; " +
-        "connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+        "connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; ";
+    private const string Csp = CspGoc + "frame-ancestors 'none'";
+    private const string CspTrangIn = CspGoc + "frame-ancestors 'self'";
+
+    public static bool LaTrangIn(PathString p) => p.StartsWithSegments("/quan-tri/in");
 
     public Task InvokeAsync(HttpContext ctx)
     {
         var h = ctx.Response.Headers;
-        h["Content-Security-Policy"] = Csp;
+        var trangIn = LaTrangIn(ctx.Request.Path);
+        h["Content-Security-Policy"] = trangIn ? CspTrangIn : Csp;
         h["X-Content-Type-Options"] = "nosniff";
         h["Referrer-Policy"] = "strict-origin-when-cross-origin";
-        h["X-Frame-Options"] = "DENY";
+        h["X-Frame-Options"] = trangIn ? "SAMEORIGIN" : "DENY";
         h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
         return next(ctx);
     }

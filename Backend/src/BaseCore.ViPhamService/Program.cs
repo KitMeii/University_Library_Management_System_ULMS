@@ -11,6 +11,8 @@ builder.Services.AddDbContext<ViPhamDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure()));
 builder.Services.AddScoped<BaseCore.ViPhamService.NghiepVu.KhoanThuService>();
 builder.Services.AddScoped<BaseCore.ViPhamService.NghiepVu.BienBanService>();
+builder.Services.AddScoped<BaseCore.ViPhamService.NghiepVu.BaoCaoViPhamService>();
+builder.Services.AddScoped<BaseCore.ViPhamService.NghiepVu.ThongKeN2Service>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

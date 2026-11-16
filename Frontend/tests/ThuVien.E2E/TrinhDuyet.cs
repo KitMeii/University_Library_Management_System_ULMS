@@ -29,6 +29,12 @@ public sealed class TrinhDuyet : IAsyncLifetime
         ViewportSize = new() { Width = 1366, Height = 768 }, Locale = "vi-VN", TimezoneId = "Asia/Ho_Chi_Minh", BypassCSP = true
     });
 
+    /// <summary>Máy tính, KHÔNG bỏ qua CSP – kiểm tra trang chạy đúng dưới chính sách bảo mật thật (file 11).</summary>
+    public Task<IBrowserContext> MayTinhCspThatAsync() => Browser.NewContextAsync(new()
+    {
+        ViewportSize = new() { Width = 1366, Height = 768 }, Locale = "vi-VN", TimezoneId = "Asia/Ho_Chi_Minh", BypassCSP = false
+    });
+
     /// <summary>Điện thoại: thiết bị mô phỏng của Playwright (iPhone 13 = 390×844, Pixel 7).</summary>
     public Task<IBrowserContext> DienThoaiAsync(string thietBi = "iPhone 13")
     {

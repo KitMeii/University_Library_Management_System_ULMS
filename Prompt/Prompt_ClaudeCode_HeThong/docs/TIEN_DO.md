@@ -7,8 +7,8 @@
 | 1 – Nền tảng | **Đã duyệt** (16/11/2026) | D25–D33 đã duyệt |
 | 2 – Danh mục + quản trị | **Đã duyệt** (16/11/2026) | D34–D43 đã duyệt (D35, D36, D41 theo quyết định chủ dự án); D44 SQL Server cài sẵn; ảnh 4.2.1–4.2.4, 4.6.1–4.6.5 |
 | 3 – Chứng từ + in MB02–MB05 | **Đã duyệt** (16/11/2026) | D45, D46, D48 đã duyệt; D47 sửa theo quyết định chủ dự án (bảng X09); D49 kiểm thử trên ThuVien_Test; ảnh 4.3.1–4.3.4, 4.4.1–4.4.4 |
-| 4 – Báo cáo MB06–MB07 + tổng quan | **Đang làm** | D50 (Top 10 theo ten_sach, ẩn đặt chỗ đến Pha 6). Xong pha này = đủ bộ ảnh Bài 4 |
-| 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | Chưa làm | |
+| 4 – Báo cáo MB06–MB07 + tổng quan | **Đã duyệt** (16/11/2026) | D50–D54 đã duyệt; X09 ghi vào file 02 (9 bảng mở rộng); ảnh 4.5.1–4.5.2, Tong_quan_N1–N4 → đủ bộ ảnh Bài 4 (`anh_giao_dien/DANH_SACH_ANH.md`) |
+| 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | **Đang làm** | File 03, 04, 05, 10; kệ sách theo ảnh tham khảo |
 | 6 – Book Preview + đặt chỗ + tài khoản + Quầy đặt chỗ | Chưa làm | |
 | 7 – Trang chủ hoàn chỉnh | Chưa làm | |
 | 8 – Hoàn thiện, prod.yml | Chưa làm | |
@@ -49,6 +49,15 @@
 - D47: bảng mở rộng X09 `khosach.XULY_CHUYENDEN` ghi việc N3 đã xử lý 03.03.02 (`btnCapNhatTT`, hoặc `btnSua` đổi tình trạng). Bản sách trả mất/hư hỏng chỉ bị chặn cho mượn tới khi N3 xử lý; sửa sách xong đặt “Sẵn sàng” thì mượn lại được, dòng 03.03.02 không xuất hiện lại. Migration `XuLyChuyenDen` (ghi nhận lùi dữ liệu cũ); dữ liệu mẫu ghi nhận sách mất đã xử lý. Kiểm thử `HuHong_N3CapNhat_SanSang_ChoMuonLai`, `HuHong_N3SuaThangSanSang_ChoMuonLai`.
 - D48: Phụ lục A trong `GIA_DINH.md` – danh sách đầy đủ control thêm ngoài SPEC theo từng giao diện (tên, loại, mục đích, nhóm “Đặt tên”/“Thêm mới”).
 - D49: kiểm thử chạy bộ hệ thống riêng `ulms-test` trên CSDL `ThuVien_Test` (tạo lại mỗi lần chạy); sao lưu kiểm thử ghi vào `SAO_LUU_THU_MUC_KIEM_THU` và được dọn sau khi chạy – không đụng CSDL ThuVien, không ghi vào thư mục Backup thật.
+
+## Pha 4 – đã làm
+- Báo cáo MB06 (01.04.02 Tổng hợp → 01.04.03 Lập báo cáo) và MB07 (02.05.01 → 02.05.02): kỳ báo cáo (DatePicker + chọn nhanh), btnTongHop, 5 số liệu theo công thức SPEC 6.4.5–6.4.6, biểu đồ ECharts, bảng chi tiết theo thẻ; trang lập báo cáo xem trước bản in, ngày lập tự sinh, btnIn ghi nhật ký rồi in; trang in A4 01 bản, biểu đồ SVG.
+- API muontra `/api/quan-tri/bao-cao/muon-tra`, vipham `/api/quan-tri/bao-cao/vi-pham` (+ `/lap`), tổng quan `/api/quan-tri/thong-ke/n1…n4` – quyền theo SPEC 3.4.
+- Trang tổng quan theo nhóm N1–N4: KPI đếm lên + thanh tiến độ, KPI bấm được (danh sách chi tiết / trang lọc sẵn), biểu đồ area + dataZoom, bar ngang Top 10, heatmap lịch, bar chồng, donut, line; “Xem bảng số liệu”, “Tải ảnh”, skeleton, trạng thái rỗng; tắt hiệu ứng khi giảm chuyển động. Đặt chỗ ẩn (D50).
+- Khung biểu đồ dùng chung `js/charts/chart-theme.js`, `chart-factory.js`; ECharts 5.6.0 tự host; `motion.config.js` thêm `chart`.
+- Sửa lỗi phát hiện: trang in bị chặn nhúng khung (btnIn Pha 3 in khung trống) – D54; lưới dữ liệu tĩnh ghi sai “1–15 / n dòng”; đường biểu đồ làm mượt vượt điểm dữ liệu.
+- Kiểm thử: tích hợp `Pha4ApiTests` (so truy vấn kiểm chứng MB06, MB07, N1–N4; kỳ 422; quyền 403; nhật ký lập báo cáo), E2E `Pha4Tests` (tổng quan, KPI chi tiết, luồng tổng hợp → lập → xem trước → in, trang in SVG, quyền, điện thoại, axe, CSP thật), ảnh 4.5.1–4.5.2, Tong_quan_N1–N4.
+- D51–D54 và bảng X09 đã duyệt 16/11/2026.
 
 ## Việc còn lại / chuyển pha sau
 - Đặt chỗ mẫu, `dgvDatCho`/`btnNhanDatCho` trong Lập Phiếu mượn, Quầy đặt chỗ → Pha 6.

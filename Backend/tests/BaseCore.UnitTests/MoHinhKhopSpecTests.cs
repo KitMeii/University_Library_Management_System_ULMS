@@ -53,7 +53,7 @@ public class MoHinhKhopSpecTests
         Assert.Equal(cot.Where(c => c.LaKhoa).Select(c => c.Ten).OrderBy(x => x, StringComparer.Ordinal), khoa);
     }
 
-    /// <summary>8 bảng mở rộng file 02 (X01–X08) + X09 XULY_CHUYENDEN (GIA_DINH D47 – chờ chủ dự án xác nhận) → 27 bảng.</summary>
+    /// <summary>8 bảng mở rộng file 02 (X01–X08) + X09 XULY_CHUYENDEN (GIA_DINH D47, file 02 X09) → 27 bảng.</summary>
     [Fact]
     public void Co9BangMoRong_File02_D47()
     {

@@ -50,7 +50,7 @@ public class SchemaMatchesSpecTests
         }
     }
 
-    /// <summary>8 bảng mở rộng của file 02 (X01–X08) + X09 XULY_CHUYENDEN (GIA_DINH D47 – chờ chủ dự án xác nhận); không có bảng lạ.</summary>
+    /// <summary>8 bảng mở rộng của file 02 (X01–X08) + X09 XULY_CHUYENDEN (GIA_DINH D47, file 02 X09); không có bảng lạ.</summary>
     [Fact]
     public async Task Co9BangMoRong_VaKhongCoBangLa()
     {

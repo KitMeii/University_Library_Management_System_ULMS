@@ -10,6 +10,8 @@ export const motion = {
   scroll: { lenisLerp: 0.1, lenisOnTouch: false },
   preview: { flip: 0.55, open: 1.6, pageTurn: 0.22, close: 0.9 },
   dashboard: { pageIn: 0.45, cardStagger: 0.05, countUp: 1.2, rowStagger: 0.02, toast: 0.35, modal: 0.3 },
+  // ECharts (file 09 mục 2): vào 900 ms cubicOut, cột/điểm trễ dần 30 ms, cập nhật dữ liệu 600 ms – đơn vị giây như các mục khác
+  chart: { in: 0.9, itemDelay: 0.03, update: 0.6, ease: 'cubicOut' },
   reduced: { fade: 0.2 }
 };
 

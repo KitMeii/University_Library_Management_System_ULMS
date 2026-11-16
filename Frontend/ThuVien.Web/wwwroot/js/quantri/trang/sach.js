@@ -57,6 +57,10 @@ $('cboLocTinhTrang').addEventListener('change', () => { form.veTaiForm(); form.l
 const timKiemGoc = form.timKiem.bind(form);
 form.timKiem = async () => { $('ghiChuTimKiem').hidden = !$('txtTimKiem').value.trim(); await timKiemGoc(); };
 
+// Tổng quan N3: thẻ KPI mở danh mục lọc sẵn theo tình trạng (?tinhTrang=…)
+const locBanDau = new URLSearchParams(location.search).get('tinhTrang');
+if (locBanDau && [...$('cboLocTinhTrang').options].some((o) => o.value === locBanDau)) $('cboLocTinhTrang').value = locBanDau;
+
 await form.batDau();
 await taiThongKe();
 

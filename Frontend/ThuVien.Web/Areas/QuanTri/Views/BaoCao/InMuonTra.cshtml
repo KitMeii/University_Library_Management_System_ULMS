@@ -1,0 +1,113 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@using ThuVien.Web.Areas.QuanTri.Models
+@{
+    Layout = "_LayoutIn";
+    var d = (BaoCaoMuonTraIn)Model.DuLieu;
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    var ngayLap = (DateOnly)ViewData["NgayLap"]!;
+    var nguoiLap = ViewData["NguoiLap"] as string;
+    string N(int v) => v.ToString("N0", vn);
+    string D(DateOnly v) => v.ToString("dd/MM/yyyy");
+    var dau = new DauIn(Model, 0, "Bộ phận mượn trả sách", $"Kỳ báo cáo: từ ngày {D(d.TuNgay)} đến ngày {D(d.DenNgay)} · Ngày lập: {D(ngayLap)}");
+    var bieuDo = System.Text.Json.JsonSerializer.Serialize(new
+    {
+        loai = "MB06",
+        ngay = d.TheoNgay.Select(x => x.Ngay.ToString("dd/MM")),
+        muon = d.TheoNgay.Select(x => x.Muon),
+        giaHan = d.TheoNgay.Select(x => x.GiaHan),
+        tra = d.TheoNgay.Select(x => x.Tra)
+    });
+}
+@* SPEC 6.4.5 – MB06 Báo cáo tình hình mượn trả sách: A4, 01 bản, nơi nhận Ban giám đốc thư viện *@
+<article class="in-to" id="baoCaoMB06">
+    <partial name="_DauIn" model="dau" />
+
+    <h2 class="in-muc">I. Số liệu tổng hợp</h2>
+    <div class="in-tong-hop">
+        <div><span>Tổng số lượt mượn</span><strong>@N(d.TongLuotMuon)</strong></div>
+        <div><span>Tổng số lượt gia hạn (đồng ý)</span><strong>@N(d.TongLuotGiaHan)</strong></div>
+        <div><span>Tổng số lượt trả</span><strong>@N(d.TongLuotTra)</strong></div>
+        <div><span>Số sách đang mượn (đến @D(d.DenNgay))</span><strong>@N(d.SoSachDangMuon)</strong></div>
+        <div><span>Số sách quá hạn (đến @D(d.DenNgay))</span><strong>@N(d.SoSachQuaHan)</strong></div>
+    </div>
+    @if (d.TongLuotMuon + d.TongLuotGiaHan + d.TongLuotTra > 0)
+    {
+        <div class="in-bieu-do"><div id="inBieuDoTheoNgay" role="img" aria-label="Biểu đồ lượt mượn, gia hạn, trả theo ngày trong kỳ"></div></div>
+    }
+    <p class="in-ghi-chu">Lượt mượn = COUNT(CT_PHIEUMUON) có ngày mượn trong kỳ; lượt gia hạn = COUNT(CT_PHIEUGIAHAN) kết quả “Đồng ý” lập trong kỳ;
+        lượt trả = COUNT(CT_PHIEUTRA) có ngày trả trong kỳ; sách quá hạn = sách chưa trả có hạn trả (kể cả gia hạn) trước ngày cuối kỳ.</p>
+
+    <h2 class="in-muc">II. Chi tiết lượt mượn <small>(@N(d.LuotMuon.Count))</small></h2>
+    @if (d.LuotMuon.Count == 0) { <p class="in-trong">Không có lượt mượn trong kỳ.</p> }
+    else
+    {
+        <table class="in-bang">
+            <thead><tr><th>STT</th><th>Số phiếu mượn</th><th>Bạn đọc</th><th>Mã bản sách</th><th>Tên sách</th><th>Ngày mượn</th><th>Hạn trả</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < d.LuotMuon.Count; i++)
+                {
+                    var x = d.LuotMuon[i];
+                    <tr><td class="giua">@(i + 1)</td><td>@x.SoPMuon</td><td>@x.MaBanDoc – @x.HoTen</td><td>@x.MaBanSach</td><td>@x.TenSach</td><td class="giua">@D(x.NgayMuon)</td><td class="giua">@D(x.HanTra)</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <h2 class="in-muc">III. Chi tiết lượt gia hạn <small>(@N(d.LuotGiaHan.Count))</small></h2>
+    @if (d.LuotGiaHan.Count == 0) { <p class="in-trong">Không có lượt gia hạn trong kỳ.</p> }
+    else
+    {
+        <table class="in-bang">
+            <thead><tr><th>STT</th><th>Số phiếu gia hạn</th><th>Ngày lập</th><th>Bạn đọc</th><th>Mã bản sách</th><th>Tên sách</th><th>Kết quả</th><th>Hạn trả mới</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < d.LuotGiaHan.Count; i++)
+                {
+                    var x = d.LuotGiaHan[i];
+                    <tr><td class="giua">@(i + 1)</td><td>@x.SoPGiaHan</td><td class="giua">@D(x.NgayLapPGiaHan)</td><td>@x.HoTen</td><td>@x.MaBanSach</td><td>@x.TenSach</td><td>@x.KetQuaGiaHan</td><td class="giua">@(x.HanTraMoi is { } h ? D(h) : "—")</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <h2 class="in-muc">IV. Chi tiết lượt trả <small>(@N(d.LuotTra.Count))</small></h2>
+    @if (d.LuotTra.Count == 0) { <p class="in-trong">Không có lượt trả trong kỳ.</p> }
+    else
+    {
+        <table class="in-bang">
+            <thead><tr><th>STT</th><th>Số phiếu trả</th><th>Ngày trả</th><th>Bạn đọc</th><th>Mã bản sách</th><th>Tên sách</th><th>Tình trạng khi trả</th><th>Số ngày quá hạn</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < d.LuotTra.Count; i++)
+                {
+                    var x = d.LuotTra[i];
+                    <tr><td class="giua">@(i + 1)</td><td>@x.SoPTra</td><td class="giua">@D(x.NgayTra)</td><td>@x.HoTen</td><td>@x.MaBanSach</td><td>@x.TenSach</td><td>@x.TinhTrangTra</td><td class="phai">@N(x.SoNgayQuaHan)</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <h2 class="in-muc">V. Sách quá hạn tính đến ngày @D(d.DenNgay) <small>(@N(d.SachQuaHan.Count))</small></h2>
+    @if (d.SachQuaHan.Count == 0) { <p class="in-trong">Không có sách quá hạn.</p> }
+    else
+    {
+        <table class="in-bang">
+            <thead><tr><th>STT</th><th>Số phiếu mượn</th><th>Bạn đọc</th><th>Mã bản sách</th><th>Tên sách</th><th>Hạn trả hiện hành</th><th>Số ngày quá hạn</th></tr></thead>
+            <tbody>
+                @for (var i = 0; i < d.SachQuaHan.Count; i++)
+                {
+                    var x = d.SachQuaHan[i];
+                    <tr><td class="giua">@(i + 1)</td><td>@x.SoPMuon</td><td>@x.MaBanDoc – @x.HoTen</td><td>@x.MaBanSach</td><td>@x.TenSach</td><td class="giua">@D(x.HanTra)</td><td class="phai">@N(x.SoNgayQuaHan)</td></tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="in-ky">
+        <div><span>Xác nhận của Ban giám đốc thư viện</span><em>(Ký, ghi rõ họ tên)</em><b>&nbsp;</b></div>
+        <div><span>Người lập báo cáo</span><em>Ngày @ngayLap.Day.ToString("00") tháng @ngayLap.Month.ToString("00") năm @ngayLap.Year · (Ký, ghi rõ họ tên)</em><b>@nguoiLap</b></div>
+    </div>
+</article>
+<script type="application/json" id="duLieuBieuDoIn">@Html.Raw(bieuDo)</script>
+@section Scripts {
+    <script src="/lib/echarts/5.6.0/echarts.min.js"></script>
+    <script type="module" src="/js/in-bao-cao.js" asp-append-version="true"></script>
+}

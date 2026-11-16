@@ -16,6 +16,7 @@ builder.Services.AddScoped<XacThucNhanVienService>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<PhanQuyenService>();
 builder.Services.AddScoped<NhatKyService>();
+builder.Services.AddScoped<ThongKeN4Service>();
 builder.Services.Configure<SaoLuuOptions>(builder.Configuration.GetSection(SaoLuuOptions.Muc));
 builder.Services.AddSingleton<SaoLuuService>();
 builder.Services.AddHostedService<SaoLuuTuDongService>();

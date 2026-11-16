@@ -1,0 +1,57 @@
+@model BaoCaoVm
+@{
+    var muonTra = Model.Loai == "muon-tra";
+    var ma = muonTra ? "01.04.03" : "02.05.02";
+    var mau = muonTra ? "MB06" : "MB07";
+    var ten = muonTra ? "Lập Báo cáo tình hình mượn trả sách" : "Lập Báo cáo tình hình vi phạm mượn trả sách";
+    ViewData["Title"] = $"{ma} {ten}";
+    ViewData["NhomMenu"] = "Thống kê";
+}
+@section Css {
+    <link rel="stylesheet" href="/css/thong-ke.css" asp-append-version="true" />
+}
+<section class="qt-giao-dien" id="@(muonTra ? "frmBaoCaoMuonTra" : "frmBaoCaoViPham")" data-loai="@Model.Loai" data-mau="@mau"
+         data-tu-ngay="@Model.TuNgay" data-den-ngay="@Model.DenNgay" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">@(muonTra ? "Báo cáo tình hình mượn trả sách" : "Báo cáo tình hình vi phạm mượn trả sách")</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh">@ma</span>Nhận số liệu tổng hợp của kỳ, xem chi tiết báo cáo @mau (khổ A4, 01 bản – nơi nhận: Ban giám đốc thư viện) và in.</p>
+        </div>
+    </div>
+
+    <div class="qt-the">
+        <div class="qt-ky-bao-cao">
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpTuNgay">Từ ngày<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="dtpTuNgay" type="date" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpDenNgay">Đến ngày<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="dtpDenNgay" type="date" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtNgayLap">Ngày lập báo cáo</label>
+                <input class="qt-o" id="txtNgayLap" readonly />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtNguoiLap">Người lập</label>
+                <input class="qt-o" id="txtNguoiLap" readonly value="@User.TenNd()" />
+            </div>
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnXemBaoCao"><i class="bi bi-eye" aria-hidden="true"></i>Xem báo cáo</button>
+        </div>
+    </div>
+
+    <div class="qt-the">
+        <h2 class="qt-tieu-muc">Xem trước @mau</h2>
+        <p class="qt-xem-truoc-trong" id="khuChuaXem">Chọn kỳ báo cáo rồi bấm “Xem báo cáo” để nhận số liệu tổng hợp.</p>
+        <iframe class="qt-xem-truoc-in" id="khungXemTruoc" title="Xem trước báo cáo @mau" hidden></iframe>
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnIn" disabled><i class="bi bi-printer" aria-hidden="true"></i>In</button>
+            <a class="qt-nut qt-nut--phu" id="lnkMoBanIn" target="_blank" rel="noopener" hidden><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Mở bản in</a>
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/lap-bao-cao.js" asp-append-version="true"></script>
+}
