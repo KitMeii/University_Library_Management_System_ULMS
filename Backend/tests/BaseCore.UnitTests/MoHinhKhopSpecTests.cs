@@ -53,12 +53,13 @@ public class MoHinhKhopSpecTests
         Assert.Equal(cot.Where(c => c.LaKhoa).Select(c => c.Ten).OrderBy(x => x, StringComparer.Ordinal), khoa);
     }
 
+    /// <summary>8 bảng mở rộng file 02 (X01–X08) + X09 XULY_CHUYENDEN (GIA_DINH D47 – chờ chủ dự án xác nhận) → 27 bảng.</summary>
     [Fact]
-    public void Co8BangMoRong_File02()
+    public void Co9BangMoRong_File02_D47()
     {
-        var mo = new[] { "THELOAI", "DAUSACH", "DAUSACH_BANSACH", "TAIKHOAN_BANDOC", "PHIEUDATCHO", "YEUTHICH", "THONGBAO", "SOCHUNGTU" };
+        var mo = new[] { "THELOAI", "DAUSACH", "DAUSACH_BANSACH", "TAIKHOAN_BANDOC", "PHIEUDATCHO", "YEUTHICH", "THONGBAO", "SOCHUNGTU", "XULY_CHUYENDEN" };
         var bang = Model.GetEntityTypes().Select(e => e.GetTableName()).ToHashSet();
         Assert.All(mo, b => Assert.Contains(b, bang));
-        Assert.Equal(26, bang.Count);
+        Assert.Equal(27, bang.Count);
     }
 }

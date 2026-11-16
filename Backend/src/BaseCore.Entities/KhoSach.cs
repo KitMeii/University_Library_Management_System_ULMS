@@ -61,3 +61,22 @@ public class DauSachBanSach
     [Key, Column("ma_bansach"), MaxLength(10)] public string MaBanSach { get; set; } = null!;
     [Column("ma_dausach"), MaxLength(10), Required] public string MaDauSach { get; set; } = null!;
 }
+
+/// <summary>
+/// X09. XULY_CHUYENDEN (mở rộng – GIA_DINH D47): Bộ phận kho sách đã xử lý một dòng “chuyển đến” của dgvChuyenDen.
+/// 03.03.02: so_chungtu = so_ptra của dòng CT_PHIEUTRA trả Mất/Hư hỏng. Có dòng này thì bản sách không còn bị chặn
+/// cho mượn vì lần trả đó, kể cả khi sau này N3 sửa tình trạng về “Sẵn sàng” (sách hư hỏng đã sửa).
+/// </summary>
+[Table("XULY_CHUYENDEN", Schema = LuocDo.KhoSach)]
+public class XuLyChuyenDen
+{
+    /// <summary>Tiến trình 03.03.02 – cập nhật tình trạng sách bị mất, hư hỏng.</summary>
+    public const string MatHuHong = "03.03.02";
+
+    [Column("ma_bansach"), MaxLength(10)] public string MaBanSach { get; set; } = null!;
+    [Column("so_chungtu"), MaxLength(10)] public string SoChungTu { get; set; } = null!;
+    [Column("tientrinh"), MaxLength(10)] public string TienTrinh { get; set; } = null!;
+    [Column("tinhtrang_moi"), MaxLength(30), Required] public string TinhTrangMoi { get; set; } = null!;
+    [Column("ma_nd"), MaxLength(10), Required] public string MaNd { get; set; } = null!;
+    [Column("thoigian_xuly")] public DateTime ThoiGianXuLy { get; set; }
+}

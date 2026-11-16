@@ -1,0 +1,46 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@using ThuVien.Web.Areas.QuanTri.Models
+@{
+    Layout = "_LayoutIn";
+    var d = (BienBanIn)Model.DuLieu;
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    DauIn Dau(int lien) => new(Model, lien, "Bộ phận xử lý vi phạm", $"Thời gian lập: {d.ThoiGianLap:HH:mm} ngày {d.ThoiGianLap:dd/MM/yyyy}");
+}
+@* SPEC 6.4.4 – MB05 Biên bản vi phạm mượn trả sách: A4, 02 bản (01 giao Bạn đọc, 01 lưu) *@
+@for (var i = 0; i < Model.Lien.Length; i++)
+{
+    <article class="in-to">
+        <partial name="_DauIn" model="Dau(i)" />
+        <dl class="in-thong-tin">
+            <div><dt>Số phiếu mượn</dt><dd>@d.SoPMuon</dd></div>
+            <div><dt>Mã bạn đọc</dt><dd>@d.BanDoc.MaBanDoc</dd></div>
+            <div><dt>Họ và tên</dt><dd><strong>@d.BanDoc.HoTen</strong></dd></div>
+            <div><dt>Lớp/Đơn vị</dt><dd>@d.BanDoc.LopDonVi</dd></div>
+        </dl>
+        <p class="in-doan">Bạn đọc vi phạm quy định mượn trả sách của thư viện (quá hạn, mất hoặc hư hỏng sách). Các khoản thu như sau:</p>
+        <table class="in-bang">
+            <thead>
+                <tr><th>STT</th><th>Mã bản sách</th><th>Tên sách</th><th>Mã khoản thu</th><th>Nội dung</th><th>Số lượng</th><th>Đơn giá (đ)</th><th>Thành tiền (đ)</th></tr>
+            </thead>
+            <tbody>
+                @for (var j = 0; j < d.ChiTiet.Count; j++)
+                {
+                    var x = d.ChiTiet[j];
+                    <tr>
+                        <td class="giua">@(j + 1)</td><td>@x.MaBanSach</td><td>@x.TenSach</td><td>@x.MaKhoanThu</td><td>@x.NoiDungTt</td>
+                        <td class="phai">@x.SoLuong.ToString("N0", vn)</td><td class="phai">@x.DonGia.ToString("N0", vn)</td><td class="phai">@x.ThanhTien.ToString("N0", vn)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><td colspan="7" class="phai">Tổng tiền</td><td class="phai"><strong>@d.TongTien.ToString("N0", vn)</strong></td></tr>
+            </tfoot>
+        </table>
+        <p class="in-ghi-chu">Thành tiền = số lượng × đơn giá; tổng tiền = tổng thành tiền các khoản thu.</p>
+        <p class="in-doan">Hình thức thanh toán: <strong>@d.HtThanhToan</strong></p>
+        <div class="in-ky in-ky--ba">
+            <div><span>Bạn đọc</span><em>(Ký, ghi rõ họ tên)</em><b>@d.BanDoc.HoTen</b></div>
+            <div><span>Người lập biên bản</span><em>(Ký, ghi rõ họ tên)</em><b>@d.TenNd</b></div>
+        </div>
+    </article>
+}

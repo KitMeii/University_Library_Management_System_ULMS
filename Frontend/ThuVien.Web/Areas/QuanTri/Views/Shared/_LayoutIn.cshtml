@@ -1,0 +1,26 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@* Trang in chứng từ SPEC 6.4 (file 08 mục 3): khổ giấy theo mẫu (@page), mỗi liên một tờ. Thanh công cụ ẩn khi in. *@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@Model.MaMau @Model.So – @Model.TenMau</title>
+    <link rel="stylesheet" href="/css/fonts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/in.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/in-@(Model.KhoGiay.ToLowerInvariant()).css" asp-append-version="true" />
+</head>
+<body class="in in--@Model.KhoGiay.ToLowerInvariant()" data-ma-mau="@Model.MaMau">
+    <div class="in-thanh-cong-cu" role="toolbar" aria-label="Thao tác in">
+        <span><strong>@Model.MaMau</strong> · @Model.TenMau · Khổ giấy @Model.KhoGiay · @Model.Lien.Length bản in</span>
+        <span class="in-thanh-cong-cu__phai">
+            <button type="button" id="btnInLai" class="in-nut in-nut--chinh">In</button>
+            <button type="button" id="btnDongIn" class="in-nut">Đóng</button>
+        </span>
+    </div>
+    <main>
+        @RenderBody()
+    </main>
+    <script src="/js/in.js" asp-append-version="true"></script>
+</body>
+</html>

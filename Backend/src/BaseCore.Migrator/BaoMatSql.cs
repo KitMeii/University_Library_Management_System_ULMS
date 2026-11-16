@@ -34,7 +34,7 @@ public static class BaoMatSql
             if (string.IsNullOrWhiteSpace(mk))
                 throw new InvalidOperationException($"Thiếu mật khẩu login svc_{schema} (biến môi trường MatKhauDichVu__{schema}).");
             return mk.Replace("'", "''");
-        });
+        }, db.Database.GetDbConnection().Database);
         await db.Database.ExecuteSqlRawAsync(sql);
     }
 
@@ -42,8 +42,9 @@ public static class BaoMatSql
     public static string BienSqlCmd(string schema) => $"SVC_{schema.ToUpperInvariant()}_PASSWORD";
 
     /// <summary>Sinh lệnh tạo login/user/quyền; <paramref name="matKhauSql"/> trả mật khẩu đã escape (hoặc $(biến sqlcmd)).</summary>
-    public static string TaoSql(Func<string, string> matKhauSql)
+    public static string TaoSql(Func<string, string> matKhauSql, string tenCsdl = "ThuVien")
     {
+        tenCsdl = tenCsdl.Replace("]", "]]");
         var sql = new StringBuilder();
         foreach (var dv in DanhSach)
         {
@@ -51,7 +52,7 @@ public static class BaoMatSql
 
             sql.AppendLine($"""
                 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = N'{dv.Ten}')
-                    CREATE LOGIN [{dv.Ten}] WITH PASSWORD = N'{mkSql}', SID = {dv.Sid}, DEFAULT_DATABASE = [ThuVien], CHECK_POLICY = ON;
+                    CREATE LOGIN [{dv.Ten}] WITH PASSWORD = N'{mkSql}', SID = {dv.Sid}, DEFAULT_DATABASE = [{tenCsdl}], CHECK_POLICY = ON;
                 ELSE
                     ALTER LOGIN [{dv.Ten}] WITH PASSWORD = N'{mkSql}';
                 IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = N'{dv.Ten}')

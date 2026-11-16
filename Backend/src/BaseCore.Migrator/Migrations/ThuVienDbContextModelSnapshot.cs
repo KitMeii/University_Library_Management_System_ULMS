@@ -241,6 +241,49 @@ namespace BaseCore.Migrator.Migrations
                     b.ToTable("THELOAI", "khosach");
                 });
 
+            modelBuilder.Entity("BaseCore.Entities.KhoSach.XuLyChuyenDen", b =>
+                {
+                    b.Property<string>("MaBanSach")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("ma_bansach");
+
+                    b.Property<string>("SoChungTu")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("so_chungtu");
+
+                    b.Property<string>("TienTrinh")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("tientrinh");
+
+                    b.Property<string>("MaNd")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("ma_nd");
+
+                    b.Property<DateTime>("ThoiGianXuLy")
+                        .HasColumnType("datetime2(0)")
+                        .HasColumnName("thoigian_xuly");
+
+                    b.Property<string>("TinhTrangMoi")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)")
+                        .HasColumnName("tinhtrang_moi");
+
+                    b.HasKey("MaBanSach", "SoChungTu", "TienTrinh");
+
+                    b.HasIndex("MaNd");
+
+                    b.ToTable("XULY_CHUYENDEN", "khosach", t =>
+                        {
+                            t.HasCheckConstraint("CK_XULY_CHUYENDEN_tinhtrang_moi", "[tinhtrang_moi] IN (N'Sẵn sàng', N'Đang được mượn', N'Mất', N'Hư hỏng')");
+                        });
+                });
+
             modelBuilder.Entity("BaseCore.Entities.MuonTra.BanDoc", b =>
                 {
                     b.Property<string>("MaBanDoc")
@@ -1163,6 +1206,21 @@ namespace BaseCore.Migrator.Migrations
                     b.HasOne("BaseCore.Entities.KhoSach.KhuVuc", null)
                         .WithMany()
                         .HasForeignKey("MaKhuVuc")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseCore.Entities.KhoSach.XuLyChuyenDen", b =>
+                {
+                    b.HasOne("BaseCore.Entities.KhoSach.Sach", null)
+                        .WithMany()
+                        .HasForeignKey("MaBanSach")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BaseCore.Entities.QuanTri.NguoiDung", null)
+                        .WithMany()
+                        .HasForeignKey("MaNd")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

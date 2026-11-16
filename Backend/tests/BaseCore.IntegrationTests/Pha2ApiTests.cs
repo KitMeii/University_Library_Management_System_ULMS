@@ -290,8 +290,8 @@ public class Pha2ApiTests
         var tep = await ScalarAsync("""
             SELECT TOP 1 bmf.physical_device_name FROM msdb.dbo.backupset bs
             JOIN msdb.dbo.backupmediafamily bmf ON bs.media_set_id = bmf.media_set_id
-            WHERE bs.database_name = 'ThuVien' ORDER BY bs.backup_finish_date DESC
-            """);
+            WHERE bs.database_name = @csdl ORDER BY bs.backup_finish_date DESC
+            """, ("@csdl", MoiTruong.TenCsdl));
         Assert.Contains(t.GetProperty("thongBao").GetString()!.Split(": ")[1], (string)tep!);
         // Dọn tệp kiểm thử – thư mục sao lưu có thể là thư mục Backup dùng chung của SQL Server cài sẵn (D44)
         await ScalarAsync("EXEC master.sys.xp_delete_files @tep;", ("@tep", (string)tep!));

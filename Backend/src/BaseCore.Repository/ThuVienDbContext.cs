@@ -32,6 +32,7 @@ public class ThuVienDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<TheLoai> TheLoai => Set<TheLoai>();
     public DbSet<DauSach> DauSach => Set<DauSach>();
     public DbSet<DauSachBanSach> DauSachBanSach => Set<DauSachBanSach>();
+    public DbSet<XuLyChuyenDen> XuLyChuyenDen => Set<XuLyChuyenDen>();
     // muontra
     public DbSet<BanDoc> BanDoc => Set<BanDoc>();
     public DbSet<PhieuMuon> PhieuMuon => Set<PhieuMuon>();
@@ -132,6 +133,13 @@ public class ThuVienDbContext(DbContextOptions options) : DbContext(options)
         {
             e.HasOne<Sach>().WithOne().HasForeignKey<DauSachBanSach>(x => x.MaBanSach).OnDelete(DeleteBehavior.Restrict);
             e.HasOne<DauSach>().WithMany().HasForeignKey(x => x.MaDauSach).OnDelete(DeleteBehavior.Restrict);
+        });
+        m.Entity<XuLyChuyenDen>(e =>
+        {
+            e.HasKey(x => new { x.MaBanSach, x.SoChungTu, x.TienTrinh });
+            e.HasOne<Sach>().WithMany().HasForeignKey(x => x.MaBanSach).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne<NguoiDung>().WithMany().HasForeignKey(x => x.MaNd).OnDelete(DeleteBehavior.Restrict);
+            Check(e, "CK_XULY_CHUYENDEN_tinhtrang_moi", Trong("tinhtrang_moi", MienGiaTri.TinhTrangSach.TatCa));
         });
     }
 

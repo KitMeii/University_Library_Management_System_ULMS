@@ -48,3 +48,150 @@ Chỉ ghi các quyết định đã được chủ dự án duyệt. Mỗi mục
 | D43 | 16/11/2026 | Tham số nghiệp vụ SPEC mục 4 đặt ở `ThuVien:QuyDinh` (số ngày/số bản theo đối tượng, gia hạn 7 ngày × 1 lần, mật khẩu mặc định) – dùng chung các service | Phát sinh Pha 2 – duyệt 16/11/2026 |
 | D2 | 15/11/2026 | Git: remote `https://github.com/KitMeii/University_Library_Management_System_ULMS.git`, nhánh `main`; kiểm tra bí mật trước commit đầu; xóa phần thừa trong commit riêng; commit + push sau mỗi pha được duyệt | Yêu cầu khởi động của chủ dự án |
 | D44 | 16/11/2026 | **CSDL dùng SQL Server cài sẵn trên máy** (SSMS, `TunKittt`, SQL Server Authentication, `sa`) theo yêu cầu chủ dự án: `.env` đặt `DB_SERVER=host.docker.internal,1433`, `COMPOSE_PROFILES=` (không chạy container SQL Server); vẫn giữ cách chạy SQL Server trong Docker (`COMPOSE_PROFILES=sql-docker`, `DB_SERVER=sqlserver`). Mật khẩu sa chỉ nằm trong `.env` (không commit). Thư mục sao lưu: `SaoLuu:ThuMuc` trống → `InstanceDefaultBackupPath` của SQL Server (Windows: `C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\Backup`), ghép đường dẫn đúng dấu phân cách. Thư mục `Database/` chứa kịch bản `.sql` (lược đồ idempotent, dữ liệu khởi tạo, login service) **sinh từ migrator** (`scripts/xuat-sql.sh`) để tạo CSDL bằng SSMS | Yêu cầu chủ dự án 16/11/2026 |
+| D45 | 16/11/2026 | **Điều kiện gia hạn** (SPEC 6.2.2 chỉ ghi “kiểm tra điều kiện gia hạn”): (1) số lần gia hạn được đồng ý của bản sách < `SoLanGiaHanToiDa` (1); (2) ngày đề nghị ≤ hạn trả hiện hành (đã quá hạn thì không gia hạn); (3) thẻ bạn đọc còn hạn đến hạn trả mới; (4) bạn đọc không còn biên bản chưa thanh toán. Không đạt → “Không đồng ý” kèm lý do hệ thống ghi; nhân viên được chủ động ghi “Không đồng ý” kèm lý do, không được ép “Đồng ý” khi không đạt. Hạn trả hiện hành = hạn mới nhất của các lần gia hạn “Đồng ý” | Phát sinh Pha 3 – duyệt 16/11/2026 |
+| D46 | 16/11/2026 | Trả sách nhiều lần (một Phiếu trả/Phiếu mượn): `PHIEUTRA.ngaytra` = ngày trả gần nhất; `so_ngay_quahan` của từng dòng tính theo ngày trả của lần đó. Ngày trả ≥ ngày mượn và ≤ hôm nay. Dòng đã lập biên bản vi phạm không sửa được | Phát sinh Pha 3 – duyệt 16/11/2026 |
+| D47 | 16/11/2026 | **Bản sách chỉ bị chặn cho mượn khi**: (a) đang thuộc phiếu mượn chưa trả, **hoặc** (b) lần trả gần nhất là Mất/Hư hỏng mà **Bộ phận kho sách chưa xử lý** (03.03.02). “Đã xử lý” được ghi ở bảng mở rộng **X09 `khosach.XULY_CHUYENDEN`** (*bảng mới ngoài 8 bảng mở rộng của file 02 – chờ chủ dự án xác nhận*; ma_bansach, so_chungtu = so_ptra, tientrinh = 03.03.02, tinhtrang_moi, ma_nd, thoigian_xuly) khi N3 bấm `btnCapNhatTT` trên dòng 03.03.02 **hoặc** đổi tình trạng bản sách bằng `btnSua`. Sau đó N3 sửa sách xong đặt lại “Sẵn sàng” thì **mượn lại được bình thường**, dòng 03.03.02 không xuất hiện lại (không còn suy “đã xử lý” từ SACH.tinhtrang). Dòng 03.03.02 chỉ hiện ở dgvChuyenDen sau khi N2 lập biên bản (02.03.01 → 03.03.02); từ lúc trả đến lúc N3 xử lý, bản sách vẫn bị chặn. Migration ghi nhận lùi các lần trả Mất/Hư hỏng đã được cập nhật SACH tương ứng. Khóa ứng dụng theo bản sách (`sp_getapplock`) trong transaction lưu phiếu để hai người không cùng cho mượn một bản. Không đáp ứng → gợi ý bản sách cùng tên, cùng tác giả còn sẵn (đổi bản sách – TT017) | Phát sinh Pha 3 – chủ dự án sửa 16/11/2026 (bỏ hạn chế sách hư hỏng đã sửa không mượn lại được) |
+| D48 | 16/11/2026 | Form chứng từ trên web: thêm ô nhập số chứng từ cạnh `btnTimPhieu`/`btnTimBienBan` (`txtSoPhieu`, `txtSoBienBan` – SPEC ghi “nhập so_… để mở phiếu đã lưu” nhưng không đặt tên control); 6.2.4 thêm `cboBanSach`, `txtSoLuong` (chọn ma_bansach, soluong của dòng CT_BIENBAN) và lưới `dgvTruongHop` (TT075 – trường hợp vi phạm chờ lập biên bản, nhấp đúp để mở). Dòng chi tiết đã lưu chỉ sửa được, không bỏ khỏi chứng từ (SPEC: “bỏ dòng chưa lưu”); bổ sung bản sách chỉ vào Phiếu mượn lập trong ngày. btnIn: lưu (một API/transaction) → hộp tiến trình % → in trong khung ẩn trang `/quan-tri/in/…` (không mở tab, không bị chặn popup) + liên kết “Mở bản in” để in lại; mỗi mẫu in đủ **02 liên** trên 2 tờ (A5 cho MB02–MB04, A4 cho MB05), tiêu đề “THƯ VIỆN TRƯỜNG ĐẠI HỌC …” lấy `ThuVien:ThongTin:TenTruong` (để trống/[…] thì in dấu chấm). **Danh sách đầy đủ control thêm ngoài SPEC theo từng giao diện: mục “Phụ lục A” cuối tệp** | Phát sinh Pha 3 – duyệt 16/11/2026 |
+| D49 | 16/11/2026 | **Kiểm thử chạy trên CSDL riêng `ThuVien_Test`**, không đụng CSDL ThuVien: `scripts/test-docker.sh` dựng bộ hệ thống kiểm thử riêng (project Compose `ulms-test`, mạng `thuvien-test-net`, web cổng 18080, `DB_NAME=ThuVien_Test`), migrator xóa – tạo lại `ThuVien_Test` + dữ liệu mẫu ở mỗi lần chạy (`ThuVien__TaoLaiCsdl`, chỉ chấp nhận tên CSDL kết thúc `_Test`), chạy kiểm thử, rồi gỡ bộ kiểm thử (`down -v`). Tệp sao lưu do kiểm thử tạo ghi vào **`SAO_LUU_THU_MUC_KIEM_THU`** (máy này: thư mục tạm riêng của dịch vụ SQL Server `C:\Windows\ServiceProfiles\MSSQLSERVER\AppData\Local\Temp\ULMS_KiemThu`), **không ghi vào thư mục Backup thật**; kiểm thử sao lưu tự xóa tệp của nó, cuối mỗi lần chạy migrator dọn mọi tệp `*ThuVien_Test_*.bak`, `KiemTra_*.bak` còn lại (`--don-sao-luu-kiem-thu`). Bộ ảnh giao diện chụp trước, trên CSDL vừa tạo lại | Yêu cầu chủ dự án 16/11/2026 |
+| D50 | 16/11/2026 | **Pha 4 – Tổng quan N1**: “Top 10 sách được mượn nhiều” **tạm tính theo `SACH.ten_sach`** (gộp các bản sách cùng tên) cho tới khi có đầu sách ở cổng bạn đọc; **biểu đồ và KPI đặt chỗ ẩn** đến Pha 6 (Quầy đặt chỗ) thì bật lại | Quyết định chủ dự án 16/11/2026 |
+
+## Phụ lục A – Control thêm ngoài SPEC (theo từng giao diện, để bổ sung hồ sơ Bài 4)
+
+Đối chiếu tự động: id HTML của mỗi giao diện web ↔ tên control trong bảng “Control và xử lý” của SPEC mục 6 (cập nhật 16/11/2026, sau Pha 3).
+Mọi control SPEC đã nêu tên đều có trên web với đúng id. Cột **Nhóm**:
+- **Đặt tên** – SPEC có mô tả (“các ô nhập”, “hiển thị hoten, doituong”, trường ở “Bảng dữ liệu sử dụng”) nhưng không ghi tên control; web đặt tên theo quy ước tiền tố của SPEC.
+- **Thêm mới** – chức năng/phần tử không có trong SPEC, thêm để dùng được trên web (D48 và các quyết định ghi kèm).
+
+Loại: `TextBox` = ô nhập văn bản, `ComboBox` = hộp chọn, `DatePicker` = chọn ngày (D42), `DataGridView` = lưới, `Label` = nhãn hiển thị số liệu, `Form` = khung nhập, `Button`, `Tab`, `Image`.
+
+### 6.1.1 Danh mục sách (`frmDanhMucSach`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `frmChiTiet` | Form | Khung chứa các ô nhập chi tiết bản sách (chỉ đọc khi xem, mở khi Thêm/Sửa) | Đặt tên |
+| `txtMaBanSach` | TextBox | ma_bansach – C(10); khóa khi Sửa | Đặt tên |
+| `txtTenSach` | TextBox | ten_sach – C(200) | Đặt tên |
+| `txtTacGia` | TextBox | tacgia – C(100) | Đặt tên |
+| `cboKhuVuc` | ComboBox | ma_khuvuc – chọn từ KHUVUC (hiện mã – vị trí) | Đặt tên |
+| `cboTinhTrang` | ComboBox | tinhtrang – {Sẵn sàng, Đang được mượn, Mất, Hư hỏng}, mặc định “Sẵn sàng” | Đặt tên |
+
+### 6.1.2 Danh mục khoản thu (`frmDanhMucKhoanThu`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `frmChiTiet` | Form | Khung chứa các ô nhập chi tiết khoản thu | Đặt tên |
+| `txtMaKhoanThu` | TextBox | ma_khoanthu – C(10); khóa khi Sửa | Đặt tên |
+| `txtNoiDungTT` | TextBox | noidung_tt – C(100) | Đặt tên |
+| `txtDonGia` | TextBox | dongia – N(10) > 0, hiển thị phân nhóm hàng nghìn | Đặt tên |
+
+### 6.1.3 Danh mục Bạn đọc (`frmDanhMucBanDoc`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `frmChiTiet` | Form | Khung chứa các ô nhập thông tin Thẻ Bạn đọc | Đặt tên |
+| `txtMaBanDoc` | TextBox | ma_bandoc – C(10); gợi ý BD#### khi Thêm (D38); khóa khi Sửa | Đặt tên |
+| `txtHoTen` | TextBox | hoten – C(50) | Đặt tên |
+| `cboDoiTuong` | ComboBox | doituong – {Sinh viên, Học viên, Cán bộ} | Đặt tên |
+| `txtMaSvHvCb` | TextBox | ma_svhvcb – C(15) | Đặt tên |
+| `txtLopDonVi` | TextBox | lop_donvi – C(50) | Đặt tên |
+| `dtpNgaySinh` | DatePicker | ngaysinh – dd/MM/yyyy, nhỏ hơn hôm nay | Đặt tên |
+| `txtSoTheBD` | TextBox | so_thebd – C(15) | Đặt tên |
+| `txtDienThoaiEmail` | TextBox | dienthoai_email – C(50), không bắt buộc | Đặt tên |
+| `dtpHsdTuNgay` | DatePicker | hsd_tungay | Đặt tên |
+| `dtpHsdDenNgay` | DatePicker | hsd_denngay > hsd_tungay | Đặt tên |
+| `imgAnh` | Image | Xem ảnh thẻ (WebP đã thu nhỏ – D35) | Đặt tên |
+| `txtAnh` | TextBox (ẩn) | anh – đường dẫn ảnh sau khi tải lên | Đặt tên |
+| `dgvSachDangMuon` | DataGridView | Danh sách sách Bạn đọc đang mượn sau khi tìm theo ma_svhvcb (SPEC: “hiển thị thông tin Bạn đọc và danh sách sách đang mượn”) | Đặt tên |
+
+### 6.1.4 Danh mục khu vực lưu trữ (`frmDanhMucKhuVuc`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `frmChiTiet` | Form | Khung chứa các ô nhập chi tiết khu vực | Đặt tên |
+| `txtMaKhuVuc` | TextBox | ma_khuvuc – C(10); khóa khi Sửa | Đặt tên |
+| `txtViTri` | TextBox | vitri – C(50) | Đặt tên |
+| `cboLoaiKhuVuc` | ComboBox | loai_khuvuc – {Kệ mở, Kho} | Đặt tên |
+
+### 6.2.1 Lập Phiếu mượn sách (`frmLapPhieuMuon`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `txtSoPhieu` | TextBox | Nhập so_pmuon để mở phiếu đã lưu bằng `btnTimPhieu` (SPEC: “nhập so_pmuon để mở phiếu đã lưu” – không ghi tên ô) | Thêm mới (D48) |
+| `txtSoPMuon` | TextBox (chỉ đọc) | so_pmuon của phiếu đang lập/sửa (“Tự sinh khi lưu” với phiếu mới) | Đặt tên |
+| `txtNgayLap` | TextBox (chỉ đọc) | ngaylap_pmuon | Đặt tên |
+| `txtNguoiLap` | TextBox (chỉ đọc) | ma_nd, ten_nd lấy từ tài khoản đăng nhập | Đặt tên |
+| `txtMaBanDoc` | TextBox (chỉ đọc) | ma_bandoc của Bạn đọc tìm được | Đặt tên |
+| `txtHoTen` | TextBox (chỉ đọc) | hoten (SPEC: “hiển thị hoten, doituong”) | Đặt tên |
+| `txtDoiTuong` | TextBox (chỉ đọc) | doituong | Đặt tên |
+| `txtLopDonVi` | TextBox (chỉ đọc) | lop_donvi (in trên MB02) | Đặt tên |
+| `lblTongSoBan` | Label | Tổng số bản sách mượn = số dòng dgvChiTiet (MB02) | Thêm mới |
+| `lblHanTra` | Label | Hạn trả của các bản mượn hôm nay (= ngaymuon + số ngày theo đối tượng) | Thêm mới |
+
+### 6.2.2 Lập Phiếu gia hạn sách (`frmLapPhieuGiaHan`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `txtSoPhieu` | TextBox | Nhập so_pgiahan để mở phiếu đã lưu bằng `btnTimPhieu` | Thêm mới (D48) |
+| `txtSoPGiaHan` | TextBox (chỉ đọc) | so_pgiahan (tự sinh khi lưu) | Đặt tên |
+| `txtNgayLap` | TextBox (chỉ đọc) | ngaylap_pgiahan | Đặt tên |
+| `txtNguoiLap` | TextBox (chỉ đọc) | ma_nd, ten_nd | Đặt tên |
+| `dtpNgayDeNghi` | DatePicker | ngay_denghi – ngày Bạn đọc đề nghị gia hạn | Đặt tên |
+| `txtMaBanDoc`, `txtHoTen`, `txtMaSvHvCb` | TextBox (chỉ đọc) | Bạn đọc của Phiếu mượn sách | Đặt tên |
+| `lblDongY` | Label | Số bản sách “Đồng ý” gia hạn | Thêm mới |
+| `lblKhongDongY` | Label | Số bản sách “Không đồng ý” | Thêm mới |
+| `lblSoNgayGiaHan` | Label | Số ngày gia hạn thêm theo quy định (7) | Thêm mới |
+
+### 6.2.3 Lập Phiếu trả sách (`frmLapPhieuTra`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `txtSoPhieu` | TextBox | Nhập so_ptra để mở phiếu đã lưu bằng `btnTimPhieu` | Thêm mới (D48) |
+| `txtSoPTra` | TextBox (chỉ đọc) | so_ptra (tự sinh khi lưu) | Đặt tên |
+| `txtNgayLap` | TextBox (chỉ đọc) | ngaylap_ptra | Đặt tên |
+| `txtNguoiLap` | TextBox (chỉ đọc) | ma_nd, ten_nd | Đặt tên |
+| `dtpNgayTra` | DatePicker | ngaytra – ≥ ngày mượn, ≤ hôm nay (D46) | Đặt tên |
+| `txtMaBanDoc`, `txtHoTen`, `txtMaSvHvCb` | TextBox (chỉ đọc) | Bạn đọc của Phiếu mượn sách | Đặt tên |
+| `lblSoTra` | Label | Số bản sách trả lần này | Thêm mới |
+| `lblViPham` | Label | Số trường hợp vi phạm (quá hạn, mất, hư hỏng) sẽ chuyển Bộ phận xử lý vi phạm | Thêm mới |
+
+### 6.2.4 Lập Biên bản vi phạm (`frmLapBienBan`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `dgvTruongHop` | DataGridView | Trường hợp vi phạm chờ lập biên bản (TT075 – thông tin Bộ phận mượn trả chuyển sang); nhấp đúp để nạp so_pmuon | Thêm mới (D48) |
+| `txtSoBienBan` | TextBox | Nhập so_bienban để mở biên bản đã lưu bằng `btnTimBienBan` (sửa, ghi nhận thanh toán) | Thêm mới (D48) |
+| `dgvSachViPham` | DataGridView | Các bản sách vi phạm của phiếu mượn (SPEC: “nạp Bạn đọc và các bản sách vi phạm”) – quá hạn, mất, hư hỏng | Đặt tên |
+| `cboBanSach` | ComboBox | ma_bansach của dòng CT_BIENBAN (chọn trong các bản sách vi phạm) | Thêm mới (D48) |
+| `txtSoLuong` | TextBox (số) | soluong > 0 của dòng CT_BIENBAN (quá hạn: gợi ý = số ngày quá hạn) | Thêm mới (D48) |
+| `lblDonGia` | Label | dongia của khoản thu đang chọn (SPEC cboKhoanThu “lấy noidung_tt, dongia”) | Đặt tên |
+| `lblTongTien` | Label | tong_tien = SUM(thanh_tien) | Đặt tên |
+| `txtThoiGianLap` | TextBox (chỉ đọc) | thoigian_lap (tự sinh khi lưu) | Đặt tên |
+| `txtNguoiLap` | TextBox (chỉ đọc) | ma_nd, ten_nd | Đặt tên |
+| `txtMaBanDoc`, `txtHoTen`, `txtLopDonVi` | TextBox (chỉ đọc) | Bạn đọc vi phạm | Đặt tên |
+
+### 6.3.1 Đăng nhập (`frmDangNhap`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `btnHienMatKhau` | Button | Hiện/ẩn mật khẩu đang gõ (trợ năng, điện thoại) | Thêm mới |
+| `btnXacNhanThoat` | Button | Nút “Thoát” trong hộp xác nhận của `btnThoat` (web không đóng được cửa sổ – về trang chủ) | Thêm mới |
+
+### 6.3.2 Quản lý tài khoản người dùng (`frmTaiKhoan`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `frmChiTiet` | Form | Khung chứa các ô nhập tài khoản | Đặt tên |
+| `txtMaND` | TextBox (chỉ đọc) | ma_nd – hệ thống tự sinh ND#### (D38) | Đặt tên |
+| `txtMaNDGoiY` | Label | Dòng gợi ý “Hệ thống tự sinh.” dưới `txtMaND` | Thêm mới |
+| `txtTenND` | TextBox | ten_nd | Đặt tên |
+| `txtTenDangNhap` | TextBox | ten_dangnhap | Đặt tên |
+| `txtChucVu` | TextBox | chucvu | Đặt tên |
+| `txtSDT` | TextBox | sdt | Đặt tên |
+| `cboTinhTrang` | ComboBox | tinhtrang tài khoản (Hoạt động/Khóa) | Đặt tên |
+
+### 6.3.3 Cấp quyền cho tài khoản (`frmPhanQuyen`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `txtLocQuyen` | TextBox (tìm) | Lọc danh sách quyền theo mã hoặc tên (danh sách quyền dài, ~150 dòng) | Thêm mới |
+| `cboLoaiQuyen` | ComboBox | Lọc danh sách quyền theo loại quyền (giá trị lấy từ dữ liệu QUYEN) | Thêm mới |
+
+### 6.3.4 Theo dõi nhật ký hệ thống (`frmNhatKy`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `tabDangNhap` | Tab | Chuyển sang 04.00.03 Lịch sử đăng nhập | Thêm mới |
+| `tabHoatDong` | Tab | Chuyển sang 04.00.08 Nhật ký hoạt động | Thêm mới |
+
+### 6.3.5 Sao lưu và phục hồi dữ liệu (`frmSaoLuu`)
+| Control | Loại | Mục đích | Nhóm |
+|---|---|---|---|
+| `btnChonXong` | Button | Nút “Chọn” trong hộp duyệt thư mục/tệp .bak của `btnChon` (web không có hộp chọn thư mục của máy chủ SQL – D20) | Thêm mới |

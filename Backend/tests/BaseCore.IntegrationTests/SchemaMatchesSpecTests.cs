@@ -50,12 +50,13 @@ public class SchemaMatchesSpecTests
         }
     }
 
+    /// <summary>8 bảng mở rộng của file 02 (X01–X08) + X09 XULY_CHUYENDEN (GIA_DINH D47 – chờ chủ dự án xác nhận); không có bảng lạ.</summary>
     [Fact]
-    public async Task Co8BangMoRong_VaKhongCoBangLa()
+    public async Task Co9BangMoRong_VaKhongCoBangLa()
     {
         var bang = (await DocCotAsync()).Select(c => c.Bang).ToHashSet();
         var mong = SpecDoc.BangGoc().Keys
-            .Concat(["THELOAI", "DAUSACH", "DAUSACH_BANSACH", "TAIKHOAN_BANDOC", "PHIEUDATCHO", "YEUTHICH", "THONGBAO", "SOCHUNGTU"])
+            .Concat(["THELOAI", "DAUSACH", "DAUSACH_BANSACH", "TAIKHOAN_BANDOC", "PHIEUDATCHO", "YEUTHICH", "THONGBAO", "SOCHUNGTU", "XULY_CHUYENDEN"])
             .ToHashSet();
         Assert.Equal(mong.Order(), bang.Order());
     }

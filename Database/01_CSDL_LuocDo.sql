@@ -960,3 +960,56 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116064648_XuLyChuyenDen'
+)
+BEGIN
+    CREATE TABLE [khosach].[XULY_CHUYENDEN] (
+        [ma_bansach] nvarchar(10) NOT NULL,
+        [so_chungtu] nvarchar(10) NOT NULL,
+        [tientrinh] nvarchar(10) NOT NULL,
+        [tinhtrang_moi] nvarchar(30) NOT NULL,
+        [ma_nd] nvarchar(10) NOT NULL,
+        [thoigian_xuly] datetime2(0) NOT NULL,
+        CONSTRAINT [PK_XULY_CHUYENDEN] PRIMARY KEY ([ma_bansach], [so_chungtu], [tientrinh]),
+        CONSTRAINT [CK_XULY_CHUYENDEN_tinhtrang_moi] CHECK ([tinhtrang_moi] IN (N'Sẵn sàng', N'Đang được mượn', N'Mất', N'Hư hỏng')),
+        CONSTRAINT [FK_XULY_CHUYENDEN_NGUOIDUNG_ma_nd] FOREIGN KEY ([ma_nd]) REFERENCES [quantri].[NGUOIDUNG] ([ma_nd]) ON DELETE NO ACTION,
+        CONSTRAINT [FK_XULY_CHUYENDEN_SACH_ma_bansach] FOREIGN KEY ([ma_bansach]) REFERENCES [khosach].[SACH] ([ma_bansach]) ON DELETE NO ACTION
+    );
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116064648_XuLyChuyenDen'
+)
+BEGIN
+    CREATE INDEX [IX_XULY_CHUYENDEN_ma_nd] ON [khosach].[XULY_CHUYENDEN] ([ma_nd]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116064648_XuLyChuyenDen'
+)
+BEGIN
+    INSERT INTO [khosach].[XULY_CHUYENDEN] (ma_bansach, so_chungtu, tientrinh, tinhtrang_moi, ma_nd, thoigian_xuly)
+    SELECT ct.ma_bansach, ct.so_ptra, N'03.03.02', s.tinhtrang, pt.ma_nd, CAST(SYSDATETIME() AS datetime2(0))
+    FROM [muontra].[CT_PHIEUTRA] ct
+    JOIN [muontra].[PHIEUTRA] pt ON pt.so_ptra = ct.so_ptra
+    JOIN [khosach].[SACH] s ON s.ma_bansach = ct.ma_bansach
+    WHERE ct.tinhtrang_tra IN (N'Mất', N'Hư hỏng') AND s.tinhtrang = ct.tinhtrang_tra;
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261116064648_XuLyChuyenDen'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261116064648_XuLyChuyenDen', N'10.0.14');
+END;
+
+COMMIT;
+GO
+

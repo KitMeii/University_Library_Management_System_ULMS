@@ -75,7 +75,7 @@ public sealed class BanDocService(MuonTraDbContext db, IClock clock, TraCuuMuonT
             lyDo.Add(bd.HsdDenNgay < homNay ? $"Thẻ bạn đọc đã hết hạn từ {bd.HsdDenNgay:dd/MM/yyyy}." : $"Thẻ bạn đọc chỉ có hiệu lực từ {bd.HsdTuNgay:dd/MM/yyyy}.");
         var quaHan = dangMuon.Where(x => x.SoNgayQuaHan > 0).ToList();
         if (quaHan.Count > 0) lyDo.Add($"Còn {quaHan.Count} sách mượn quá hạn chưa trả.");
-        if (viPham.Count > 0) lyDo.Add($"Còn {viPham.Count} biên bản vi phạm chưa thanh toán ({viPham.Sum(v => v.TongTien):N0} đ).");
+        if (viPham.Count > 0) lyDo.Add($"Còn {viPham.Count} biên bản vi phạm chưa thanh toán ({viPham.Sum(v => v.TongTien).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))} đ).");
         if (dangMuon.Count >= toiDa) lyDo.Add($"Đã mượn đủ số bản tối đa ({toiDa} bản đối với {bd.DoiTuong.ToLowerInvariant()}).");
 
         return new DieuKienMuonDto(lyDo.Count == 0, lyDo, conHan, dangMuon.Count, toiDa, dangMuon, viPham);

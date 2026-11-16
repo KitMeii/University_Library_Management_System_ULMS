@@ -14,6 +14,10 @@ builder.Services.AddThuVienRateLimit(builder.Configuration);
 builder.Services.AddScoped<XacThucBanDocService>();
 builder.Services.AddScoped<TraCuuMuonTra>();
 builder.Services.AddScoped<BanDocService>();
+builder.Services.AddScoped<ChungTuChung>();
+builder.Services.AddScoped<PhieuMuonService>();
+builder.Services.AddScoped<PhieuGiaHanService>();
+builder.Services.AddScoped<PhieuTraService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

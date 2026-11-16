@@ -13,7 +13,7 @@ namespace BaseCore.Migrator;
 /// <summary>
 /// DỮ LIỆU MẪU – chỉ nạp ở Development (SPEC mục 7, file 02 mục 4). Tên người, tên sách là dữ liệu demo.
 /// Pha 1: tài khoản nhân viên, khu vực, thể loại, đầu sách, bản sách, bạn đọc + tài khoản cổng, khoản thu.
-/// Lịch sử phiếu mượn/gia hạn/trả/biên bản nạp ở Pha 3 (dùng chính quy tắc nghiệp vụ); đặt chỗ ở Pha 6.
+/// Lịch sử phiếu mượn/gia hạn/trả/biên bản: <see cref="DuLieuMauChungTu"/> (Pha 3); đặt chỗ ở Pha 6.
 /// </summary>
 public static class DuLieuMau
 {

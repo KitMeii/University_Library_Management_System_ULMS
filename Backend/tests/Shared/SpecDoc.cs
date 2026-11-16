@@ -29,6 +29,36 @@ public static partial class SpecDoc
         throw new FileNotFoundException("Không tìm thấy " + duongDanTuGoc + " (đặt biến ULMS_ROOT = thư mục gốc dự án).");
     }
 
+    /// <summary>
+    /// Trạng thái nút trong bảng “Control và xử lý” của một giao diện SPEC mục 6 (ví dụ "6.2.1"):
+    /// control đầu dòng (ví dụ "frmLapPhieuMuon (Load)", "btnIn") → danh sách Enable = True / Enable = False.
+    /// </summary>
+    public static IReadOnlyDictionary<string, (string[] Bat, string[] Tat)> TrangThaiNut(string muc)
+    {
+        var dong = NoiDung.Value.Split('\n');
+        var batDau = Array.FindIndex(dong, l => l.StartsWith("### " + muc + " ", StringComparison.Ordinal));
+        if (batDau < 0) throw new InvalidOperationException("Không thấy mục SPEC " + muc);
+        var kq = new Dictionary<string, (string[], string[])>(StringComparer.Ordinal);
+        for (var i = batDau + 1; i < dong.Length && !dong[i].StartsWith("### ", StringComparison.Ordinal); i++)
+        {
+            var m = DongControl().Match(dong[i]);
+            if (!m.Success) continue;
+            var bat = new List<string>();
+            var tat = new List<string>();
+            foreach (Match e in DanhSachEnable().Matches(m.Groups[2].Value))
+            {
+                var ds = e.Groups[1].Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => x.Split(' ').Last()).Where(x => Regex.IsMatch(x, "^(txt|btn|cbo|dgv|dtp|rdo|chk)[A-Za-z]+$"));
+                (e.Groups[2].Value == "True" ? bat : tat).AddRange(ds);
+            }
+            if (bat.Count + tat.Count > 0) kq[m.Groups[1].Value] = (bat.ToArray(), tat.ToArray());
+        }
+        return kq;
+    }
+
+    [GeneratedRegex(@"^\s*\|\s*`([^`]+)`\s*\|(.*)$")] private static partial Regex DongControl();
+    [GeneratedRegex(@"([A-Za-z, ]+?)\s*→\s*Enable\s*=\s*(True|False)")] private static partial Regex DanhSachEnable();
+
     /// <summary>18 bảng SPEC mục 2 (tên bảng → danh sách cột).</summary>
     public static IReadOnlyDictionary<string, List<CotSpec>> BangGoc()
     {

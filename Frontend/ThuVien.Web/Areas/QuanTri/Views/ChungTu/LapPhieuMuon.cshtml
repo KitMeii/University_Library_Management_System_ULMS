@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "01.01.03 Lập Phiếu mượn sách";
+    ViewData["NhomMenu"] = "Mượn trả sách";
+}
+<section class="qt-giao-dien" id="frmLapPhieuMuon" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Lập Phiếu mượn sách</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh">01.01.03</span>Lập Phiếu mượn sách mới hoặc bổ sung bản sách vào phiếu lập trong ngày; sửa phiếu đã lưu; in Phiếu mượn sách (MB02).</p>
+        </div>
+    </div>
+
+    <partial name="_ThanhBuoc" model='new[] { "Tìm Bạn đọc hoặc phiếu đã lưu", "Thêm bản sách", "In Phiếu mượn sách" }' />
+
+    <div class="qt-the">
+        <div class="qt-tim-chung-tu">
+            <div>
+                <label class="qt-nhan" for="txtMaSV">Mã SV/HV/CB của Bạn đọc<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <div class="qt-nhom-tim">
+                    <input class="qt-o" id="txtMaSV" maxlength="15" autocomplete="off" placeholder="Ví dụ SV22000001" />
+                    <button type="button" class="qt-nut qt-nut--chinh" id="btnTimBanDoc"><i class="bi bi-search" aria-hidden="true"></i>Tìm Bạn đọc</button>
+                </div>
+            </div>
+            <span class="qt-tim-chung-tu__hoac">hoặc</span>
+            <div>
+                <label class="qt-nhan" for="txtSoPhieu">Số Phiếu mượn sách đã lưu (để sửa)</label>
+                <div class="qt-nhom-tim">
+                    <input class="qt-o" id="txtSoPhieu" maxlength="10" autocomplete="off" placeholder="Ví dụ PM26110001" />
+                    <button type="button" class="qt-nut qt-nut--phu" id="btnTimPhieu"><i class="bi bi-folder2-open" aria-hidden="true"></i>Tìm phiếu</button>
+                </div>
+            </div>
+        </div>
+        <div id="khuDieuKien" class="mt-3" hidden aria-live="polite"></div>
+    </div>
+
+    <div class="qt-the">
+        <h2 class="qt-tieu-muc">Thông tin phiếu</h2>
+        <div class="qt-khu-nhap">
+            <div class="qt-truong"><label class="qt-nhan" for="txtSoPMuon">Số phiếu mượn</label><input class="qt-o" id="txtSoPMuon" readonly placeholder="Cấp khi in" /></div>
+            <div class="qt-truong"><label class="qt-nhan" for="txtNgayLap">Ngày lập</label><input class="qt-o" id="txtNgayLap" readonly placeholder="Cấp khi in" /></div>
+            <div class="qt-truong"><label class="qt-nhan" for="txtMaBanDoc">Mã bạn đọc</label><input class="qt-o" id="txtMaBanDoc" readonly /></div>
+            <div class="qt-truong qt-truong--rong"><label class="qt-nhan" for="txtHoTen">Họ và tên</label><input class="qt-o" id="txtHoTen" readonly /></div>
+            <div class="qt-truong"><label class="qt-nhan" for="txtDoiTuong">Đối tượng</label><input class="qt-o" id="txtDoiTuong" readonly /></div>
+            <div class="qt-truong"><label class="qt-nhan" for="txtLopDonVi">Lớp/Đơn vị</label><input class="qt-o" id="txtLopDonVi" readonly /></div>
+            <div class="qt-truong"><label class="qt-nhan" for="txtNguoiLap">Người lập</label><input class="qt-o" id="txtNguoiLap" readonly value="@User.TenNd()" /></div>
+        </div>
+
+        <h2 class="qt-tieu-muc mt-2">Bản sách mượn</h2>
+        <div class="qt-thanh-tim mb-2">
+            <label class="qt-nhan mb-0" for="txtMaBanSach">Mã bản sách<span class="bat-buoc" aria-hidden="true">*</span></label>
+            <input class="qt-o" id="txtMaBanSach" maxlength="10" autocomplete="off" placeholder="Nhập hoặc quét mã bản sách" />
+            <button type="button" class="qt-nut qt-nut--phu" id="btnThemSach"><i class="bi bi-plus-lg" aria-hidden="true"></i>Thêm sách</button>
+        </div>
+        <div id="khuDapUng" class="mb-2" hidden aria-live="polite"></div>
+        <div class="qt-luoi" id="dgvChiTiet" aria-label="Chi tiết Phiếu mượn sách"></div>
+        <p class="small text-secondary mt-2 mb-0">Nhấp đúp vào dòng để sửa tình trạng khi mượn, ghi chú hoặc bỏ dòng chưa lưu.</p>
+        <div class="qt-tong">
+            <span>Tổng số bản sách mượn: <strong id="lblTongSoBan" class="so-lieu">0</strong></span>
+            <span>Hạn trả: <strong id="lblHanTra" class="so-lieu">–</strong></span>
+        </div>
+        <p class="qt-in-gan-nhat" id="khuInGanNhat" hidden>Chứng từ vừa in: <a target="_blank" rel="noopener"></a></p>
+
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            <button type="button" class="qt-nut qt-nut--chinh" id="btnIn"><i class="bi bi-printer" aria-hidden="true"></i>In</button>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnHuy"><i class="bi bi-x-lg" aria-hidden="true"></i>Hủy</button>
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/phieu-muon.js" asp-append-version="true"></script>
+}

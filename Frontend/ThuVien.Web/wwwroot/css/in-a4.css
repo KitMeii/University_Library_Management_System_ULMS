@@ -1,0 +1,4 @@
+/* MB05–MB07: khổ giấy A4 dọc (210 × 297 mm) – SPEC 6.4.4–6.4.6 */
+:root { --kho-rong: 210mm; --kho-cao: 297mm; }
+@page { size: A4 portrait; margin: 14mm 12mm; }
+body.in--a4 { font-size: 12.5px; }

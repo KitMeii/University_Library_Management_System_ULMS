@@ -1,0 +1,11 @@
+@model string[]
+@* Chỉ báo 3 trạng thái form chứng từ (SPEC mục 5, file 03): bước hiện tại màu đỏ; cập nhật bởi chung-tu.js *@
+<ol class="qt-buoc" aria-label="Trạng thái form" data-trang-thai-form="TT1">
+    @for (var i = 0; i < Model.Length; i++)
+    {
+        <li data-buoc="TT@(i + 1)" aria-current="@(i == 0 ? "step" : null)">
+            <span class="qt-buoc__so" aria-hidden="true">@(i + 1)</span>
+            <span class="qt-buoc__nhan"><span class="sr-only">Trạng thái @(i + 1): </span>@Model[i]</span>
+        </li>
+    }
+</ol>

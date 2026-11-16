@@ -1,6 +1,6 @@
 # ULMS – toàn hệ thống bằng một lệnh (file 14):  docker compose up -d --build
 # Bí mật đọc từ .env (chép từ .env.example). Cấu hình phát triển nằm ở docker-compose.override.yml (tự nạp).
-# CSDL: DB_SERVER trỏ tới SQL Server có sẵn (vd host.docker.internal,1433) hoặc container `sqlserver`
+# CSDL: DB_NAME (mặc định ThuVien; kiểm thử dùng ThuVien_Test). DB_SERVER trỏ tới SQL Server có sẵn (vd host.docker.internal,1433) hoặc container `sqlserver`
 #       (bật bằng COMPOSE_PROFILES=sql-docker – GIA_DINH D44).
 name: ulms
 
@@ -69,13 +69,16 @@ services:
         required: false
     environment:
       <<: *dotnet-env
-      ConnectionStrings__QuanTriCsdl: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__QuanTriCsdl: "Server=${DB_SERVER:-sqlserver};Database=${DB_NAME:-ThuVien};User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
       MatKhauDichVu__quantri: ${SVC_QUANTRI_PASSWORD:?}
       MatKhauDichVu__khosach: ${SVC_KHOSACH_PASSWORD:?}
       MatKhauDichVu__muontra: ${SVC_MUONTRA_PASSWORD:?}
       MatKhauDichVu__vipham: ${SVC_VIPHAM_PASSWORD:?}
       ThuVien__KhoiTao__MatKhauAdmin: ${ADMIN_PASSWORD:?Thiếu ADMIN_PASSWORD trong .env}
       ThuVien__NapDuLieuMau: ${NAP_DU_LIEU_MAU:-false}
+      # Chỉ dùng cho CSDL kiểm thử (tên kết thúc _Test – scripts/test-docker.sh): xóa và tạo lại CSDL, dọn .bak kiểm thử
+      ThuVien__TaoLaiCsdl: ${TAO_LAI_CSDL:-false}
+      SaoLuu__ThuMuc: ${SAO_LUU_THU_MUC:-}
 
   quantri:
     <<: [*service, *sau-migrator]
@@ -83,11 +86,12 @@ services:
     image: ulms/quantri:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_quantri;Password=${SVC_QUANTRI_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=${DB_NAME:-ThuVien};User Id=svc_quantri;Password=${SVC_QUANTRI_PASSWORD};TrustServerCertificate=True"
       # 04.00.09 Sao lưu – phục hồi: kết nối quản trị CSDL (BACKUP/RESTORE, duyệt thư mục sao lưu)
       ConnectionStrings__QuanTriCsdl: "Server=${DB_SERVER:-sqlserver};Database=master;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True"
       # Trống = thư mục sao lưu mặc định của SQL Server (InstanceDefaultBackupPath)
       SaoLuu__ThuMuc: ${SAO_LUU_THU_MUC:-}
+      SaoLuu__TenCsdl: ${DB_NAME:-ThuVien}
       Jwt__ThoiHanPhut: "720"
     volumes:
       - thuvien-logs:/app/logs
@@ -98,7 +102,7 @@ services:
     image: ulms/khosach:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_khosach;Password=${SVC_KHOSACH_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=${DB_NAME:-ThuVien};User Id=svc_khosach;Password=${SVC_KHOSACH_PASSWORD};TrustServerCertificate=True"
     volumes:
       - thuvien-logs:/app/logs
 
@@ -108,7 +112,7 @@ services:
     image: ulms/muontra:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_muontra;Password=${SVC_MUONTRA_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=${DB_NAME:-ThuVien};User Id=svc_muontra;Password=${SVC_MUONTRA_PASSWORD};TrustServerCertificate=True"
     volumes:
       - thuvien-logs:/app/logs
 
@@ -118,7 +122,7 @@ services:
     image: ulms/vipham:local
     environment:
       <<: *dotnet-env
-      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=ThuVien;User Id=svc_vipham;Password=${SVC_VIPHAM_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=${DB_NAME:-ThuVien};User Id=svc_vipham;Password=${SVC_VIPHAM_PASSWORD};TrustServerCertificate=True"
     volumes:
       - thuvien-logs:/app/logs
 
@@ -155,7 +159,8 @@ services:
 
 networks:
   thuvien-net:
-    name: thuvien-net
+    # Bộ kiểm thử chạy project riêng (ulms-test) trên mạng riêng – scripts/test-docker.sh
+    name: ${ULMS_NET:-thuvien-net}
 
 volumes:
   thuvien-sql-data:

@@ -1,0 +1,3 @@
+/* MB02–MB04: khổ giấy A5 dọc (148 × 210 mm) – SPEC 6.4.1–6.4.3 */
+:root { --kho-rong: 148mm; --kho-cao: 210mm; }
+@page { size: A5 portrait; margin: 8mm; }

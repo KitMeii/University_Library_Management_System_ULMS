@@ -55,7 +55,12 @@ public sealed class TrinhDuyet : IAsyncLifetime
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         await page.EvaluateAsync("() => document.fonts.ready");
         // Ảnh toàn trang: hàng nút “dính đáy” được đặt về vị trí tĩnh để không đè lên lưới trong ảnh ghép
-        if (toanTrang) await page.AddStyleTagAsync(new() { Content = ".qt-hang-nut{position:static!important}" });
+        if (toanTrang)
+        {
+            await page.AddStyleTagAsync(new() { Content = ".qt-hang-nut{position:static!important}" });
+            // Thanh trên/sidebar cố định theo khung nhìn: cuộn về đầu trang để ảnh ghép không lệch
+            await page.EvaluateAsync("() => { document.activeElement?.blur(); window.scrollTo(0, 0); }");
+        }
         await page.WaitForTimeoutAsync(700);
         await page.ScreenshotAsync(new() { Path = Path.Combine(ThuMucAnh, ten + ".png"), FullPage = toanTrang });
     }

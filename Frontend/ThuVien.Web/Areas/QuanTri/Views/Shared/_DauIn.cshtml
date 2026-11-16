@@ -1,0 +1,17 @@
+@model ThuVien.Web.Areas.QuanTri.Models.DauIn
+@{
+    var k = Model.Khung;
+    var tenTruong = string.IsNullOrWhiteSpace(k.TenTruong) || k.TenTruong.TrimStart().StartsWith('[') ? "……………………………" : k.TenTruong.ToUpperInvariant();
+}
+<header class="in-dau">
+    <div class="in-dau__trai">
+        <div class="in-dau__truong">THƯ VIỆN TRƯỜNG ĐẠI HỌC @tenTruong</div>
+        <div class="in-dau__bo-phan">@Model.BoPhan</div>
+    </div>
+    <div class="in-dau__phai">
+        <div>Mẫu số: <strong>@k.MaMau</strong></div>
+        <div class="in-dau__lien">@k.Lien[Model.Lien]</div>
+    </div>
+</header>
+<h1 class="in-tieu-de">@k.TenMau</h1>
+<p class="in-so">Số: <strong>@k.So</strong> <span aria-hidden="true">·</span> @Model.DongNgay</p>

@@ -1,0 +1,46 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@using ThuVien.Web.Areas.QuanTri.Models
+@{
+    Layout = "_LayoutIn";
+    var d = (PhieuMuonIn)Model.DuLieu;
+    DauIn Dau(int lien) => new(Model, lien, "Bộ phận mượn trả sách", $"Ngày lập: {d.NgayLapPMuon:dd/MM/yyyy}");
+}
+@* SPEC 6.4.1 – MB02 Phiếu mượn sách: A5, 02 bản (01 giao Bạn đọc, 01 lưu) *@
+@for (var i = 0; i < Model.Lien.Length; i++)
+{
+    <article class="in-to">
+        <partial name="_DauIn" model="Dau(i)" />
+        <dl class="in-thong-tin">
+            <div><dt>Mã bạn đọc</dt><dd>@d.BanDoc.MaBanDoc</dd></div>
+            <div><dt>Họ và tên</dt><dd><strong>@d.BanDoc.HoTen</strong></dd></div>
+            <div><dt>Đối tượng</dt><dd>@d.BanDoc.DoiTuong</dd></div>
+            <div><dt>Mã SV/HV/CB</dt><dd>@d.BanDoc.MaSvHvCb</dd></div>
+            <div><dt>Lớp/Đơn vị</dt><dd>@d.BanDoc.LopDonVi</dd></div>
+            <div><dt>Số thẻ bạn đọc</dt><dd>@d.BanDoc.SoTheBd</dd></div>
+        </dl>
+        <table class="in-bang">
+            <thead>
+                <tr><th>STT</th><th>Mã bản sách</th><th>Tên sách</th><th>Ngày mượn</th><th>Hạn trả</th><th>Tình trạng khi mượn</th><th>Ghi chú</th></tr>
+            </thead>
+            <tbody>
+                @for (var j = 0; j < d.ChiTiet.Count; j++)
+                {
+                    var x = d.ChiTiet[j];
+                    <tr>
+                        <td class="giua">@(j + 1)</td><td>@x.MaBanSach</td><td>@x.TenSach</td>
+                        <td class="giua">@x.NgayMuon.ToString("dd/MM/yyyy")</td><td class="giua"><strong>@x.HanTra.ToString("dd/MM/yyyy")</strong></td>
+                        <td>@x.TinhTrangMuon</td><td>@x.GhiChuMuon</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><td colspan="7">Tổng số bản sách mượn: <strong>@d.TongSoBan</strong> bản</td></tr>
+            </tfoot>
+        </table>
+        <p class="in-ghi-chu">Hạn trả = ngày mượn + số ngày được mượn theo đối tượng Bạn đọc. Bạn đọc giữ phiếu này để gia hạn, trả sách.</p>
+        <div class="in-ky">
+            <div><span>Bạn đọc</span><em>(Ký, ghi rõ họ tên)</em><b>@d.BanDoc.HoTen</b></div>
+            <div><span>Người lập phiếu</span><em>(Ký, ghi rõ họ tên)</em><b>@d.TenNd</b></div>
+        </div>
+    </article>
+}

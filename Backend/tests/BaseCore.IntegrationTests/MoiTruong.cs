@@ -15,8 +15,11 @@ public static class MoiTruong
     public const string MatKhauMau = "Thuvien@123";
     public const string MatKhauBanDocMau = "Docgia@123";
 
+    /// <summary>CSDL kiểm thử riêng (DB_NAME do scripts/test-docker.sh đặt = ThuVien_Test) – không đụng CSDL ThuVien (GIA_DINH D49).</summary>
+    public static string TenCsdl => Environment.GetEnvironmentVariable("DB_NAME") is { Length: > 0 } t ? t : "ThuVien_Test";
+
     public static SqlConnection KetNoi(string user, string matKhau) =>
-        new($"Server={SqlServer};Database=ThuVien;User Id={user};Password={matKhau};TrustServerCertificate=True;Connect Timeout=10");
+        new($"Server={SqlServer};Database={TenCsdl};User Id={user};Password={matKhau};TrustServerCertificate=True;Connect Timeout=10");
 
     public static SqlConnection KetNoiSa() => KetNoi("sa", MatKhauSa);
 

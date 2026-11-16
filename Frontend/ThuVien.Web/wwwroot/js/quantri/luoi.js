@@ -68,12 +68,14 @@ export class LuoiDuLieu {
     this.tbody = this.el.querySelector('tbody');
     this.tbody.addEventListener('click', (e) => this.xuLyChon(e));
     this.tbody.addEventListener('dblclick', (e) => {
+      if (e.target.matches('input, select, textarea, button, label')) return;
+      window.getSelection()?.removeAllRanges(); // nhấp đúp = mở dòng, không bôi đen chữ
       const tr = e.target.closest('tr[data-chi-so]');
       if (tr && !this.dangKhoa() && this.tc.khiNhapDup) this.tc.khiNhapDup(this.dong[+tr.dataset.chiSo]);
     });
     this.tbody.addEventListener('keydown', (e) => {
       const tr = e.target.closest('tr[data-chi-so]');
-      if (!tr) return;
+      if (!tr || e.target.matches('input, select, textarea, button')) return; // ô nhập trong dòng (lưới chi tiết chứng từ)
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.xuLyChon(e); }
       else if (e.key === 'ArrowDown') { e.preventDefault(); tr.nextElementSibling?.focus(); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); tr.previousElementSibling?.focus(); }

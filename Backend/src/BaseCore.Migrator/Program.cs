@@ -36,6 +36,15 @@ var chuoiKetNoi = config.GetConnectionString("QuanTriCsdl")
 Console.WriteLine($"[migrator] Môi trường: {moiTruong}");
 await ChoSqlServerAsync(chuoiKetNoi);
 
+// Bộ kiểm thử (GIA_DINH D49): dọn .bak kiểm thử khi kết thúc; xóa – tạo lại CSDL kiểm thử khi bắt đầu
+if (args is ["--don-sao-luu-kiem-thu"])
+{
+    await CsdlKiemThu.DonSaoLuuAsync(chuoiKetNoi, config["SaoLuu:ThuMuc"]);
+    return 0;
+}
+if (config.GetValue("ThuVien:TaoLaiCsdl", false))
+    await CsdlKiemThu.TaoLaiAsync(chuoiKetNoi, config["SaoLuu:ThuMuc"]);
+
 var options = new DbContextOptionsBuilder<ThuVienDbContext>()
     .UseSqlServer(chuoiKetNoi, sql => sql.MigrationsAssembly(typeof(Program).Assembly.GetName().Name))
     .Options;
@@ -60,6 +69,7 @@ await using (var db = new ThuVienDbContext(options))
             throw new InvalidOperationException("Không được nạp dữ liệu mẫu ở Production (nguyên tắc 4, file 01).");
         Console.WriteLine("[migrator] Nạp DỮ LIỆU MẪU (Development)...");
         await DuLieuMau.NapAsync(db, hasher, clock);
+        await DuLieuMauChungTu.NapAsync(db, clock);
     }
 }
 

@@ -10,6 +10,7 @@ builder.AddThuVienService("vipham").AddDbContextCheck<ViPhamDbContext>("csdl");
 builder.Services.AddDbContext<ViPhamDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure()));
 builder.Services.AddScoped<BaseCore.ViPhamService.NghiepVu.KhoanThuService>();
+builder.Services.AddScoped<BaseCore.ViPhamService.NghiepVu.BienBanService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

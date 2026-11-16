@@ -35,6 +35,10 @@ public sealed class GatewayClient(HttpClient http, IHttpContextAccessor? accesso
     public Task<KetQuaApi<DangNhapBanDocKq>> DangNhapBanDocAsync(string maSvHvCb, string matKhau, CancellationToken ct) =>
         GuiAsync<DangNhapBanDocKq>(HttpMethod.Post, "/api/cong/dang-nhap", null, new { maSvHvCb, matKhau }, ct);
 
+    /// <summary>GET bất kỳ API nào bằng token của người dùng (trang in chứng từ render phía server).</summary>
+    public Task<KetQuaApi<T>> LayAsync<T>(string url, string token, CancellationToken ct) =>
+        GuiAsync<T>(HttpMethod.Get, url, token, null, ct);
+
     private async Task<KetQuaApi<T>> GuiAsync<T>(HttpMethod method, string url, string? token, object? body, CancellationToken ct)
     {
         using var req = new HttpRequestMessage(method, url);

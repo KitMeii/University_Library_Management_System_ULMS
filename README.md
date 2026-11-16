@@ -69,8 +69,10 @@ CSDL `ThuVien` có 4 schema: `quantri`, `khosach`, `muontra`, `vipham` – mỗi
 | Xem trạng thái | `docker compose ps` |
 | Xem log | `docker compose logs -f web muontra` |
 | Build toàn solution (không cần SDK) | `sh scripts/build-docker.sh` |
-| Kiểm thử (đơn vị + tích hợp + E2E/ảnh) | `sh scripts/test-docker.sh` (hoặc `unit`, `integration`, `e2e`) |
-| Chụp bộ ảnh Bài 4 (CSDL sạch, không nhãn DỮ LIỆU MẪU) | Xóa CSDL `ThuVien` (Cách 1: SSMS, xem `Database/README.md`; Cách 2: `docker compose down -v`) → `HIEN_NHAN_DU_LIEU_MAU=false docker compose up -d --build` → `sh scripts/test-docker.sh anh` |
+| Kiểm thử (đơn vị + ảnh + tích hợp + E2E) | `docker compose up -d --build` (build image) → `sh scripts/test-docker.sh` (hoặc `unit`, `integration`, `e2e`, `anh`) |
+| Chụp bộ ảnh Bài 4 (CSDL sạch, không nhãn DỮ LIỆU MẪU) | `sh scripts/test-docker.sh anh` |
+
+**Kiểm thử không đụng CSDL `ThuVien`** (GIA_DINH D49): `scripts/test-docker.sh` dựng bộ hệ thống riêng (project `ulms-test`, web cổng 18080) trên CSDL **`ThuVien_Test`**, xóa – tạo lại CSDL này + dữ liệu mẫu mỗi lần chạy, chạy xong thì gỡ bộ kiểm thử (`GIU_LAI=1` để giữ lại xem). Dùng SQL Server cài sẵn thì đặt `SAO_LUU_THU_MUC_KIEM_THU` trong `.env` – thư mục riêng cho tệp sao lưu do kiểm thử tạo (vd thư mục tạm của dịch vụ `C:\Windows\ServiceProfiles\MSSQLSERVER\AppData\Local\Temp\ULMS_KiemThu`), **không phải thư mục Backup thật**; tệp `.bak` kiểm thử được dọn sau mỗi lần chạy.
 | Xuất lại kịch bản SQL sau khi thêm migration | `sh scripts/xuat-sql.sh` |
 | Dừng | `docker compose down` |
 | **Xóa sạch môi trường dev, kể cả dữ liệu** | `docker compose down -v` ⚠️ mất ảnh tải lên, khóa cookie; Cách 2 mất cả CSDL và bản sao lưu |

@@ -101,11 +101,15 @@ public sealed class SachService(KhoSachDbContext db, IClock clock)
                 ?? throw LoiNghiepVu.KhongTimThay("KHONG_TIM_THAY", $"Không tìm thấy bản sách {ma}.");
         (await KiemTraAsync(n, false, ct)).NemNeuCoLoi();
         var cu = $"{s.TenSach} ({s.TacGia}), {s.MaKhuVuc}, {s.TinhTrang}";
+        var doiTinhTrang = s.TinhTrang != n.TinhTrang;
         s.MaKhuVuc = n.MaKhuVuc!;
         s.TenSach = n.TenSach!.Trim();
         s.TacGia = n.TacGia!.Trim();
         s.TinhTrang = n.TinhTrang!;
-        await NhatKyGhi.ThemAsync(db, maNd, $"Sửa bản sách {ma}: {cu} → {s.TenSach} ({s.TacGia}), {s.MaKhuVuc}, {s.TinhTrang}", clock.BayGio, ct);
+        // N3 đổi tình trạng bản sách đang chờ 03.03.02 qua btnSua cũng là đã xử lý lần trả mất/hư hỏng đó (GIA_DINH D47)
+        var phieuTra = doiTinhTrang ? await GhiDaXuLyMatHongAsync(ma, s.TinhTrang, maNd, ct) : [];
+        var theo = phieuTra.Count > 0 ? $" (03.03.02 theo phiếu trả {string.Join(", ", phieuTra)})" : string.Empty;
+        await NhatKyGhi.ThemAsync(db, maNd, $"Sửa bản sách {ma}: {cu} → {s.TenSach} ({s.TacGia}), {s.MaKhuVuc}, {s.TinhTrang}{theo}", clock.BayGio, ct);
         await LuuAsync(ct);
         return await MotAsync(ma, ct);
     }
@@ -159,20 +163,57 @@ public sealed class SachService(KhoSachDbContext db, IClock clock)
                              select new ChuyenDenDto(ct2.MaBanSach, s.TenSach, LoaiChuyenDen.SachTra, pt.SoPTra, pt.NgayTra,
                                  s.TinhTrang, TT.SanSang, "03.02.03")).ToListAsync(ct);
 
-        // 03.03.02: sách mất/hư hỏng khi trả, đã lập biên bản vi phạm, SACH chưa cập nhật tương ứng
-        var matHong = await (from ct2 in db.CtPhieuTra.AsNoTracking()
-                             join pt in db.PhieuTra on ct2.SoPTra equals pt.SoPTra
-                             join s in db.Sach on ct2.MaBanSach equals s.MaBanSach
-                             join cb in db.CtBienBan on ct2.MaBanSach equals cb.MaBanSach
-                             join bb in db.BienBan on cb.SoBienBan equals bb.SoBienBan
-                             where bb.SoPMuon == pt.SoPMuon
-                                   && (ct2.TinhTrangTra == MienGiaTri.TinhTrangTra.Mat || ct2.TinhTrangTra == MienGiaTri.TinhTrangTra.HuHong)
-                                   && s.TinhTrang != ct2.TinhTrangTra && !dangMuon.Contains(ct2.MaBanSach)
-                             select new ChuyenDenDto(ct2.MaBanSach, s.TenSach, LoaiChuyenDen.MatHuHong, bb.SoBienBan,
-                                 DateOnly.FromDateTime(bb.ThoiGianLap), s.TinhTrang, ct2.TinhTrangTra, "03.03.02")).ToListAsync(ct);
+        // 03.03.02: sách mất/hư hỏng khi trả, đã lập biên bản vi phạm, Bộ phận kho sách chưa xử lý (GIA_DINH D47)
+        var matHong = await MatHongChoXuLyAsync(ct);
 
-        return daChoMuon.Concat(sachTra).Concat(matHong.DistinctBy(x => x.MaBanSach))
+        return daChoMuon.Concat(sachTra).Concat(matHong.Select(x => x.Dong).DistinctBy(x => x.MaBanSach))
             .OrderBy(x => x.Ngay).ThenBy(x => x.MaBanSach).ToList();
+    }
+
+    private sealed record MatHongChoXuLy(ChuyenDenDto Dong, string SoPTra);
+
+    /// <summary>
+    /// Lần trả Mất/Hư hỏng đã lập biên bản mà chưa có dòng XULY_CHUYENDEN (03.03.02). Dòng hết khi N3 xử lý
+    /// (btnCapNhatTT, hoặc btnSua đổi tình trạng bản sách) – không phụ thuộc tình trạng hiện tại của SACH, nên sửa sách
+    /// hư hỏng xong đặt lại “Sẵn sàng” không làm dòng xuất hiện lại (GIA_DINH D47).
+    /// </summary>
+    private async Task<List<MatHongChoXuLy>> MatHongChoXuLyAsync(CancellationToken ct)
+    {
+        var dangMuon = BanDangMuon();
+        var q = from ct2 in db.CtPhieuTra.AsNoTracking()
+                // dòng 03.03.02 chỉ xuất hiện khi Bộ phận vi phạm đã lập biên bản (02.03.01 → 03.03.02)
+                join pt in db.PhieuTra on ct2.SoPTra equals pt.SoPTra
+                join s in db.Sach on ct2.MaBanSach equals s.MaBanSach
+                join cb in db.CtBienBan on ct2.MaBanSach equals cb.MaBanSach
+                join bb in db.BienBan on cb.SoBienBan equals bb.SoBienBan
+                where bb.SoPMuon == pt.SoPMuon
+                      && (ct2.TinhTrangTra == MienGiaTri.TinhTrangTra.Mat || ct2.TinhTrangTra == MienGiaTri.TinhTrangTra.HuHong)
+                      && !db.XuLyChuyenDen.Any(x => x.MaBanSach == ct2.MaBanSach && x.SoChungTu == ct2.SoPTra && x.TienTrinh == XuLyChuyenDen.MatHuHong)
+                      && !dangMuon.Contains(ct2.MaBanSach)
+                select new { ct2.MaBanSach, s.TenSach, bb.SoBienBan, bb.ThoiGianLap, s.TinhTrang, ct2.TinhTrangTra, ct2.SoPTra };
+        return (await q.ToListAsync(ct))
+            .Select(x => new MatHongChoXuLy(new ChuyenDenDto(x.MaBanSach, x.TenSach, LoaiChuyenDen.MatHuHong, x.SoBienBan,
+                DateOnly.FromDateTime(x.ThoiGianLap), x.TinhTrang, x.TinhTrangTra, XuLyChuyenDen.MatHuHong), x.SoPTra))
+            .DistinctBy(x => (x.Dong.MaBanSach, x.SoPTra)).ToList();
+    }
+
+    /// <summary>
+    /// Đánh dấu N3 đã xử lý mọi lần trả Mất/Hư hỏng chưa xử lý của bản sách (thêm dòng XULY_CHUYENDEN, 03.03.02);
+    /// trả về các số phiếu trả được đánh dấu.
+    /// </summary>
+    private async Task<List<string>> GhiDaXuLyMatHongAsync(string ma, string tinhTrangMoi, string maNd, CancellationToken ct)
+    {
+        var soPTra = await db.CtPhieuTra.AsNoTracking()
+            .Where(x => x.MaBanSach == ma && (x.TinhTrangTra == MienGiaTri.TinhTrangTra.Mat || x.TinhTrangTra == MienGiaTri.TinhTrangTra.HuHong)
+                        && !db.XuLyChuyenDen.Any(k => k.MaBanSach == x.MaBanSach && k.SoChungTu == x.SoPTra && k.TienTrinh == XuLyChuyenDen.MatHuHong))
+            .Select(x => x.SoPTra).ToListAsync(ct);
+        foreach (var so in soPTra)
+            db.XuLyChuyenDen.Add(new XuLyChuyenDen
+            {
+                MaBanSach = ma, SoChungTu = so, TienTrinh = XuLyChuyenDen.MatHuHong,
+                TinhTrangMoi = tinhTrangMoi, MaNd = maNd, ThoiGianXuLy = clock.BayGio
+            });
+        return soPTra;
     }
 
     /// <summary>btnCapNhatTT: cập nhật SACH.tinhtrang theo dòng chuyển đến (tình trạng mới do server xác định lại).</summary>
@@ -187,6 +228,7 @@ public sealed class SachService(KhoSachDbContext db, IClock clock)
         var s = await db.Sach.SingleAsync(x => x.MaBanSach == ma, ct);
         var cu = s.TinhTrang;
         s.TinhTrang = dong.TinhTrangDeXuat;
+        if (dong.TienTrinh == XuLyChuyenDen.MatHuHong) await GhiDaXuLyMatHongAsync(ma, s.TinhTrang, maNd, ct);
         await NhatKyGhi.ThemAsync(db, maNd,
             $"{dong.TienTrinh} Cập nhật tình trạng bản sách {ma}: {cu} → {s.TinhTrang} (theo {dong.Loai.ToLowerInvariant()} {dong.ChungTu})",
             clock.BayGio, ct);

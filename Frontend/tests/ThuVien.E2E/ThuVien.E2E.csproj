@@ -13,5 +13,6 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="Microsoft.Playwright" />
+    <Compile Include="..\..\..\Backend/tests\Shared\SpecDoc.cs" Link="Shared\SpecDoc.cs" />
   </ItemGroup>
 </Project>

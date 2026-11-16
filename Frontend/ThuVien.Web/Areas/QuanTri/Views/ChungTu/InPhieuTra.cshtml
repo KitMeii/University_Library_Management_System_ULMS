@@ -1,0 +1,45 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@using ThuVien.Web.Areas.QuanTri.Models
+@{
+    Layout = "_LayoutIn";
+    var d = (PhieuTraIn)Model.DuLieu;
+    DauIn Dau(int lien) => new(Model, lien, "Bộ phận mượn trả sách", $"Ngày lập: {d.NgayLapPTra:dd/MM/yyyy}");
+}
+@* SPEC 6.4.3 – MB04 Phiếu trả sách: A5, 02 bản *@
+@for (var i = 0; i < Model.Lien.Length; i++)
+{
+    <article class="in-to">
+        <partial name="_DauIn" model="Dau(i)" />
+        <dl class="in-thong-tin">
+            <div><dt>Số phiếu mượn</dt><dd>@d.SoPMuon</dd></div>
+            <div><dt>Ngày trả</dt><dd>@d.NgayTra.ToString("dd/MM/yyyy")</dd></div>
+            <div><dt>Mã bạn đọc</dt><dd>@d.BanDoc.MaBanDoc</dd></div>
+            <div><dt>Họ và tên</dt><dd><strong>@d.BanDoc.HoTen</strong></dd></div>
+            <div><dt>Mã SV/HV/CB</dt><dd>@d.BanDoc.MaSvHvCb</dd></div>
+        </dl>
+        <table class="in-bang">
+            <thead>
+                <tr><th>STT</th><th>Mã bản sách</th><th>Tên sách</th><th>Hạn trả</th><th>Tình trạng khi trả</th><th>Số ngày quá hạn</th><th>Ghi chú</th></tr>
+            </thead>
+            <tbody>
+                @for (var j = 0; j < d.ChiTiet.Count; j++)
+                {
+                    var x = d.ChiTiet[j];
+                    <tr>
+                        <td class="giua">@(j + 1)</td><td>@x.MaBanSach</td><td>@x.TenSach</td>
+                        <td class="giua">@x.HanTra.ToString("dd/MM/yyyy")</td><td>@x.TinhTrangTra</td>
+                        <td class="giua">@(x.SoNgayQuaHan > 0 ? x.SoNgayQuaHan.ToString() : "–")</td><td>@x.GhiChuTra</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><td colspan="7">Tổng số bản sách trả: <strong>@d.ChiTiet.Count</strong> bản · Bản sách quá hạn: <strong>@d.ChiTiet.Count(x => x.SoNgayQuaHan > 0)</strong></td></tr>
+            </tfoot>
+        </table>
+        <p class="in-ghi-chu">Số ngày quá hạn = ngày trả − hạn trả hiện hành (khi lớn hơn 0). Trường hợp quá hạn, mất, hư hỏng được chuyển Bộ phận xử lý vi phạm.</p>
+        <div class="in-ky">
+            <div><span>Bạn đọc</span><em>(Ký, ghi rõ họ tên)</em><b>@d.BanDoc.HoTen</b></div>
+            <div><span>Người lập phiếu</span><em>(Ký, ghi rõ họ tên)</em><b>@d.TenNd</b></div>
+        </div>
+    </article>
+}
