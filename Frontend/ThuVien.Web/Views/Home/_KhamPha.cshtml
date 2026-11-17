@@ -1,0 +1,89 @@
+@model ThuVien.Web.Models.KhamPhaVm
+@{
+    var namNay = DateTime.Now.Year;
+}
+@* Khu 5 – Khám phá sách (file 04 mục 1): thanh công cụ + lưới thẻ sách; dùng chung cho trang chủ và trang /kham-pha.
+   Đổi bộ lọc không đổi route, không tải lại trang; danh sách cũ giữ nguyên trong lúc tải; yêu cầu mới nhất thắng. *@
+<section id="kham-pha" class="kham-pha@(Model.ToanTrang ? " kham-pha--toan-trang" : "")" aria-labelledby="khamPhaTieuDe"
+         data-q="@Model.Q" data-the-loai="@Model.TheLoaiChon">
+    <div class="cong-container">
+        @if (Model.ToanTrang)
+        {
+            <h1 class="cong-khu__tieu-de" id="khamPhaTieuDe">Khám phá sách</h1>
+            <p class="cong-khu__mo-ta">Tìm theo tên sách, tác giả, ISBN hoặc từ khóa; lọc theo thể loại, năm xuất bản và tình trạng còn sách.</p>
+        }
+        else
+        {
+            <header class="cong-khu__dau cong-khu__dau--hang" data-xuat-hien>
+                <div>
+                    <p class="cong-khu__nhan">Khám phá sách</p>
+                    <h2 class="cong-khu__tieu-de" id="khamPhaTieuDe">Tìm sách trong thư viện</h2>
+                </div>
+                <a class="cong-khu__xem" href="/kham-pha">Xem tất cả sách<i class="bi bi-caret-right-fill" aria-hidden="true"></i></a>
+            </header>
+        }
+        <form class="kp-cong-cu" id="frmKhamPha" role="search" action="/kham-pha" method="get" aria-label="Tìm và lọc sách">
+            <div class="kp-o-tim">
+                <label class="sr-only" for="txtTimSach">Tìm sách</label>
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input class="cong-o" id="txtTimSach" name="q" type="search" value="@Model.Q" maxlength="100" autocomplete="off"
+                       placeholder="Tên sách, tác giả, ISBN, từ khóa" />
+            </div>
+            <div class="kp-truong">
+                <label for="cboTheLoai">Thể loại</label>
+                <select class="cong-o" id="cboTheLoai" name="theLoai">
+                    <option value="">Tất cả thể loại</option>
+                    @foreach (var t in Model.TheLoai)
+                    {
+                        <option value="@t.MaTheLoai" selected="@(t.MaTheLoai == Model.TheLoaiChon)">@t.TenTheLoai (@t.SoDauSach)</option>
+                    }
+                </select>
+            </div>
+            @if (Model.ToanTrang)
+            {
+                <div class="kp-truong kp-truong--nam">
+                    <label for="txtNamTu">Năm xuất bản từ</label>
+                    <input class="cong-o" id="txtNamTu" name="namTu" type="number" min="1900" max="@namNay" inputmode="numeric" />
+                </div>
+                <div class="kp-truong kp-truong--nam">
+                    <label for="txtNamDen">đến</label>
+                    <input class="cong-o" id="txtNamDen" name="namDen" type="number" min="1900" max="@namNay" inputmode="numeric" />
+                </div>
+            }
+            else
+            {
+                <div class="kp-truong">
+                    <label for="cboNam">Năm xuất bản</label>
+                    <select class="cong-o" id="cboNam">
+                        <option value="">Mọi năm</option>
+                        <option value="2020-">Từ 2020</option>
+                        <option value="2010-2019">2010 – 2019</option>
+                        <option value="2000-2009">2000 – 2009</option>
+                        <option value="-1999">Trước 2000</option>
+                    </select>
+                </div>
+            }
+            <div class="kp-truong">
+                <label for="cboSapXep">Sắp xếp</label>
+                <select class="cong-o" id="cboSapXep" name="sapXep">
+                    <option value="moi">Mới nhất</option>
+                    <option value="ten">Tên sách A – Z</option>
+                    <option value="muon-nhieu">Mượn nhiều</option>
+                    <option value="nam">Năm xuất bản mới</option>
+                </select>
+            </div>
+            <label class="kp-con-sach">
+                <input type="checkbox" id="chkConSach" name="conSach" value="true" />
+                Chỉ sách còn có thể mượn
+            </label>
+            <button type="submit" class="cong-nut cong-nut--chinh" id="btnTimSach"><i class="bi bi-search" aria-hidden="true"></i>Tìm</button>
+        </form>
+
+        <p class="kp-ket-qua" id="kpKetQua" aria-live="polite"></p>
+        <div class="kp-luoi" id="kpLuoi" aria-labelledby="khamPhaTieuDe" aria-busy="false"></div>
+        <div class="kp-xem-them">
+            <button type="button" class="cong-nut cong-nut--vien" id="btnXemThem" hidden><i class="bi bi-plus-lg" aria-hidden="true"></i>Xem thêm</button>
+        </div>
+        <noscript><p class="kp-ket-qua">Bật JavaScript để tìm và lọc sách.</p></noscript>
+    </div>
+</section>

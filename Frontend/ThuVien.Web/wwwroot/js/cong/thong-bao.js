@@ -35,6 +35,21 @@ async function nap() {
   }
 }
 
+// Yêu thích (số lượng) trên header (file 04 mục 1)
+const lnkYeuThich = document.getElementById('lnkYeuThich');
+const soYeuThich = document.getElementById('soYeuThich');
+function datSoYeuThich(n) {
+  if (!lnkYeuThich) return;
+  soYeuThich.hidden = n <= 0;
+  soYeuThich.textContent = n > 99 ? '99+' : String(n);
+  lnkYeuThich.setAttribute('aria-label', n > 0 ? `Sách yêu thích – ${n} cuốn` : 'Sách yêu thích');
+}
+if (lnkYeuThich) {
+  const napYeuThich = () => api.lay('/api/cong/yeu-thich').then((ds) => datSoYeuThich(ds.length)).catch(() => {});
+  napYeuThich();
+  document.addEventListener('ulms:yeu-thich-doi', (e) => (typeof e.detail?.so === 'number' ? datSoYeuThich(e.detail.so) : napYeuThich()));
+}
+
 if (nut) {
   nap();
   nut.addEventListener('show.bs.dropdown', nap);

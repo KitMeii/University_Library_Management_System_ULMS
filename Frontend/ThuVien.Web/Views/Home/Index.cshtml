@@ -7,6 +7,7 @@
 }
 @section Css {
     <link rel="stylesheet" href="/css/trang-chu.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/kham-pha.css" asp-append-version="true" />
 }
 
 @* ---------- Khu 2: Hero (file 04 mục 2) ---------- *@
@@ -39,19 +40,44 @@
             @if (Model.AnhHero.Count > 1)
             {
                 <div class="hero__dieu-khien">
+                    <button type="button" class="hero__mui-ten" id="btnHeroTruoc" aria-label="Ảnh giới thiệu trước"><i class="bi bi-arrow-left" aria-hidden="true"></i></button>
                     <div class="hero__cham" role="group" aria-label="Chọn ảnh giới thiệu">
                         @for (var i = 0; i < Model.AnhHero.Count; i++)
                         {
                             <button type="button" class="hero__cham-nut" data-chi-so="@i" aria-label="Ảnh @(i + 1) trên @Model.AnhHero.Count" aria-current="@(i == 0 ? "true" : null)"></button>
                         }
                     </div>
+                    <button type="button" class="hero__mui-ten" id="btnHeroSau" aria-label="Ảnh giới thiệu sau"><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
                     <button type="button" class="hero__dung" id="btnHeroDung" aria-pressed="false" aria-label="Tạm dừng trình chiếu">
                         <i class="bi bi-pause-fill" aria-hidden="true"></i>
                     </button>
                 </div>
             }
+            @if (Model.Ke is not null)
+            {
+                @* Gợi ý “Cuộn xuống” (THAM_KHAO_MTA mục 3.3): biểu tượng chuột nhấp nhô (CSS), tự ẩn khi đã cuộn; bấm → kệ sách *@
+                <a class="hero__cuon" id="lnkCuonXuong" href="/#ke-sach"><span class="hero__chuot" aria-hidden="true"><span></span></span><span class="hero__cuon-chu">Cuộn xuống</span></a>
+            }
         </div>
-        <p class="hero__mo-ta">Lướt kệ sách nổi bật để xem sách mới về, sách được mượn nhiều và sách theo từng thể loại – số bản còn có thể mượn lấy trực tiếp từ hệ thống quản lý của thư viện.</p>
+        <div class="hero__duoi">
+            <p class="hero__mo-ta">Lướt kệ sách nổi bật để xem sách mới về, sách được mượn nhiều và sách theo từng thể loại – số bản còn có thể mượn lấy trực tiếp từ hệ thống quản lý của thư viện.</p>
+            @* Thanh tìm kiếm Hero (file 04 mục 2): Enter → cuộn tới khu Khám phá sách với kết quả *@
+            <form class="hero-tim" id="frmTimHero" role="search" action="/kham-pha" method="get" aria-label="Tìm sách nhanh">
+                <label class="sr-only" for="txtTimHero">Tìm sách theo tên, tác giả, ISBN hoặc từ khóa</label>
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input id="txtTimHero" name="q" type="search" maxlength="100" autocomplete="off" placeholder="Tên sách, tác giả, ISBN, từ khóa…" />
+                <button type="submit" class="cong-nut cong-nut--chinh" id="btnTimHero">Tìm</button>
+            </form>
+            @if (Model.KhamPha.TuKhoa.Count > 0)
+            {
+                <p class="hero-goi-y" id="goiYTuKhoa"><span>Gợi ý:</span>
+                    @foreach (var k in Model.KhamPha.TuKhoa)
+                    {
+                        <a class="hero-goi-y__chip" href="/kham-pha?q=@Uri.EscapeDataString(k.TuKhoa)" data-tu-khoa="@k.TuKhoa">@k.TuKhoa</a>
+                    }
+                </p>
+            }
+        </div>
     </div>
 </section>
 
@@ -120,8 +146,113 @@
         <script type="application/json" id="duLieuKe">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new { danhSach = Model.DanhSachKe, ke = Model.Ke }, json))</script>
     </section>
 }
+
+@* ---------- Khu 4: Danh mục thể loại – bấm ô: cuộn tới khu 5 và lọc, không đổi route ---------- *@
+@if (Model.KhamPha.TheLoai.Count > 0)
+{
+    <section id="danh-muc" class="danh-muc" aria-labelledby="danhMucTieuDe">
+        <div class="cong-container">
+            <header class="cong-khu__dau cong-khu__dau--hang" data-xuat-hien>
+                <div>
+                    <p class="cong-khu__nhan">Danh mục</p>
+                    <h2 class="cong-khu__tieu-de" id="danhMucTieuDe">Sách theo thể loại</h2>
+                </div>
+                <a class="cong-khu__xem" href="/kham-pha">Khám phá theo thể loại<i class="bi bi-caret-right-fill" aria-hidden="true"></i></a>
+            </header>
+            <ul class="danh-muc__luoi">
+                @foreach (var t in Model.KhamPha.TheLoai)
+                {
+                    <li data-xuat-hien>
+                        <a class="danh-muc__o" href="/kham-pha?theLoai=@t.MaTheLoai" data-the-loai="@t.MaTheLoai">
+                            @* Biểu tượng mờ cỡ lớn làm nền (THAM_KHAO_MTA mục 3.6) *@
+                            <i class="bi @(t.BieuTuong ?? "bi-bookmark") danh-muc__nen" aria-hidden="true"></i>
+                            <span class="danh-muc__icon" aria-hidden="true"><i class="bi @(t.BieuTuong ?? "bi-bookmark")"></i></span>
+                            <span class="danh-muc__ten">@t.TenTheLoai</span>
+                            <span class="danh-muc__so">@t.SoDauSach đầu sách</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+}
+
+@* ---------- Khu 5: Khám phá sách ---------- *@
+<partial name="_KhamPha" model="Model.KhamPha" />
+
+@* ---------- Khu 6: Hướng dẫn mượn và đặt chỗ (số liệu từ quy định máy chủ) ---------- *@
+@if (Model.KhamPha.QuyDinh is { } qd)
+{
+    <section id="huong-dan" class="huong-dan" aria-labelledby="huongDanTieuDe">
+        <div class="cong-container">
+            <header class="cong-khu__dau cong-khu__dau--hang" data-xuat-hien>
+                <div>
+                    <p class="cong-khu__nhan">Hướng dẫn</p>
+                    <h2 class="cong-khu__tieu-de" id="huongDanTieuDe">Mượn sách và đặt chỗ</h2>
+                </div>
+                <a class="cong-khu__xem" href="/huong-dan">Xem hướng dẫn đầy đủ<i class="bi bi-caret-right-fill" aria-hidden="true"></i></a>
+            </header>
+            <ol class="huong-dan__buoc">
+                <li data-xuat-hien><span class="huong-dan__so">1</span><i class="bi bi-search" aria-hidden="true"></i><h3>Tìm và mở sách</h3><p>Lướt kệ sách nổi bật hoặc tìm theo tên, tác giả, từ khóa rồi mở sách để xem thông tin và số bản còn có thể mượn.</p></li>
+                <li data-xuat-hien><span class="huong-dan__so">2</span><i class="bi bi-bookmark-plus" aria-hidden="true"></i><h3>Bấm Đặt chỗ</h3><p>Hệ thống giữ 1 bản cho bạn trong <strong>@qd.SoGioGiu giờ</strong>. Đăng nhập bằng mã SV/HV/CB để đặt chỗ.</p></li>
+                <li data-xuat-hien><span class="huong-dan__so">3</span><i class="bi bi-person-badge" aria-hidden="true"></i><h3>Đến quầy trong @qd.SoGioGiu giờ</h3><p>Mang theo thẻ bạn đọc đến @qd.QuayNhan, đọc mã đặt chỗ trên vé giữ chỗ.</p></li>
+                <li data-xuat-hien><span class="huong-dan__so">4</span><i class="bi bi-bag-check" aria-hidden="true"></i><h3>Nhận sách và Phiếu mượn</h3><p>Nhân viên lập Phiếu mượn sách; hạn trả tùy đối tượng (ví dụ @string.Join(", ", qd.DoiTuong.Select(d => $"{d.DoiTuong.ToLowerInvariant()} {d.SoNgayMuon} ngày"))).</p></li>
+            </ol>
+            <p class="huong-dan__luu-y"><i class="bi bi-info-circle" aria-hidden="true"></i>Quá @qd.SoGioGiu giờ không đến nhận, hệ thống tự hủy đặt chỗ và trả bản sách về kệ. Mỗi bạn đọc giữ tối đa <strong>@qd.ToiDaDangGiu đặt chỗ</strong> cùng lúc.</p>
+        </div>
+    </section>
+}
+
+@* ---------- Khu 7: Thư viện bằng số – truy vấn thật, đếm lên khi cuộn tới ---------- *@
+@if (Model.KhamPha.SoLieu is { } sl)
+{
+    var vn = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    <section id="so-lieu" class="so-lieu-tv" aria-labelledby="soLieuTieuDe">
+        <div class="cong-container">
+            <header class="cong-khu__dau cong-khu__dau--giua" data-xuat-hien>
+                <p class="cong-khu__nhan">Thư viện bằng số</p>
+                <h2 class="cong-khu__tieu-de" id="soLieuTieuDe">Những con số hôm nay</h2>
+                <span class="cong-khu__gach" aria-hidden="true"></span>
+            </header>
+            <ul class="so-lieu-tv__luoi">
+                @foreach (var (gt, nhan, icon) in new[] { (sl.SoDauSach, "đầu sách", "bi-journals"), (sl.SoBanSach, "bản sách", "bi-book"),
+                                                          (sl.SoBanDoc, "bạn đọc", "bi-people"), (sl.LuotMuonThangNay, "lượt mượn tháng này", "bi-arrow-left-right") })
+                {
+                    <li data-xuat-hien><span class="so-lieu-tv__vong" aria-hidden="true"><i class="bi @icon"></i></span><strong class="so-lieu-tv__so" data-dem-len="@gt">@gt.ToString("N0", vn)</strong><span>@nhan</span></li>
+                }
+            </ul>
+        </div>
+    </section>
+}
+
+@* ---------- Khu 8: Thông tin thư viện (appsettings ThuVien:ThongTin – chỉ hiện khi đã có dữ liệu thật, D21) ---------- *@
+@if (tt.GioMoCua.Count > 0 || !string.IsNullOrWhiteSpace(tt.DiaChi) || !string.IsNullOrWhiteSpace(tt.Email) || !string.IsNullOrWhiteSpace(tt.DienThoai) || !string.IsNullOrWhiteSpace(tt.NoiQuy))
+{
+    <section id="thong-tin-thu-vien" class="thong-tin-tv" aria-labelledby="thongTinTieuDe">
+        <div class="cong-container">
+            <header class="cong-khu__dau" data-xuat-hien>
+                <p class="cong-khu__nhan">Thông tin thư viện</p>
+                <h2 class="cong-khu__tieu-de" id="thongTinTieuDe">@tt.TenThuVien</h2>
+            </header>
+            <div class="thong-tin-tv__luoi">
+                @if (tt.GioMoCua.Count > 0)
+                {
+                    <div><h3>Giờ mở cửa</h3><ul class="thong-tin-tv__gio">@foreach (var (k, v) in tt.GioMoCua) { <li><span>@k</span><span>@v</span></li> }</ul></div>
+                }
+                <div>
+                    <h3>Liên hệ</h3>
+                    @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <p><i class="bi bi-geo-alt" aria-hidden="true"></i> @tt.DiaChi</p> }
+                    @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <p><i class="bi bi-telephone" aria-hidden="true"></i> <a href="tel:@tt.DienThoai">@tt.DienThoai</a></p> }
+                    @if (!string.IsNullOrWhiteSpace(tt.Email)) { <p><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:@tt.Email">@tt.Email</a></p> }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(tt.NoiQuy)) { <div><h3>Nội quy</h3><p>@tt.NoiQuy</p></div> }
+            </div>
+        </div>
+    </section>
+}
 @section Scripts {
     <script type="module" src="/js/cong/hero.js" asp-append-version="true"></script>
+    <script type="module" src="/js/cong/kham-pha.js" asp-append-version="true"></script>
     @if (Model.Ke is not null)
     {
         <script type="module" src="/js/cong/coverflow.js" asp-append-version="true"></script>

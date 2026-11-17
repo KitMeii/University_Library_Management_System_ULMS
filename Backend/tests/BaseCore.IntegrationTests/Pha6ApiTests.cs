@@ -12,6 +12,7 @@ namespace BaseCore.IntegrationTests;
 /// MỘT bản được tạo trực tiếp bằng SQL (CSDL ThuVien_Test) cho các kiểm thử “bản cuối cùng”.
 /// Tác vụ nền quét mỗi 3 giây trong bộ kiểm thử (DATCHO_CHU_KY_PHUT=0.05).
 /// </summary>
+[Collection("ThongKe")]
 public class Pha6ApiTests
 {
     private const string MatKhauBd = "Docgia@123";
@@ -57,7 +58,7 @@ public class Pha6ApiTests
     {
         var ma = Ngau("BK", 10);
         var sv = Ngau("DCK", 12);
-        var homNay = DateOnly.FromDateTime(DateTime.Today);
+        var homNay = DateOnly.FromDateTime(GioVietNam.HomNay);
         var ngaySinh = new DateOnly(1995, 3, 14);
         await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/ban-doc", new
         {
@@ -381,7 +382,7 @@ public class Pha6ApiTests
         using var n1 = await NhanVienAsync("muontra");
         var ma = Ngau("BK", 10);
         var sv = Ngau("KHK", 12);
-        var homNay = DateOnly.FromDateTime(DateTime.Today);
+        var homNay = DateOnly.FromDateTime(GioVietNam.HomNay);
         var ngaySinh = new DateOnly(2001, 6, 2);
         await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/ban-doc", new
         {

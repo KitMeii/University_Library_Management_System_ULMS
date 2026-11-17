@@ -84,7 +84,7 @@ case "$LOAI" in unit|all) chay_unit ;; esac
 case "$LOAI" in integration|e2e|anh|all) khoi_dong ;; esac
 case "$LOAI" in anh|all) echo "== Chụp bộ ảnh giao diện (CSDL sạch) =="; chay_e2e "FullyQualifiedName~ChupAnh" anh.trx ;; esac
 case "$LOAI" in integration|all) chay_tich_hop ;; esac
-case "$LOAI" in e2e|all) echo "== E2E (Playwright) =="; chay_e2e "FullyQualifiedName!~ChupAnh" e2e.trx ;; esac
+case "$LOAI" in e2e|all) echo "== E2E (Playwright) =="; chay_e2e "${E2E_LOC:-FullyQualifiedName!~ChupAnh}" e2e.trx ;; esac
 
 [ $LOI = 0 ] && echo "== Tất cả kiểm thử đạt ==" || echo "== CÓ KIỂM THỬ KHÔNG ĐẠT – xem artifacts/test-results =="
 exit $LOI

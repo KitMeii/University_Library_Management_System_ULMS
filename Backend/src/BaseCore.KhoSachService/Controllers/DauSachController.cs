@@ -109,8 +109,32 @@ public sealed class KeSachController(KeSachService service) : ControllerBase
 [ApiController]
 [Route("api/cong/sach")]
 [AllowAnonymous]
-public sealed class SachCongController(KeSachService service) : ControllerBase
+public sealed class SachCongController(KeSachService service, KhamPhaService khamPha) : ControllerBase
 {
+    /// <summary>Khu 5 Khám phá sách / tìm kiếm (file 04): q (tên sách, tác giả, ISBN, từ khóa), thể loại, năm xb, còn sách, sắp xếp.</summary>
+    [HttpGet]
+    public Task<KetQuaKhamPha> Tim([FromQuery] string? q, [FromQuery] string? theLoai, [FromQuery] int? namTu, [FromQuery] int? namDen,
+        [FromQuery] bool conSach = false, [FromQuery] string? sapXep = null, [FromQuery] int? trang = null, [FromQuery] int? coTrang = null,
+        CancellationToken ct = default) => khamPha.TimAsync(q, theLoai, namTu, namDen, conSach, sapXep, trang, coTrang, ct);
+
+    /// <summary>Gợi ý từ khóa phổ biến dưới thanh tìm kiếm Hero.</summary>
+    [HttpGet("tu-khoa")]
+    public Task<List<TuKhoaPhoBien>> TuKhoa([FromQuery] int soLuong = 8, CancellationToken ct = default) => khamPha.TuKhoaPhoBienAsync(soLuong, ct);
+
+    /// <summary>Khu 7 “Thư viện bằng số”.</summary>
+    [HttpGet("so-lieu")]
+    public Task<SoLieuThuVien> SoLieu(CancellationToken ct) => khamPha.SoLieuAsync(ct);
+
     [HttpGet("{maDauSach}")]
     public Task<SachPreviewDto> Sach(string maDauSach, CancellationToken ct) => service.SachAsync(maDauSach, ct);
+}
+
+/// <summary>Khu 4 Danh mục thể loại (file 04): thể loại có đầu sách + số đầu sách – công khai.</summary>
+[ApiController]
+[Route("api/cong/the-loai")]
+[AllowAnonymous]
+public sealed class TheLoaiCongController(KhamPhaService khamPha) : ControllerBase
+{
+    [HttpGet]
+    public Task<List<TheLoaiCong>> DanhSach(CancellationToken ct) => khamPha.TheLoaiAsync(ct);
 }

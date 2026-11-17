@@ -35,13 +35,6 @@
 .hop-dang-nhap .phu { color: var(--text-2); margin: 0 0 24px; }
 .cong-truong { margin-bottom: 16px; }
 .cong-truong label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text); }
-.cong-o {
-  width: 100%; min-height: 46px; padding: 10px 14px; border-radius: 10px;
-  border: 1px solid var(--border); background: rgba(255, 255, 255, .9);
-  font: 400 15px/1.3 var(--font); color: var(--text);
-  transition: border-color .2s ease, box-shadow .2s ease;
-}
-.cong-o:focus { outline: none; border-color: var(--emerald); box-shadow: var(--focus); }
 .cong-loi {
   display: flex; gap: 8px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; margin-bottom: 16px;
   background: var(--error-nen); color: var(--error); border: 1px solid var(--error-vien); font-size: 14px;

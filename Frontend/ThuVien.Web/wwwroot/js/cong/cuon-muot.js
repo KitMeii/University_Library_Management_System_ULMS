@@ -54,10 +54,20 @@ if (location.hash.length > 1) {
   if (dich) window.addEventListener('load', () => cuonToi(dich), { once: true });
 }
 
-// Xuất hiện khi cuộn (ScrollTrigger, một lần)
-if (window.gsap && window.ScrollTrigger && !giamChuyenDong()) {
-  gsap.utils.toArray('[data-xuat-hien]').forEach((el) => {
-    gsap.from(el, { y: 24, opacity: 0, duration: motion.dur.lg, ease: motion.ease.out, clearProps: 'transform,opacity',
-      scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+// Xuất hiện khi cuộn (ScrollTrigger, một lần – THAM_KHAO_MTA mục 3.4): các phần tử vào khung nhìn cùng lúc được gom lại và
+// xuất hiện so le (tiêu đề → hàng ô/thẻ, stagger.normal); biên độ 24px, dur.lg, ease.out. Xong thì gắn lớp “da-hien”
+// (CSS dùng cho gạch dưới tiêu đề). Giảm chuyển động: hiện ngay, gắn lớp luôn.
+const xuatHien = [...document.querySelectorAll('[data-xuat-hien]')];
+if (window.gsap && window.ScrollTrigger && !giamChuyenDong() && xuatHien.length) {
+  gsap.set(xuatHien, { y: 24, opacity: 0 });
+  ScrollTrigger.batch(xuatHien, {
+    start: 'top 88%',
+    once: true,
+    onEnter: (nhom) => gsap.to(nhom, {
+      y: 0, opacity: 1, duration: motion.dur.lg, ease: motion.ease.out, stagger: motion.stagger.normal, overwrite: true,
+      clearProps: 'transform,opacity', onStart: () => nhom.forEach((e) => e.classList.add('da-hien'))
+    })
   });
+} else {
+  xuatHien.forEach((e) => e.classList.add('da-hien'));
 }

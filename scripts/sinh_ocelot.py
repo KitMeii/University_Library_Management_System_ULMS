@@ -29,6 +29,7 @@ ROUTES = [
     ("/api/quan-tri/thong-ke/n1", "muontra", True),
     ("/api/cong/dang-nhap", "muontra", False),
     ("/api/cong/kich-hoat", "muontra", False),
+    ("/api/cong/quy-dinh", "muontra", False),  # quy định mượn/đặt chỗ công khai (Pha 7)
     ("/api/cong/tai-khoan", "muontra", True),
     ("/api/cong/dat-cho", "muontra", True),
     ("/api/cong/thong-bao", "muontra", True),

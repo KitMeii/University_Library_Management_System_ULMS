@@ -99,8 +99,13 @@ function trangTrai(s) {
   if (s.tuKhoa?.length) {
     const tk = h('div', 'bp-tu-khoa');
     tk.setAttribute('aria-label', 'Từ khóa');
-    // Tìm theo từ khóa: trang Khám phá sách ở Pha 7 – hiện là nhãn
-    for (const k of s.tuKhoa) tk.append(h('span', 'bp-chip', k));
+    // Nút nhỏ → tìm theo từ khóa ở trang Khám phá sách (file 06 mục 1)
+    for (const k of s.tuKhoa) {
+      const a = h('a', 'bp-chip', k);
+      a.href = '/kham-pha?q=' + encodeURIComponent(k);
+      a.setAttribute('aria-label', 'Tìm sách theo từ khóa ' + k);
+      tk.append(a);
+    }
     noi.append(tk);
   }
   const goiY = h('p', 'bp-goi-y-lat');
@@ -391,6 +396,7 @@ async function doiYeuThich(phien) {
       if (phien.yeuThich && !giamChuyenDong()) gsap.fromTo(nut.firstChild, { scale: 0.4 }, { scale: 1, duration: motion.dur.md, ease: motion.ease.back });
     }
     thongBaoSr(phien, phien.yeuThich ? 'Đã thêm vào yêu thích.' : 'Đã bỏ khỏi yêu thích.');
+    document.dispatchEvent(new CustomEvent('ulms:yeu-thich-doi', { detail: {} }));
   } catch (err) { window.alert(err.message); }
 }
 
@@ -628,7 +634,7 @@ document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-mo-sach]');
   if (!el || e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
   e.preventDefault();
-  const nguon = el.querySelector('img, .bp-bia, .book__front') || el;
+  const nguon = el.querySelector('img, .the-sach__bia, .bp-bia, .book__front') || el;
   moBookPreview(el.dataset.moSach, { nguon });
 });
 

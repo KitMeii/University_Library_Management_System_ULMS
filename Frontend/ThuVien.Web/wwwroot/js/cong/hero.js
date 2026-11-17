@@ -25,7 +25,8 @@ if (khung && anh.length > 1 && window.gsap) {
   function henGio(giay = h.interval) {
     hen?.kill();
     if (nguoiDung || tamNghi) return;
-    hen = gsap.delayedCall(giay, () => chuyenToi((hien + 1) % anh.length));
+    // Book Preview đang mở: không chuyển ảnh (không chạy cùng lúc với chuyển động sách), hẹn lại lần sau
+    hen = gsap.delayedCall(giay, () => (document.documentElement.classList.contains('bp-dang-mo') ? henGio() : chuyenToi((hien + 1) % anh.length)));
   }
 
   async function chuyenToi(i) {
@@ -55,6 +56,16 @@ if (khung && anh.length > 1 && window.gsap) {
   }
 
   cham.forEach((c, k) => c.addEventListener('click', () => { chuyenToi(k); henGio(h.resumeAfterDot); }));
+  // Nút ← → (THAM_KHAO_MTA mục 3.3): dùng lại đúng hiệu ứng chuyển ảnh ở trên; là <button> nên bấm được bằng Enter/Space
+  document.getElementById('btnHeroTruoc')?.addEventListener('click', () => { chuyenToi((hien - 1 + anh.length) % anh.length); henGio(h.resumeAfterDot); });
+  document.getElementById('btnHeroSau')?.addEventListener('click', () => { chuyenToi((hien + 1) % anh.length); henGio(h.resumeAfterDot); });
+  // Phím ←/→ khi focus đang trong khung Hero (trừ ô nhập)
+  khung.addEventListener('keydown', (e) => {
+    if ((e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') || e.target.closest('input')) return;
+    e.preventDefault();
+    chuyenToi((hien + (e.key === 'ArrowRight' ? 1 : -1) + anh.length) % anh.length);
+    henGio(h.resumeAfterDot);
+  });
 
   nutDung?.addEventListener('click', () => {
     nguoiDung = !nguoiDung;
@@ -74,4 +85,12 @@ if (khung && anh.length > 1 && window.gsap) {
 
   napAnh(anh[1]);
   henGio();
+}
+
+// Gợi ý “Cuộn xuống”: ẩn khi đã cuộn quá 40px (CSS chạy nhấp nhô, tắt khi giảm chuyển động)
+const cuon = document.getElementById('lnkCuonXuong');
+if (cuon) {
+  const capNhat = () => cuon.classList.toggle('an', window.scrollY > 40);
+  window.addEventListener('scroll', capNhat, { passive: true });
+  capNhat();
 }

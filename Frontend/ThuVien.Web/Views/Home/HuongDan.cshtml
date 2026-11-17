@@ -1,0 +1,73 @@
+@model ThuVien.Web.Models.QuyDinhCongVm?
+@{
+    ViewData["Title"] = "Hướng dẫn mượn sách";
+}
+@section Css {
+    <link rel="stylesheet" href="/css/trang-chu.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/kham-pha.css" asp-append-version="true" />
+}
+@* /huong-dan (file 04 mục 3): mượn, gia hạn, trả, đặt chỗ, xử lý vi phạm – số liệu lấy từ quy định đang áp dụng ở máy chủ *@
+<article class="huong-dan-trang" aria-labelledby="huongDanTrangTieuDe">
+    <div class="cong-container huong-dan-trang__than">
+        <h1 class="cong-khu__tieu-de" id="huongDanTrangTieuDe">Hướng dẫn mượn sách</h1>
+        <p class="cong-khu__mo-ta">Quy định mượn, gia hạn, trả, đặt chỗ và xử lý vi phạm tại thư viện.</p>
+
+        <nav class="huong-dan-trang__muc-luc" aria-label="Mục lục">
+            <a href="#muon">Mượn sách</a><a href="#dat-cho">Đặt chỗ trên cổng</a><a href="#gia-han">Gia hạn</a><a href="#tra">Trả sách</a><a href="#vi-pham">Xử lý vi phạm</a><a href="#tai-khoan">Tài khoản</a>
+        </nav>
+
+        <section id="muon" aria-labelledby="hdMuon">
+            <h2 id="hdMuon"><i class="bi bi-journal-arrow-up" aria-hidden="true"></i> Mượn sách</h2>
+            <p>Bạn đọc mang thẻ bạn đọc còn hạn đến quầy mượn trả. Nhân viên kiểm tra điều kiện mượn (thẻ còn hạn, không có sách quá hạn chưa trả, không có biên bản vi phạm chưa thanh toán, chưa mượn đủ số bản tối đa) rồi lập Phiếu mượn sách.</p>
+            @if (Model is not null)
+            {
+                <div class="huong-dan-trang__bang">
+                    <table>
+                        <caption>Số ngày mượn và số bản tối đa theo đối tượng</caption>
+                        <thead><tr><th scope="col">Đối tượng</th><th scope="col">Số ngày được mượn</th><th scope="col">Số bản tối đa</th></tr></thead>
+                        <tbody>
+                            @foreach (var d in Model.DoiTuong)
+                            {
+                                <tr><th scope="row">@d.DoiTuong</th><td>@d.SoNgayMuon ngày</td><td>@d.SoBanToiDa bản</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section id="dat-cho" aria-labelledby="hdDatCho">
+            <h2 id="hdDatCho"><i class="bi bi-bookmark-check" aria-hidden="true"></i> Đặt chỗ trên cổng bạn đọc</h2>
+            <ol>
+                <li>Đăng nhập cổng bằng mã SV/HV/CB (lần đầu: <a href="/kich-hoat">kích hoạt tài khoản</a> bằng mã SV/HV/CB, số thẻ và ngày sinh).</li>
+                <li>Mở sách trên kệ hoặc ở <a href="/kham-pha">Khám phá sách</a>, bấm <strong>Đặt chỗ</strong>: hệ thống giữ 1 bản cho bạn@(Model is null ? "" : $" trong {Model.SoGioGiu} giờ").</li>
+                <li>Đến @(Model?.QuayNhan ?? "quầy mượn trả") trong thời hạn giữ, mang thẻ bạn đọc và mã đặt chỗ (vé giữ chỗ ở mục Tài khoản → Đặt chỗ).</li>
+                <li>Nhân viên lập Phiếu mượn sách cho bản đang giữ; đặt chỗ chuyển “Đã nhận”.</li>
+            </ol>
+            @if (Model is not null)
+            {
+                <p class="huong-dan__luu-y"><i class="bi bi-info-circle" aria-hidden="true"></i>Quá @Model.SoGioGiu giờ không đến nhận, đặt chỗ tự hủy và bản sách trở lại kệ. Hệ thống nhắc khi còn @Model.NhacTruocGio giờ. Mỗi bạn đọc giữ tối đa @Model.ToiDaDangGiu đặt chỗ cùng lúc; số bản đang mượn cộng số bản đang giữ không vượt số bản tối đa.</p>
+            }
+        </section>
+
+        <section id="gia-han" aria-labelledby="hdGiaHan">
+            <h2 id="hdGiaHan"><i class="bi bi-calendar-plus" aria-hidden="true"></i> Gia hạn</h2>
+            <p>Gia hạn thực hiện tại quầy mượn trả trước hạn trả@(Model is null ? "" : $": mỗi lần thêm {Model.SoNgayGiaHan} ngày, tối đa {Model.SoLanGiaHanToiDa} lần cho mỗi bản sách"). Sách đã quá hạn không được gia hạn. Bạn đọc không tự gia hạn trên cổng.</p>
+        </section>
+
+        <section id="tra" aria-labelledby="hdTra">
+            <h2 id="hdTra"><i class="bi bi-journal-arrow-down" aria-hidden="true"></i> Trả sách</h2>
+            <p>Trả sách tại quầy mượn trả; nhân viên lập Phiếu trả sách và ghi tình trạng sách khi trả. Có thể trả một phần số sách của phiếu mượn.</p>
+        </section>
+
+        <section id="vi-pham" aria-labelledby="hdViPham">
+            <h2 id="hdViPham"><i class="bi bi-exclamation-octagon" aria-hidden="true"></i> Xử lý vi phạm</h2>
+            <p>Trả sách quá hạn, làm mất hoặc làm hư hỏng sách sẽ được Bộ phận xử lý vi phạm lập Biên bản vi phạm và thu theo danh mục khoản thu của thư viện. Khi còn biên bản chưa thanh toán, bạn đọc chưa được mượn hoặc đặt chỗ thêm. Xem biên bản của mình ở mục Tài khoản → Vi phạm và khoản phải nộp.</p>
+        </section>
+
+        <section id="tai-khoan" aria-labelledby="hdTaiKhoan">
+            <h2 id="hdTaiKhoan"><i class="bi bi-person-circle" aria-hidden="true"></i> Tài khoản cổng bạn đọc</h2>
+            <p>Quên mật khẩu: đặt lại tại trang <a href="/kich-hoat">Kích hoạt tài khoản</a> bằng mã SV/HV/CB, số thẻ và ngày sinh, hoặc liên hệ thư viện để được hỗ trợ. Nhập sai 5 lần liên tiếp, chức năng tạm khóa 15 phút.</p>
+        </section>
+    </div>
+</article>

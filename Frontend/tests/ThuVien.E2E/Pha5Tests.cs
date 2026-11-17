@@ -33,8 +33,8 @@ public class Pha5Tests(TrinhDuyet td)
         await using var ctx = await td.MayTinhAsync();
         var p = await ctx.NewPageAsync();
         await p.GotoAsync(TrinhDuyet.Web + "/");
-        var nav = await p.Locator(".cong-nav a").AllInnerTextsAsync();
-        Assert.Equal(["Trang chủ", "Kệ sách nổi bật", "Thông tin thư viện"], nav.Select(x => x.Trim()).ToArray());
+        var nav = await p.Locator(".cong-nav__muc > a").AllInnerTextsAsync();
+        Assert.Equal(["Trang chủ", "Khám phá sách", "Danh mục", "Kệ sách nổi bật", "Hướng dẫn mượn sách", "Thông tin thư viện"], nav.Select(x => x.Trim()).ToArray());
         Assert.Equal("Tri thức mở lối – Tương lai rộng mở.", (await p.InnerTextAsync("h1")).Trim());
         // Ảnh đầu không lazy-load, ảnh sau chưa tải trước khi cần
         Assert.Null(await p.GetAttributeAsync(".hero__slide >> nth=0", "loading"));

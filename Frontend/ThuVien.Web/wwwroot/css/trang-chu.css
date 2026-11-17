@@ -260,3 +260,29 @@
 @media (prefers-reduced-motion: reduce) {
   .hero__cham-nut::before, .coverflow__mui-ten, .coverflow__doi-ke, .coverflow__con-tro { transition: none; }
 }
+
+/* ── Hero bổ sung (THAM_KHAO_MTA mục 3.3): nút ← → cạnh chấm, gợi ý “Cuộn xuống” nhấp nhô ── */
+.hero__mui-ten {
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .55); background: var(--hero-phu);
+  color: var(--surface); display: grid; place-items: center; font-size: 16px; cursor: pointer;
+  transition: background-color .15s ease, transform .15s cubic-bezier(.25, .46, .45, .94);
+}
+.hero__mui-ten:hover { background: var(--forest); }
+#btnHeroTruoc:hover { transform: translateX(-2px); }
+#btnHeroSau:hover { transform: translateX(2px); }
+.hero__mui-ten:focus-visible { outline: none; box-shadow: var(--focus); }
+.hero__cuon {
+  position: absolute; z-index: 2; left: 50%; bottom: 22px; transform: translateX(-50%); display: grid; justify-items: center; gap: 6px;
+  color: var(--surface); text-decoration: none; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  transition: opacity .25s cubic-bezier(.25, .46, .45, .94);
+}
+.hero__cuon.an { opacity: 0; pointer-events: none; }
+.hero__cuon:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 8px; }
+.hero__chuot { width: 22px; height: 34px; border: 2px solid currentColor; border-radius: 12px; display: grid; justify-items: center; padding-top: 6px; }
+.hero__chuot span { width: 4px; height: 7px; border-radius: 2px; background: currentColor; animation: hero-chuot 1.6s ease-in-out infinite; }
+@keyframes hero-chuot { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(6px); opacity: .4; } }
+@media (max-width: 767.98px) { .hero__cuon { display: none; } .hero__mui-ten { width: 32px; height: 32px; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero__chuot span { animation: none; }
+  .hero__mui-ten, .hero__cuon { transition: none; }
+}

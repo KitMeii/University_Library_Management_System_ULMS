@@ -11,12 +11,25 @@
         DayOfWeek.Friday => "T6", DayOfWeek.Saturday => "T7", _ => "CN"
     };
     var gioHomNay = tt.GioMoCua.TryGetValue(thu, out var g) ? g : null;
-    // Mục điều hướng: chỉ các khu vực đã có ở trang chủ (Pha 7 thêm Khám phá sách, Danh mục, Hướng dẫn)
+    // Vùng điều hướng (file 04 mục 1): các khu của trang chủ; trang con cuộn về đúng khu qua neo
     var menu = new (string Ten, string Href, string Icon)[]
     {
         ("Trang chủ", "/", "bi-house"),
+        ("Khám phá sách", "/#kham-pha", "bi-search"),
+        ("Danh mục", "/#danh-muc", "bi-grid"),
         ("Kệ sách nổi bật", "/#ke-sach", "bi-bookshelf"),
+        ("Hướng dẫn mượn sách", "/#huong-dan", "bi-signpost"),
         ("Thông tin thư viện", "/#thong-tin", "bi-info-circle"),
+    };
+    // Menu thả xuống “Hướng dẫn mượn sách” – các mục của trang /huong-dan
+    var huongDan = new (string Ten, string Href, string Icon)[]
+    {
+        ("Mượn sách", "/huong-dan#muon", "bi-journal-arrow-up"),
+        ("Đặt chỗ trên cổng", "/huong-dan#dat-cho", "bi-bookmark-check"),
+        ("Gia hạn", "/huong-dan#gia-han", "bi-calendar-plus"),
+        ("Trả sách", "/huong-dan#tra", "bi-journal-arrow-down"),
+        ("Xử lý vi phạm", "/huong-dan#vi-pham", "bi-exclamation-octagon"),
+        ("Tài khoản bạn đọc", "/huong-dan#tai-khoan", "bi-person-circle"),
     };
 }
 <!DOCTYPE html>
@@ -28,6 +41,7 @@
     <link rel="stylesheet" href="/css/tokens-cong.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/base.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/cong.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/cong-dieu-huong.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/book-preview.css" asp-append-version="true" />
     @await RenderSectionAsync("Css", required: false)
 </head>
@@ -48,8 +62,14 @@
                 <span class="cong-header__gio d-none d-md-inline-flex"><i class="bi bi-clock" aria-hidden="true"></i>Hôm nay mở cửa: <strong>@gioHomNay</strong></span>
             }
             <div class="cong-header__phai">
+                <a class="cong-lien-ket" id="lnkTimKiem" href="/kham-pha" aria-label="Tìm kiếm sách" aria-current="@(duongDan == "/kham-pha" ? "page" : null)">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                </a>
                 @if (laBanDoc)
                 {
+                    <a class="cong-lien-ket cong-chuong__nut" id="lnkYeuThich" href="/tai-khoan/yeu-thich" aria-label="Sách yêu thích">
+                        <i class="bi bi-heart" aria-hidden="true"></i><span class="cong-chuong__so" id="soYeuThich" hidden></span>
+                    </a>
                     @* Chuông thông báo: số chưa đọc + 10 thông báo mới nhất (file 07 mục 4) *@
                     <div class="dropdown cong-chuong">
                         <button type="button" class="cong-lien-ket cong-chuong__nut" id="btnChuongCong" data-bs-toggle="dropdown"
@@ -85,7 +105,31 @@
                 <ul>
                     @foreach (var m in menu)
                     {
-                        <li><a href="@m.Href" data-muc="@m.Href" aria-current="@(m.Href == "/" && laTrangChu ? "page" : null)">@m.Ten</a></li>
+                        var con = m.Href == "/#danh-muc" ? "danh-muc" : m.Href == "/#huong-dan" ? "huong-dan" : null;
+                        <li class="cong-nav__muc@(con is null ? "" : " cong-nav__muc--con")">
+                            <a href="@m.Href" data-muc="@m.Href" aria-current="@(m.Href == "/" && laTrangChu ? "page" : null)">@m.Ten</a>
+                            @if (con is not null)
+                            {
+                                @* Menu thả xuống (THAM_KHAO_MTA mục 3.2): mở khi rê chuột, focus, Enter/↓ ở nút mũi tên; Esc đóng *@
+                                <button type="button" class="cong-nav__mo" aria-expanded="false" aria-controls="dd-@con"
+                                        aria-label="@(con == "danh-muc" ? "Mở danh sách thể loại" : "Mở các mục hướng dẫn")"><i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+                                <div class="cong-nav__con" id="dd-@con">
+                                    <ul class="cong-nav__ds" data-ds-the-loai="@(con == "danh-muc" ? "1" : null)">
+                                        @if (con == "danh-muc")
+                                        {
+                                            <li><a href="/kham-pha"><i class="bi bi-grid" aria-hidden="true"></i>Tất cả thể loại</a></li>
+                                        }
+                                        else
+                                        {
+                                            foreach (var (ten, href, icon) in huongDan)
+                                            {
+                                                <li><a href="@href"><i class="bi @icon" aria-hidden="true"></i>@ten</a></li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </li>
                     }
                 </ul>
             </div>
@@ -108,7 +152,30 @@
                 <ul>
                     @foreach (var m in menu)
                     {
-                        <li><a href="@m.Href" data-muc="@m.Href" data-bs-dismiss="offcanvas" aria-current="@(m.Href == "/" && laTrangChu ? "page" : null)"><i class="bi @m.Icon" aria-hidden="true"></i>@m.Ten</a></li>
+                        if (m.Href == "/#danh-muc" || m.Href == "/#huong-dan")
+                        {
+                            var laDanhMuc = m.Href == "/#danh-muc";
+                            @* Điện thoại: nhóm thu gọn (details/summary – không cần JavaScript) *@
+                            <li>
+                                <details class="cong-offcanvas__nhom">
+                                    <summary><i class="bi @m.Icon" aria-hidden="true"></i>@m.Ten<i class="bi bi-chevron-down cong-offcanvas__mui" aria-hidden="true"></i></summary>
+                                    <ul class="cong-offcanvas__con" data-ds-the-loai="@(laDanhMuc ? "1" : null)">
+                                        <li><a href="@m.Href" data-muc="@m.Href" data-bs-dismiss="offcanvas">@(laDanhMuc ? "Tất cả thể loại" : "Mượn sách và đặt chỗ")</a></li>
+                                        @if (!laDanhMuc)
+                                        {
+                                            foreach (var (ten, href, _) in huongDan)
+                                            {
+                                                <li><a href="@href">@ten</a></li>
+                                            }
+                                        }
+                                    </ul>
+                                </details>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a href="@m.Href" data-muc="@m.Href" data-bs-dismiss="offcanvas" aria-current="@(m.Href == "/" && laTrangChu ? "page" : null)"><i class="bi @m.Icon" aria-hidden="true"></i>@m.Ten</a></li>
+                        }
                     }
                 </ul>
             </nav>
@@ -119,37 +186,45 @@
         @RenderBody()
     </main>
 
+    @* Footer (THAM_KHAO_MTA mục 3.9): 3 cột, hoa văn nét mảnh tự vẽ, liên kết có mũi tên; nút lên đầu trang *@
     <footer class="cong-footer" id="thong-tin" aria-labelledby="chanTrangTieuDe">
         <div class="cong-container cong-footer__tren">
-            <div>
+            <div class="cong-footer__cot cong-footer__cot--chinh">
+                <span class="cong-logo__dau cong-footer__logo" aria-hidden="true"><i class="bi bi-book-half"></i></span>
                 <h2 id="chanTrangTieuDe">@tt.TenThuVien</h2>
-                <p class="cong-footer__mo-ta">Hệ thống quản lý mượn trả sách thư viện đại học – tra cứu sách, xem tình trạng còn sách trên kệ.</p>
-                @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <p class="mb-1"><i class="bi bi-geo-alt" aria-hidden="true"></i> @tt.DiaChi</p> }
-                @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <p class="mb-1"><i class="bi bi-telephone" aria-hidden="true"></i> <a href="tel:@tt.DienThoai">@tt.DienThoai</a></p> }
-                @if (!string.IsNullOrWhiteSpace(tt.Email)) { <p class="mb-1"><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:@tt.Email">@tt.Email</a></p> }
+                <p class="cong-footer__mo-ta">Hệ thống quản lý mượn trả sách thư viện đại học – tra cứu sách, xem tình trạng còn sách trên kệ, đặt chỗ và nhận sách tại quầy.</p>
+                <ul class="cong-footer__lien-he">
+                    @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <li><i class="bi bi-geo-alt" aria-hidden="true"></i><span>@tt.DiaChi</span></li> }
+                    @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <li><i class="bi bi-telephone" aria-hidden="true"></i><a href="tel:@tt.DienThoai">@tt.DienThoai</a></li> }
+                    @if (!string.IsNullOrWhiteSpace(tt.Email)) { <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:@tt.Email">@tt.Email</a></li> }
+                </ul>
             </div>
-            <div>
+            <div class="cong-footer__cot">
                 <h3>Liên kết</h3>
-                <ul>
+                <ul class="cong-footer__lien-ket">
+                    <li><a href="/kham-pha">Khám phá sách</a></li>
                     <li><a href="/#ke-sach">Kệ sách nổi bật</a></li>
+                    <li><a href="/huong-dan">Hướng dẫn mượn sách</a></li>
+                    <li><a href="/kich-hoat">Kích hoạt tài khoản</a></li>
                     <li><a href="/dang-nhap">Đăng nhập bạn đọc</a></li>
                     <li><a href="/quan-tri/dang-nhap">Đăng nhập nhân viên</a></li>
                 </ul>
             </div>
-            @if (tt.GioMoCua.Count > 0)
+            @if (tt.GioMoCua.Count > 0 || !string.IsNullOrWhiteSpace(tt.NoiQuy))
             {
-                <div>
-                    <h3>Giờ mở cửa</h3>
-                    <ul class="cong-footer__gio">
-                        @foreach (var (k, v) in tt.GioMoCua) { <li class="@(k == thu ? "hom-nay" : null)"><span>@k</span><span>@v</span></li> }
-                    </ul>
-                </div>
-            }
-            @if (!string.IsNullOrWhiteSpace(tt.NoiQuy))
-            {
-                <div>
-                    <h3>Nội quy</h3>
-                    <p class="mb-0">@tt.NoiQuy</p>
+                <div class="cong-footer__cot">
+                    @if (tt.GioMoCua.Count > 0)
+                    {
+                        <h3>Giờ mở cửa</h3>
+                        <ul class="cong-footer__gio">
+                            @foreach (var (k, v) in tt.GioMoCua) { <li class="@(k == thu ? "hom-nay" : null)"><span>@k</span><span>@v</span></li> }
+                        </ul>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(tt.NoiQuy))
+                    {
+                        <h3>Nội quy</h3>
+                        <p class="mb-0">@tt.NoiQuy</p>
+                    }
                 </div>
             }
         </div>
@@ -157,6 +232,7 @@
             <div class="cong-container">© @DateTime.Now.Year @tt.TenThuVien. Hệ thống quản lý mượn trả sách thư viện đại học.</div>
         </div>
     </footer>
+    <button type="button" class="cong-len-dau" id="btnLenDau" aria-label="Lên đầu trang" hidden><i class="bi bi-arrow-up" aria-hidden="true"></i></button>
 
     <partial name="_ScriptChung" />
     <script src="/lib/gsap/3.13.0/ScrollTrigger.min.js"></script>

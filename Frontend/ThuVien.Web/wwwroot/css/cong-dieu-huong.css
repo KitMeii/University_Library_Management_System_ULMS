@@ -1,0 +1,99 @@
+/* Điều hướng cổng bạn đọc bổ sung Pha 7 theo THAM_KHAO_MTA.md (đã duyệt 17/11/2026):
+   header thu gọn khi cuộn (mục 3.1), menu thả xuống (3.2), nhóm thu gọn trên điện thoại, footer 3 cột + hoa văn (3.9),
+   nút lên đầu trang. Chỉ transform/opacity; thời lượng theo motion.config.js (dur.xs .15s, dur.sm .25s, ease.out ≈ power2.out). */
+
+/* ── Header thu gọn: JS dịch cả header bằng transform; ẩn dần logo khi thu gọn ── */
+.cong-header { will-change: auto; }
+.cong-header .cong-header__tien-ich { transition: opacity .25s cubic-bezier(.25, .46, .45, .94); }
+.cong-header.thu-gon .cong-header__tien-ich { opacity: 0; }
+
+/* ── Menu thả xuống ── */
+.cong-nav__muc { position: relative; display: flex; align-items: center; }
+.cong-nav__muc--con > a { padding-right: 4px; }
+.cong-nav__mo {
+  display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 6px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--hdr-text); cursor: pointer; font-size: 12px;
+  transition: transform .25s cubic-bezier(.25, .46, .45, .94), background-color .2s ease;
+}
+.cong-nav__mo:hover { background: var(--hdr-hover-bg); }
+.cong-nav__con {
+  position: absolute; left: 0; top: 100%; z-index: 1040; min-width: 280px; padding: 8px; border-radius: 0 12px 12px 12px;
+  background: var(--surface); box-shadow: 0 18px 36px rgba(11, 42, 37, .18); font-family: var(--font);
+  opacity: 0; visibility: hidden; transform: translateY(-6px); pointer-events: none;
+  transition: opacity .25s cubic-bezier(.25, .46, .45, .94), transform .25s cubic-bezier(.25, .46, .45, .94), visibility 0s linear .25s;
+}
+/* Mở: rê chuột, focus bên trong, hoặc bấm nút mũi tên; [data-dong] (vừa Esc) thắng :focus-within */
+.cong-nav__muc--con:hover > .cong-nav__con,
+.cong-nav__muc--con:focus-within:not([data-dong]) > .cong-nav__con,
+.cong-nav__muc--con[data-mo] > .cong-nav__con {
+  opacity: 1; visibility: visible; transform: none; pointer-events: auto; transition-delay: 0s;
+}
+/* Tab nền trắng nối liền bảng con (kiểu tham khảo) */
+.cong-nav__muc--con:hover, .cong-nav__muc--con:focus-within:not([data-dong]), .cong-nav__muc--con[data-mo] {
+  background: var(--surface); border-radius: 10px 10px 0 0;
+}
+.cong-nav__muc--con:hover > a, .cong-nav__muc--con:focus-within:not([data-dong]) > a, .cong-nav__muc--con[data-mo] > a,
+.cong-nav__muc--con:hover > .cong-nav__mo, .cong-nav__muc--con:focus-within:not([data-dong]) > .cong-nav__mo, .cong-nav__muc--con[data-mo] > .cong-nav__mo {
+  color: var(--forest);
+}
+.cong-nav__muc--con[data-mo] > .cong-nav__mo, .cong-nav__muc--con:hover > .cong-nav__mo { transform: rotate(180deg); }
+.cong-nav__ds { list-style: none; margin: 0; padding: 0; display: grid !important; gap: 2px; }
+.cong-nav__ds a {
+  display: flex !important; align-items: center; gap: 10px; padding: 9px 12px !important; border-radius: 8px;
+  font-size: 15px !important; font-weight: 600 !important; color: var(--forest) !important; white-space: nowrap;
+}
+.cong-nav__ds a:hover, .cong-nav__ds a:focus-visible { background: var(--sage-1); outline: none; }
+.cong-nav__ds a .bi { color: var(--emerald); width: 18px; }
+.cong-nav__ds a::after { display: none; }
+.cong-nav__so { margin-left: auto; padding-left: 16px; font-size: 12px; color: var(--text-2); font-weight: 600; }
+
+/* ── Điện thoại: nhóm thu gọn trong Offcanvas ── */
+.cong-offcanvas__nhom summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px; border-radius: 8px;
+  color: var(--hdr-text); font: 700 19px/1.3 var(--font-header);
+}
+.cong-offcanvas__nhom summary:hover { background: var(--hdr-hover-bg); color: var(--hdr-hover); }
+.cong-offcanvas__nhom summary:focus-visible { outline: none; box-shadow: var(--focus); }
+.cong-offcanvas__nhom summary::-webkit-details-marker { display: none; }
+.cong-offcanvas__mui { margin-left: auto; transition: transform .25s cubic-bezier(.25, .46, .45, .94); }
+.cong-offcanvas__nhom[open] .cong-offcanvas__mui { transform: rotate(180deg); }
+.cong-offcanvas__con { list-style: none; margin: 0 0 6px; padding: 0 0 0 34px; }
+.cong-offcanvas__con a { min-height: 44px; padding: 6px 12px; font-size: 16px; font-weight: 600; }
+
+/* ── Footer 3 cột + hoa văn nét mảnh tự vẽ (img/hoa-van-sach.svg, opacity thấp) ── */
+.cong-footer { position: relative; overflow: hidden; }
+.cong-footer::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .07;
+  background: url("/img/hoa-van-sach.svg") right -40px top -20px / 520px auto no-repeat;
+}
+.cong-footer__tren { position: relative; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+.cong-footer__logo { margin-bottom: 10px; }
+.cong-footer__lien-he, .cong-footer__lien-ket { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.cong-footer__lien-he li { display: flex; gap: 10px; align-items: flex-start; }
+.cong-footer__lien-he .bi { color: var(--emerald); margin-top: 2px; }
+.cong-footer__lien-ket a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.cong-footer__lien-ket a::before {
+  content: "\F231"; font-family: bootstrap-icons; font-size: 11px; color: var(--emerald);
+  transition: transform .15s cubic-bezier(.25, .46, .45, .94);
+}
+.cong-footer__lien-ket a:hover::before, .cong-footer__lien-ket a:focus-visible::before { transform: translateX(4px); }
+@media (max-width: 767.98px) { .cong-footer__tren { grid-template-columns: 1fr; gap: 24px; } }
+
+/* ── Nút lên đầu trang ── */
+.cong-len-dau {
+  position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 1020; width: 48px; height: 48px;
+  border-radius: 50%; border: 0; background: var(--emerald); color: #fff; font-size: 20px; display: grid; place-items: center;
+  box-shadow: 0 8px 20px rgba(11, 42, 37, .25); cursor: pointer;
+  animation: cong-len-dau-vao .25s cubic-bezier(.25, .46, .45, .94);
+}
+.cong-len-dau[hidden] { display: none; }
+.cong-len-dau:hover { background: var(--forest); }
+.cong-len-dau:focus-visible { outline: none; box-shadow: var(--focus), 0 8px 20px rgba(11, 42, 37, .25); }
+html.bp-dang-mo .cong-len-dau { display: none; }
+@keyframes cong-len-dau-vao { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cong-nav__con, .cong-nav__mo, .cong-offcanvas__mui, .cong-footer__lien-ket a::before, .cong-header .cong-header__tien-ich { transition: none; }
+  .cong-nav__con { transform: none; }
+  .cong-len-dau { animation: none; }
+}

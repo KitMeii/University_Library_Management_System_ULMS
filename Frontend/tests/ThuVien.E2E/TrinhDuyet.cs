@@ -87,7 +87,8 @@ public sealed class TrinhDuyet : IAsyncLifetime
         // Ảnh toàn trang: hàng nút “dính đáy” được đặt về vị trí tĩnh để không đè lên lưới trong ảnh ghép
         if (toanTrang)
         {
-            await page.AddStyleTagAsync(new() { Content = ".qt-hang-nut{position:static!important}" });
+            // content-visibility:auto (khu dưới màn hình chưa vẽ – Pha 7) không áp dụng cho ảnh ghép toàn trang: buộc vẽ hết
+            await page.AddStyleTagAsync(new() { Content = ".qt-hang-nut{position:static!important} *{content-visibility:visible!important}" });
             // Thanh trên/sidebar cố định theo khung nhìn: cuộn về đầu trang để ảnh ghép không lệch
             await page.EvaluateAsync("() => { document.activeElement?.blur(); window.scrollTo(0, 0); }");
         }

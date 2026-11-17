@@ -1,0 +1,13 @@
+@model ThuVien.Web.Models.KhamPhaVm
+@{
+    ViewData["Title"] = "Khám phá sách";
+}
+@section Css {
+    <link rel="stylesheet" href="/css/trang-chu.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/kham-pha.css" asp-append-version="true" />
+}
+@* /kham-pha – Khám phá sách toàn trang (file 04 mục 3): cùng thành phần với khu 5 trang chủ, bộ lọc năm xuất bản nâng cao *@
+<partial name="_KhamPha" model="Model" />
+@section Scripts {
+    <script type="module" src="/js/cong/kham-pha.js" asp-append-version="true"></script>
+}

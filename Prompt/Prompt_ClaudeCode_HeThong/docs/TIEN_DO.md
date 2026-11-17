@@ -10,7 +10,7 @@
 | 4 – Báo cáo MB06–MB07 + tổng quan | **Đã duyệt** (16/11/2026) | D50–D54 đã duyệt; X09 ghi vào file 02 (9 bảng mở rộng); ảnh 4.5.1–4.5.2, Tong_quan_N1–N4 → đủ bộ ảnh Bài 4 (`anh_giao_dien/DANH_SACH_ANH.md`) |
 | 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | **Đã duyệt** (17/11/2026) | D55–D59, D61 duyệt; D60 chờ số đo máy thật của chủ dự án; ảnh Cong_*, Pha5_* |
 | 6 – Book Preview + đặt chỗ + tài khoản + Quầy đặt chỗ | **Đã duyệt** (17/11/2026) | D62–D71 duyệt (D63 thêm loại “Đặt chỗ bị hủy”, D69 băm CSP thay bản vá); ảnh Cong_Book_Preview*, Cong_Tai_khoan*, Pha6_* |
-| 7 – Trang chủ hoàn chỉnh | Chưa làm | |
+| 7 – Trang chủ hoàn chỉnh + học từ trang tham khảo | **Xong, đã commit + push theo yêu cầu chủ dự án** (18/11/2026) | D78 (FLIP bằng GSAP core) và D79 (THAM_KHAO_MTA) đã duyệt; D72–D77 *chờ duyệt* (D75 cần chủ dự án cung cấp thông tin thư viện); ảnh Cong_Trang_chu_hoan_chinh*, Cong_Kham_pha*, Cong_Huong_dan*, Cong_Menu*, Cong_Header_thu_gon, so_sanh_mta/ |
 | 8 – Hoàn thiện, prod.yml | Chưa làm | |
 
 ## Pha 1 – đã làm
@@ -77,7 +77,19 @@
 - Duyệt 17/11/2026: D63 thêm loại THONGBAO “Đặt chỗ bị hủy” (migration + file 02); D65 thêm kiểm thử Production; D69 bỏ bản vá page-flip, CSP băm SHA-256, kiểm thử giải mã Code128 (`MaVachTests`); xóa 2 đặt chỗ + thông báo do smoke test để lại trong CSDL ThuVien.
 - Kiểm thử: đơn vị `VongDoiDatChoTests`, `CheDoAnhBai4Tests`; tích hợp `Pha6ApiTests` (20 yêu cầu song song → đúng 1 thành công, tua 24 giờ → Hết hạn + thông báo, nhắc 1 lần, nhận tại quầy, từng điều kiện, kích hoạt/khóa tạm, trang cá nhân so truy vấn kiểm chứng, phân quyền); E2E `Pha6Tests` (Book Preview: Back/liên kết sâu/focus/điện thoại/giảm chuyển động/CSP thật/axe; đặt chỗ có đăng nhập trong trang; trang cá nhân + axe; N1 dgvDatCho, Quầy đặt chỗ; chế độ ảnh Bài 4 ẩn phần mở rộng); ảnh `ChupAnhPha6Tests`.
 
+## Pha 7 – đã làm
+- Trang chủ đủ khu theo file 04 mục 1: header (Trang chủ, Khám phá sách, Danh mục, Kệ sách nổi bật, Hướng dẫn mượn sách, Thông tin thư viện; Tìm kiếm, Yêu thích có số lượng, Thông báo), Hero + thanh tìm kiếm + gợi ý từ khóa phổ biến, kệ coverflow, Danh mục thể loại (ô thể loại + số đầu sách), Khám phá sách, Hướng dẫn mượn và đặt chỗ (số liệu từ quy định máy chủ), Thư viện bằng số (đếm lên khi cuộn tới), Thông tin thư viện (chỉ khi có dữ liệu – D75), footer.
+- Khám phá sách: tìm tên sách/tác giả/ISBN/từ khóa không dấu (D72), lọc thể loại, năm xuất bản, chỉ sách còn có thể mượn, sắp xếp (mới nhất, tên, mượn nhiều, năm); “Xem thêm”; hiệu ứng FLIP tự viết bằng GSAP core khi đổi bộ lọc (bỏ plugin Flip – D78); không đổi route, không tải lại, giữ danh sách cũ khi tải, yêu cầu mới nhất thắng. Book Card 2:3 (bìa ảnh hoặc bìa chữ), nhãn tình trạng, tim yêu thích, bấm → Book Preview. Từ khóa trong Book Preview → `/kham-pha?q=`.
+- Trang `/kham-pha` (bộ lọc năm từ – đến), `/huong-dan` (mượn, đặt chỗ, gia hạn, trả, vi phạm, tài khoản – số liệu từ `GET /api/cong/quy-dinh`, D74).
+- API khosach: `GET /api/cong/sach` (tìm/lọc/sắp xếp/phân trang), `/api/cong/sach/tu-khoa`, `/api/cong/sach/so-lieu`, `/api/cong/the-loai`; muontra `GET /api/cong/quy-dinh` (route gateway công khai mới).
+- Hiệu năng: khu dưới kệ sách dùng `content-visibility: auto` – kéo kệ ở CPU chậm 4× giữ ~25 fps trong container không GPU (trang dài làm tụt xuống 15,8 fps trước khi tối ưu); CLS < 0,1.
+- Kiểm thử: tích hợp `Pha7ApiTests` (tìm không dấu so truy vấn kiểm chứng, lọc, phân trang, thể loại/số liệu/từ khóa/quy định khớp CSDL); E2E `Pha7Tests` (đủ khu đúng thứ tự, tìm Hero không đổi route/không tải lại, lọc thể loại, Xem thêm, yêu cầu mới nhất thắng, thẻ → Book Preview → từ khóa → /kham-pha, /huong-dan, axe + CSP thật + CLS, điện thoại 2 cột); ảnh `ChupAnhPha7Tests`.
+- Học từ trang tham khảo (THAM_KHAO_MTA.md, duyệt 17/11/2026 – D79): header máy tính thu gọn khi cuộn; menu thả xuống “Danh mục” (thể loại thật) và “Hướng dẫn mượn sách” dùng được bằng bàn phím (↓ mở, ↑↓ di chuyển, Esc đóng trả focus), trên điện thoại là nhóm thu gọn trong Offcanvas; Hero thêm nút ← → (và phím ← →) + gợi ý “Cuộn xuống”; tiêu đề khu có vạch nhấn + “Xem tất cả ▸”; ô thể loại có biểu tượng nền mờ; số liệu trong vòng viền; footer 3 cột + hoa văn kệ sách tự vẽ; nút lên đầu trang; xuất hiện khi cuộn so le (`ScrollTrigger.batch`). Không thêm thư viện, chỉ transform/opacity, có bản giảm chuyển động; CSP không `'unsafe-hashes'`/`'unsafe-inline'`. Ảnh tham khảo không đưa vào git.
+- Đo lại kệ sách sau thay đổi (Chromium headless trong container, không GPU): hai lần chạy: CPU thường 59–59,6 fps, CPU chậm 4× 28,1–34,4 fps (trước thay đổi 60 / 24,6) – không giảm.
+- Sửa kiểm thử tích hợp tính “hôm nay” theo giờ máy (UTC trong container) – lệch một ngày từ 00:00 đến 07:00 giờ Việt Nam; nay dùng `GioVietNam.HomNay` trùng IClock của service.
+- Kiểm thử bổ sung: E2E `Pha7MtaTests` (menu thả xuống bằng bàn phím + nạp thể loại + bấm thể loại lọc không tải lại, nhóm thu gọn điện thoại, mũi tên Hero chuột/bàn phím, nút lên đầu + header thu gọn, CSP không unsafe, giảm chuyển động); ảnh `ChupAnhPha7Tests.Chup_DieuHuong_ThamKhao`; ảnh so sánh trước/sau trong `anh_giao_dien/so_sanh_mta/`.
+
 ## Việc còn lại / chuyển pha sau
-- Tìm theo từ khóa từ Book Preview, trang Khám phá sách → Pha 7.
+- Thông tin thư viện (ThuVien:ThongTin – giờ mở cửa, địa chỉ, email, điện thoại, nội quy): chờ chủ dự án cung cấp (D21, D75).
 - `docker-compose.prod.yml` → Pha 8. Kiểm thử đã tách bộ hệ thống riêng (project `ulms-test`, CSDL `ThuVien_Test` – D49).
 - Không làm đặt lại mật khẩu qua email (D68 – chủ dự án quyết định): bạn đọc đặt lại tại /kich-hoat hoặc nhờ N4.

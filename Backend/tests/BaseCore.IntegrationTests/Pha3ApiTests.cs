@@ -38,14 +38,14 @@ public class Pha3ApiTests
     }
 
     private static string Ngau(string tienTo, int doDai) => (tienTo + Guid.NewGuid().ToString("N").ToUpperInvariant())[..doDai];
-    private static string HomNay => DateTime.Today.ToString("yyyy-MM-dd");
+    private static string HomNay => GioVietNam.HomNay.ToString("yyyy-MM-dd");
 
     /// <summary>Bạn đọc mới (Cán bộ) để kiểm thử – trả về (maBanDoc, maSvHvCb).</summary>
     private static async Task<(string Ma, string MaSv)> BanDocMoiAsync(HttpClient n1)
     {
         var ma = Ngau("BK", 10);
         var sv = Ngau("CBK", 12);
-        var homNay = DateOnly.FromDateTime(DateTime.Today);
+        var homNay = DateOnly.FromDateTime(GioVietNam.HomNay);
         await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/ban-doc", new
         {
             maBanDoc = ma, hoTen = "Bạn đọc kiểm thử chứng từ", doiTuong = "Cán bộ", maSvHvCb = sv, lopDonVi = "Phòng thử nghiệm",
@@ -88,11 +88,11 @@ public class Pha3ApiTests
         var sach = await SachSanSangAsync(n1, bd, 3);
         var pm = await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/phieu-muon", new { maBanDoc = bd, chiTiet = new[] { DongMuon(sach[0]), DongMuon(sach[1]) } }));
         var soPm = pm.GetProperty("so").GetString()!;
-        Assert.Matches(new Regex($@"^PM{DateTime.Today:yyMM}\d{{4}}$"), soPm); // số cấp khi lưu, đúng C(10)
+        Assert.Matches(new Regex($@"^PM{GioVietNam.HomNay:yyMM}\d{{4}}$"), soPm); // số cấp khi lưu, đúng C(10)
         Assert.True(pm.GetProperty("laPhieuMoi").GetBoolean());
         Assert.Equal(1, await ScalarAsync("SELECT COUNT(*) FROM quantri.NHATKY_HOATDONG WHERE noidung LIKE @c", ("@c", $"01.01.03 Lập Phiếu mượn sách {soPm}%")));
         var hanTra = (DateTime)(await ScalarAsync("SELECT TOP 1 hantra FROM muontra.CT_PHIEUMUON WHERE so_pmuon = @s", ("@s", soPm)))!;
-        Assert.Equal(DateTime.Today.AddDays(30), hanTra); // hantra = ngaymuon + 30 ngày (Cán bộ)
+        Assert.Equal(GioVietNam.HomNay.AddDays(30), hanTra); // hantra = ngaymuon + 30 ngày (Cán bộ)
 
         // Bổ sung trong ngày: không cấp số mới (SPEC mục 4)
         var bs = await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/phieu-muon", new { maBanDoc = bd, chiTiet = new[] { DongMuon(sach[2]) } }));
@@ -115,7 +115,7 @@ public class Pha3ApiTests
             chiTiet = new object[] { new { maBanSach = sach[0] }, new { maBanSach = sach[1], ketQuaGiaHan = "Không đồng ý", lyDoKhongGh = "Bạn đọc rút đề nghị" } }
         }));
         var soGh = gh.GetProperty("so").GetString()!;
-        Assert.StartsWith("GH" + DateTime.Today.ToString("yyMM"), soGh);
+        Assert.StartsWith("GH" + GioVietNam.HomNay.ToString("yyMM"), soGh);
         var ctGh = (await JsonAsync(await n1.GetAsync($"/api/quan-tri/phieu-gia-han/{soGh}"))).GetProperty("chiTiet").EnumerateArray().ToList();
         var dongY = ctGh.Single(x => x.GetProperty("maBanSach").GetString() == sach[0]);
         Assert.Equal("Đồng ý", dongY.GetProperty("ketQuaGiaHan").GetString());
@@ -129,7 +129,7 @@ public class Pha3ApiTests
         // 6.2.3 – trả 2 lần: lần 1 bình thường (phiếu mới), lần 2 mất sách (bổ sung, cùng số); sai lệch bị chặn
         var pt = await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/phieu-tra", new { soPMuon = soPm, ngayTra = HomNay, chiTiet = new[] { new { maBanSach = sach[0], tinhTrangTra = "Bình thường" } } }));
         var soPt = pt.GetProperty("so").GetString()!;
-        Assert.StartsWith("PT" + DateTime.Today.ToString("yyMM"), soPt);
+        Assert.StartsWith("PT" + GioVietNam.HomNay.ToString("yyMM"), soPt);
         var pt2 = await JsonAsync(await n1.PostAsJsonAsync("/api/quan-tri/phieu-tra", new { soPMuon = soPm, ngayTra = HomNay, chiTiet = new[] { new { maBanSach = sach[1], tinhTrangTra = "Mất", ghiChuTra = "Bạn đọc báo mất" } } }));
         Assert.Equal(soPt, pt2.GetProperty("so").GetString());
         Assert.Contains("vi phạm", pt2.GetProperty("thongBao").GetString());
@@ -150,7 +150,7 @@ public class Pha3ApiTests
             soPMuon = soPm, htThanhToan = "Chưa thanh toán", chiTiet = new[] { new { maKhoanThu = "KT02", maBanSach = sach[1], soLuong = 2 } }
         }));
         var soBb = bb.GetProperty("so").GetString()!;
-        Assert.StartsWith("BB" + DateTime.Today.ToString("yyMM"), soBb);
+        Assert.StartsWith("BB" + GioVietNam.HomNay.ToString("yyMM"), soBb);
         var ctBb = await JsonAsync(await n2.GetAsync($"/api/quan-tri/bien-ban/{soBb}"));
         Assert.Equal(2 * donGia, ctBb.GetProperty("tongTien").GetDecimal()); // thanh_tien = soluong × dongia; tong_tien = SUM
         Assert.Equal(2 * donGia, (decimal)(await ScalarAsync("SELECT tong_tien FROM vipham.BIENBAN WHERE so_bienban = @s", ("@s", soBb)))!);

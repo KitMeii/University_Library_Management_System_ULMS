@@ -138,3 +138,28 @@ public sealed class DatChoQuayController(DatChoService service) : ControllerBase
     [YeuCauQuyen("DATCHO_GH")]
     public Task<DatChoDto> Huy(string ma, YeuCauHuy yc, CancellationToken ct) => service.HuyCuaNhanVienAsync(ma, yc.LyDo, User.MaNd(), ct);
 }
+
+/// <summary>Quy định mượn và đặt chỗ hiện hành – công khai (route riêng không qua xác thực ở gateway).</summary>
+[ApiController]
+[Route("api/cong/quy-dinh")]
+[AllowAnonymous]
+public sealed class QuyDinhCongController : ControllerBase
+{
+    /// <summary>
+    /// Quy định mượn và đặt chỗ hiện hành (công khai) cho khu “Hướng dẫn mượn và đặt chỗ” và trang /huong-dan (file 04):
+    /// số ngày mượn, số bản tối đa theo đối tượng, gia hạn (SPEC mục 4), giữ chỗ (file 06 mục 2) – cùng cấu hình máy chủ dùng để kiểm tra.
+    /// </summary>
+    [HttpGet]
+    public object QuyDinh([FromServices] Microsoft.Extensions.Options.IOptions<BaseCore.Common.NghiepVu.QuyDinhOptions> quyDinh,
+        [FromServices] Microsoft.Extensions.Options.IOptions<BaseCore.Common.NghiepVu.DatChoOptions> datCho)
+    {
+        var q = quyDinh.Value;
+        var d = datCho.Value;
+        return new
+        {
+            doiTuong = q.DoiTuong.Select(x => new { doiTuong = x.Key, x.Value.SoNgayMuon, x.Value.SoBanToiDa }),
+            q.SoNgayGiaHan, q.SoLanGiaHanToiDa,
+            d.SoGioGiu, d.ToiDaDangGiu, d.NhacTruocGio, d.QuayNhan
+        };
+    }
+}

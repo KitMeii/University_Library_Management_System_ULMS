@@ -24,3 +24,6 @@ TestResults/
 logs/
 *.log
 playwright-report/
+
+# Ảnh chụp trang tham khảo mta.edu.vn – chỉ giữ trên máy (quyết định chủ dự án 17/11/2026)
+Prompt/Prompt_ClaudeCode_HeThong/docs/tham_khao_mta/

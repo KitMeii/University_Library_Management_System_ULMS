@@ -108,6 +108,20 @@ public static class DuLieuMau
         "#A9793E", "#264653", "#6B4226", "#2A4D3E", "#7A1F3D", "#344E41", "#4A5568"
     ];
 
+    /// <summary>
+    /// Từ khóa mẫu có nghĩa (Pha 7 – gợi ý tìm kiếm ở Hero): cụm chủ đề của thể loại có trong tên sách (vd “cơ sở dữ liệu”),
+    /// hai chữ đầu của tên sách, tên thể loại.
+    /// </summary>
+    private static string TuKhoaMau(string tenSach, string maTheLoai)
+    {
+        var ten = tenSach.ToLowerInvariant();
+        var tl = TheLoaiMau.First(t => t.Ma == maTheLoai);
+        var cum = tl.MoTa.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Select(c => c.ToLowerInvariant()).Where(ten.Contains);
+        var dau = string.Join(' ', ten.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2));
+        return string.Join(", ", cum.Append(dau).Append(tl.Ten.ToLowerInvariant()).Distinct().Take(3));
+    }
+
     public static async Task NapAsync(ThuVienDbContext db, MatKhauHasher hasher, IClock clock)
     {
         var bayGio = clock.BayGio;
@@ -156,7 +170,7 @@ public static class DuLieuMau
                 MaTheLoai = d.TheLoai,
                 GioiThieu = $"[DỮ LIỆU MẪU] “{d.TenSach}” – tài liệu tham khảo dùng cho thử nghiệm hệ thống thư viện. " +
                             "Nội dung giới thiệu sẽ được thư viện cập nhật khi nhập sách thật.",
-                TuKhoa = string.Join(", ", d.TenSach.ToLowerInvariant().Split(' ').Where(w => w.Length > 3).Take(3)),
+                TuKhoa = TuKhoaMau(d.TenSach, d.TheLoai),
                 MauGay = MauGay[i % MauGay.Length],
                 NgayTao = bayGio.AddDays(-(DauSachMau.Length - i))
             });

@@ -15,6 +15,7 @@ builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.ThongKeN3Service>();
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.TheLoaiService>();
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.DauSachService>();
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.KeSachService>();
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.KhamPhaService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

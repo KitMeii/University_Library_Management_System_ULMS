@@ -109,3 +109,17 @@ Cập nhật: 16/11/2026 (Pha 5).
 | `Pha6_Lap_phieu_muon_Nhan_dat_cho.png` | 01.01.03 có khối `dgvDatCho` + `btnNhanDatCho` (mở rộng – **không dùng cho Bài 4**; ảnh Bài 4 4.3.1 không có khối này) |
 | `Pha6_Phieu_soan_sach_A4.png` | Phiếu soạn sách đặt chỗ in A4 (mở rộng) |
 | `Pha6_Danh_muc_ban_doc_Tai_khoan_cong.png` | Danh mục Bạn đọc của N4 có khối khóa/mở khóa tài khoản cổng (mở rộng – D66, không dùng cho Bài 4) |
+| `Cong_Trang_chu_hoan_chinh.png`, `Cong_Trang_chu_hoan_chinh_mobile.png` | Pha 7 – trang chủ hoàn chỉnh toàn trang: Hero + thanh tìm kiếm, kệ sách, danh mục, khám phá sách, hướng dẫn, thư viện bằng số, footer |
+| `Cong_Danh_muc_the_loai.png` | Khu Danh mục thể loại (ô thể loại + số đầu sách) |
+| `Cong_Kham_pha_Tim_kiem.png` | Tìm từ thanh Hero (“co so du lieu” – không dấu) → kết quả ở khu Khám phá sách |
+| `Cong_Kham_pha_Loc_the_loai.png` | Bấm ô thể loại → khu Khám phá sách lọc theo thể loại (không đổi route) |
+| `Cong_Huong_dan_dat_cho.png` | Khu Hướng dẫn mượn và đặt chỗ (4 bước, số liệu quy định thật) |
+| `Cong_Thu_vien_bang_so.png` | Khu Thư viện bằng số (số liệu truy vấn thật) |
+| `Cong_Kham_pha_toan_trang.png` | Trang `/kham-pha` (bộ lọc năm từ – đến) |
+| `Cong_Huong_dan.png` | Trang `/huong-dan` |
+| `Cong_Hero_mui_ten.png` | Hero có nút ← → cạnh chấm điều hướng và gợi ý “Cuộn xuống” (THAM_KHAO_MTA – D79) |
+| `Cong_Menu_tha_xuong_Danh_muc.png` | Menu thả xuống “Danh mục” mở bằng bàn phím: thể loại thật + số đầu sách |
+| `Cong_Header_thu_gon.png` | Header máy tính thu gọn khi cuộn xuống (chỉ còn thanh menu), nút lên đầu trang |
+| `Cong_Footer_ba_cot.png` | Footer 3 cột + hoa văn kệ sách nét mảnh tự vẽ |
+| `Cong_Menu_dien_thoai_nhom.png` | Menu điện thoại: nhóm “Danh mục” thu gọn đang mở |
+| `so_sanh_mta/so_sanh_*.png` | Ảnh ghép TRƯỚC / SAU khi áp dụng THAM_KHAO_MTA: trang chủ máy tính, điện thoại, khu Danh mục, Hướng dẫn, Thư viện bằng số (`truoc_*.png` chụp trước thay đổi) |

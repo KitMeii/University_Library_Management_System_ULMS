@@ -115,7 +115,7 @@ public class Pha2ApiTests
         using var n1 = await HttpCuaAsync("muontra");
         var ma = MaNgauNhien("BT", 10);
         var sv = MaNgauNhien("SVT", 12);
-        var homNay = DateOnly.FromDateTime(DateTime.Today);
+        var homNay = DateOnly.FromDateTime(GioVietNam.HomNay);
 
         var sai = await n1.PostAsJsonAsync("/api/quan-tri/ban-doc", new
         {
@@ -156,7 +156,7 @@ public class Pha2ApiTests
         using var n1 = await HttpCuaAsync("muontra");
         var ma = MaNgauNhien("BX", 10);
         var sv = MaNgauNhien("SVX", 12);
-        var homNay = DateOnly.FromDateTime(DateTime.Today);
+        var homNay = DateOnly.FromDateTime(GioVietNam.HomNay);
         Assert.Equal(HttpStatusCode.OK, (await n1.PostAsJsonAsync("/api/quan-tri/ban-doc", new
         {
             maBanDoc = ma, hoTen = "Bạn đọc có chứng từ", doiTuong = "Sinh viên", maSvHvCb = sv, lopDonVi = "K26",
@@ -264,7 +264,7 @@ public class Pha2ApiTests
     {
         using var admin = await HttpCuaAsync("admin");
         Assert.Equal((HttpStatusCode)422, (await admin.GetAsync("/api/quan-tri/nhat-ky/dang-nhap?tuNgay=2030-01-02&denNgay=2030-01-01")).StatusCode);
-        var homNay = DateTime.Today.ToString("yyyy-MM-dd");
+        var homNay = GioVietNam.HomNay.ToString("yyyy-MM-dd");
         var kq = await JsonAsync(await admin.GetAsync($"/api/quan-tri/nhat-ky/dang-nhap?tuNgay={homNay}&denNgay={homNay}&maNd=ND0001"));
         Assert.True(kq.GetProperty("tongSo").GetInt32() >= 1);
         Assert.Equal(HttpStatusCode.Forbidden, (await (await HttpCuaAsync("khosach")).GetAsync($"/api/quan-tri/nhat-ky/hoat-dong?tuNgay={homNay}&denNgay={homNay}")).StatusCode);

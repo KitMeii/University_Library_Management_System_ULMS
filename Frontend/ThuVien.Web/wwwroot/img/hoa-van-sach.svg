@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" fill="none" stroke="#0B2A25" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Hoa văn nét mảnh tự vẽ cho footer cổng bạn đọc ULMS: kệ sách với gáy sách đứng, nghiêng, chồng nằm -->
+  <path d="M20 300h480M20 312h480"/>
+  <path d="M40 300V150h26v150M66 300V130h22v170M88 300V170h30v130M118 300V140h20v160"/>
+  <path d="M48 170h10M48 182h10M74 150h8M74 162h8M96 190h14M96 202h14M124 160h8"/>
+  <path d="M150 300l36-142 22 6-36 142z"/>
+  <path d="M230 300V120h28v180M258 300V160h34v140M292 300V110h22v190M314 300V150h28v150"/>
+  <path d="M238 140h12M238 152h12M266 180h18M298 130h10M322 170h12"/>
+  <path d="M370 300h120v-22H370zM378 278h104v-20H378zM366 258h126v-24H366z"/>
+  <path d="M384 290h20M390 268h28M378 246h24"/>
+  <path d="M20 90h480M20 102h480"/>
+  <path d="M60 90V20h24v70M84 90V36h30v54M114 90V14h20v76M300 90V30h26v60M326 90V18h22v72M348 90V42h30v48"/>
+  <path d="M170 90l24-64 20 8-24 64z M430 90V26h22v64M452 90V40h26v50"/>
+</svg>

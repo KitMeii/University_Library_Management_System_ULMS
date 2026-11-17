@@ -10,7 +10,7 @@ tai $J/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js lib/bootstrap/5.3.3/boots
 tai $J/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css lib/bootstrap-icons/1.11.3/bootstrap-icons.min.css
 tai $J/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2 lib/bootstrap-icons/1.11.3/fonts/bootstrap-icons.woff2
 tai $J/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff lib/bootstrap-icons/1.11.3/fonts/bootstrap-icons.woff
-for f in gsap Flip ScrollTrigger Observer Draggable; do tai $J/gsap@3.13.0/dist/$f.min.js lib/gsap/3.13.0/$f.min.js; done
+for f in gsap ScrollTrigger Observer Draggable; do tai $J/gsap@3.13.0/dist/$f.min.js lib/gsap/3.13.0/$f.min.js; done
 # Pha 4 – biểu đồ thống kê (file 09)
 tai $J/echarts@5.6.0/dist/echarts.min.js lib/echarts/5.6.0/echarts.min.js
 # Pha 5 – cuộn mượt cổng bạn đọc (file 10, 13)
