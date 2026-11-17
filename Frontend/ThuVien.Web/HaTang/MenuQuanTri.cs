@@ -7,7 +7,22 @@ namespace ThuVien.Web.HaTang;
 /// Một mục menu dashboard. Hiện khi người dùng có MỘT trong <see cref="Quyen"/> (PHANQUYEN) và không có
 /// <see cref="AnNeuCo"/>. <see cref="Pha"/> = pha hoàn thiện giao diện (trước đó hiển thị trang “đang xây dựng”).
 /// </summary>
-public sealed record MucMenu(string Ten, string DuongDan, string[] Quyen, string Icon, int Pha, string? AnNeuCo = null);
+/// <param name="MoRong">Mục thuộc phần mở rộng (ngoài SPEC) – ẩn ở chế độ chụp ảnh Bài 4 (GIA_DINH D61).</param>
+public sealed record MucMenu(string Ten, string DuongDan, string[] Quyen, string Icon, int Pha, string? AnNeuCo = null, bool MoRong = false);
+
+/// <summary>
+/// Chế độ chụp ảnh Bài 4 (GIA_DINH D61): Development + ẩn nhãn “DỮ LIỆU MẪU” (ThuVien:HienNhanDuLieuMau = false, D23).
+/// Khi đó ẩn mọi mục menu và control thuộc phần mở rộng để ảnh đúng thiết kế Bài 4. Production luôn hiện đủ (file 08).
+/// </summary>
+public static class CheDoAnhBai4
+{
+    public static bool AnMoRong(HttpContext ctx)
+    {
+        var env = ctx.RequestServices.GetRequiredService<IWebHostEnvironment>();
+        var opt = ctx.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<ThuVienOptions>>().Value;
+        return env.IsDevelopment() && !opt.HienNhanDuLieuMau;
+    }
+}
 
 public sealed record NhomMenu(string Ten, string Icon, MucMenu[] Muc);
 
@@ -37,6 +52,9 @@ public static class MenuQuanTri
             new("03.02.03 Cập nhật sách sau trả", "/quan-tri/danh-muc/sach?tienTrinh=03.02.03", ["TT109"], "bi-box-arrow-in-down", 3),
             new("03.03.02 Cập nhật tình trạng sách bị mất, hư hỏng", "/quan-tri/danh-muc/sach?tienTrinh=03.03.02", ["TT113"], "bi-bandaid", 3),
             new("03.04.01 Tổng hợp số sách theo tình trạng", "/quan-tri/danh-muc/sach?tienTrinh=03.04.01", ["TT117"], "bi-pie-chart", 2),
+            // Mở rộng cho cổng bạn đọc – file 08 mục 1 “Kho sách: … · Đầu sách và thể loại” (file 02 X01–X03)
+            new("Đầu sách (cổng bạn đọc)", "/quan-tri/danh-muc/dau-sach", ["DAUSACH_R"], "bi-journals", 5, MoRong: true),
+            new("Thể loại (cổng bạn đọc)", "/quan-tri/danh-muc/the-loai", ["THELOAI_R"], "bi-tags", 5, MoRong: true),
         ]),
         new("Thống kê", "bi-bar-chart-line",
         [
@@ -66,8 +84,8 @@ public static class MenuQuanTri
     public static bool DuocThay(this MucMenu m, ClaimsPrincipal u) =>
         m.Quyen.Any(u.CoQuyen) && (m.AnNeuCo is null || !u.CoQuyen(m.AnNeuCo));
 
-    public static IEnumerable<NhomMenu> ChoNguoiDung(ClaimsPrincipal u) =>
-        TatCa.Select(n => n with { Muc = n.Muc.Where(m => m.DuocThay(u)).ToArray() }).Where(n => n.Muc.Length > 0);
+    public static IEnumerable<NhomMenu> ChoNguoiDung(ClaimsPrincipal u, bool anMoRong = false) =>
+        TatCa.Select(n => n with { Muc = n.Muc.Where(m => m.DuocThay(u) && !(anMoRong && m.MoRong)).ToArray() }).Where(n => n.Muc.Length > 0);
 
     /// <summary>Tìm mục menu theo đường dẫn (không tính query) – dùng cho trang “đang xây dựng” và breadcrumb.</summary>
     public static (NhomMenu Nhom, MucMenu Muc)? Tim(string duongDanDayDu) =>

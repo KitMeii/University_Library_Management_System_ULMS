@@ -76,7 +76,7 @@ body.cong { background: var(--bg); color: var(--text); }
 
 /* ---------- Footer ---------- */
 .cong-footer { background: var(--sage-1); color: var(--text); margin-top: 0; }
-.cong-footer__tren { padding-top: 48px; padding-bottom: 32px; display: grid; gap: 24px; grid-template-columns: 2fr 1fr 1fr; }
+.cong-footer__tren { padding-top: 48px; padding-bottom: 32px; display: grid; gap: 24px 32px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .cong-footer h2 { font-family: var(--font-header); font-size: 22px; color: var(--forest); margin: 0 0 8px; }
 .cong-footer h3 { font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--text); margin: 0 0 10px; }
 .cong-footer ul { list-style: none; margin: 0; padding: 0; }
@@ -100,3 +100,31 @@ body.cong { background: var(--bg); color: var(--text); }
   .cong-header a.cong-lien-ket, .cong-header button.cong-lien-ket { padding: 8px; font-size: 20px; }
   .cong-logo__ten { line-height: 1.15; }
 }
+
+/* ---------- Pha 5: tiện ích header, menu điện thoại, footer thông tin ---------- */
+.cong-header__gio {
+  align-items: center; gap: 8px; margin-left: 8px; padding: 6px 12px; border-radius: 999px;
+  font: 700 15px/1.2 var(--font-header); background: var(--hdr-hover-bg); color: var(--hdr-text);
+}
+.cong-header__gio strong { color: var(--hdr-hover); }
+.cong-header__menu { font-size: 26px !important; padding: 6px 8px !important; }
+.cong-offcanvas { background: var(--hdr-bg); color: var(--hdr-text); font-family: var(--font-header); max-width: 86vw; }
+.cong-offcanvas .offcanvas-title { font-size: 22px; font-weight: 700; }
+.cong-offcanvas__gio { font: 700 15px/1.4 var(--font-header); }
+.cong-offcanvas__gio strong { color: var(--hdr-hover); }
+.cong-offcanvas ul { list-style: none; margin: 0; padding: 0; }
+.cong-offcanvas a {
+  display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px; border-radius: 8px;
+  color: var(--hdr-text); text-decoration: none; font-size: 19px; font-weight: 700;
+}
+.cong-offcanvas a:hover, .cong-offcanvas a[aria-current] { background: var(--hdr-hover-bg); color: var(--hdr-hover); }
+.cong-offcanvas a:focus-visible { outline: none; box-shadow: var(--focus); }
+.cong-nav a[aria-current="location"] { color: var(--hdr-hover); }
+.cong-nav a[aria-current="location"]::after {
+  content: ""; position: absolute; left: 14px; right: 14px; bottom: 6px; height: 2px; background: var(--hdr-accent);
+}
+.cong-footer__mo-ta { color: var(--text); max-width: 420px; } /* --text-2 trên --sage-1 chỉ ~4,2:1 */
+.cong-footer__gio li { display: flex; justify-content: space-between; gap: 16px; max-width: 240px; }
+.cong-footer__gio li.hom-nay { font-weight: 700; color: var(--forest); }
+.cong-nut--vang { background: var(--gold); color: var(--midnight); }
+.cong-nut--vang:hover { background: var(--champagne); color: var(--midnight); }

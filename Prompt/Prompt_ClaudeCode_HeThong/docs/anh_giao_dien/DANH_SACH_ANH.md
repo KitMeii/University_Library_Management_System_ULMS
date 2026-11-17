@@ -5,7 +5,7 @@ Máy tính 1366×768 (ảnh “toàn trang” ghép theo chiều dọc), điện
 Đối chiếu số mục (SPEC mục 6): 6.1.k ↔ 4.2.k · 6.2.k ↔ 4.3.k · 6.4.1–6.4.4 ↔ 4.4.1–4.4.4 · 6.4.5–6.4.6 ↔ 4.5.1–4.5.2 · 6.3.k ↔ 4.6.k.
 TT1/TT2/TT3 = trạng thái 1/2/3 của form chứng từ theo bảng “Control và xử lý” (SPEC mục 5, 6.2).
 
-Cập nhật: 16/11/2026 (hết Pha 4).
+Cập nhật: 16/11/2026 (Pha 5).
 
 ## 4.2 Giao diện danh mục
 
@@ -85,5 +85,13 @@ Cập nhật: 16/11/2026 (hết Pha 4).
 | `Pha1_Man_hinh_mac_dinh_N1.png` … `_N4.png` | Màn hình mặc định ngay sau đăng nhập của từng nhóm (SPEC 3.3) |
 | `Pha1_Tong_quan_N1.png` … `_N4.png`, `Pha1_Tong_quan_N4_mobile.png` | Trang Tổng quan mở từ menu (chụp lại mỗi lần chạy – nay là trang tổng quan Pha 4) |
 | `Pha1_Menu_N4_mobile.png` | Menu chức năng dạng ngăn kéo trên điện thoại (N4) |
-| `Cong_Trang_chu_khung.png`, `Cong_Trang_chu_khung_mobile.png` | Khung trang chủ cổng bạn đọc (hoàn thiện ở Pha 5–7) |
+| `Cong_Trang_chu_khung.png`, `Cong_Trang_chu_khung_mobile.png` | Trang chủ cổng bạn đọc (chụp từ Pha 1, nay là trang chủ Pha 5) |
 | `Cong_Dang_nhap.png`, `Cong_Dang_nhap_mobile.png` | Đăng nhập cổng bạn đọc |
+| `Cong_Trang_chu.png`, `Cong_Trang_chu_mobile.png` | Trang chủ cổng bạn đọc Pha 5 toàn trang: header, Hero, kệ sách nổi bật, footer |
+| `Cong_Trang_chu_Hero.png`, `Cong_Trang_chu_Hero_mobile.png` | Header + Hero (khung ảnh chạy, nút Tạm dừng/Phát, chấm điều hướng) |
+| `Cong_Ke_sach.png`, `Cong_Ke_sach_mobile.png` | Kệ sách nổi bật – coverflow gáy sách, kệ “Sách mới về” (thanh thời gian theo năm xuất bản) |
+| `Cong_Ke_sach_Muon_nhieu.png` | Kệ “Mượn nhiều nhất” (thanh thứ hạng) |
+| `Cong_Ke_sach_doi_chieu_tham_khao.png` | Đặt cạnh ảnh tham khảo `tham_khao/hieu_ung_ke_sach_coverflow.png` (file 05 mục 7) |
+| `Cong_Ke_sach_Xem_nhanh.png` | Bấm cuốn giữa → hộp “Xem nhanh” (Book Preview ở Pha 6) |
+| `Cong_Menu_mobile.png` | Menu cổng dạng Offcanvas trên điện thoại |
+| `Pha5_Quan_ly_dau_sach.png`, `Pha5_Quan_ly_the_loai.png` | Dashboard: quản lý đầu sách (gắn bản sách – D55) và thể loại (mở rộng cho cổng bạn đọc) |

@@ -51,13 +51,45 @@ public sealed class TaiLenController(IWebHostEnvironment env) : Controller
         return Ok(new { duongDan = "/uploads/ban-doc/" + ten }); // 50 ký tự ≤ C(100)
     }
 
+    /// <summary>
+    /// Ảnh bìa đầu sách (DAUSACH.anhbia – mở rộng): cùng kiểm tra như ảnh thẻ; lưu 2 bản WebP – lớn 600×900 (cuốn giữa kệ,
+    /// Book Preview) và nhỏ 240×360 “_nho” (gáy/cuốn ngoài tâm, lưới sách – file 05 mục 7).
+    /// </summary>
+    [HttpPost("quan-tri/tai-len/anh-bia")]
+    [QuyenTrang("DAUSACH_C", "DAUSACH_E")]
+    [RequestSizeLimit(ToiDa + 64 * 1024)]
+    public async Task<IActionResult> AnhBia(IFormFile? tep, CancellationToken ct)
+    {
+        if (tep is null || tep.Length == 0) return BadRequest(new LoiApi("THIEU_TEP", "Vui lòng chọn tệp ảnh."));
+        if (tep.Length > ToiDa) return BadRequest(new LoiApi("TEP_QUA_LON", "Ảnh tối đa 2 MB."));
+        byte[] du;
+        using (var ms = new MemoryStream((int)tep.Length))
+        {
+            await tep.CopyToAsync(ms, ct);
+            du = ms.ToArray();
+        }
+        if (!LaAnhHopLe(du)) return BadRequest(new LoiApi("SAI_LOAI_TEP", "Chỉ nhận ảnh JPG, PNG hoặc WebP."));
+        var lon = ChuyenWebP(du, 600, 900);
+        var nho = ChuyenWebP(du, 240, 360);
+        if (lon is null || nho is null) return BadRequest(new LoiApi("ANH_HONG", "Không đọc được ảnh (tệp hỏng hoặc kích thước quá lớn)."));
+
+        var thuMuc = Path.Combine(env.WebRootPath, "uploads", "bia");
+        Directory.CreateDirectory(thuMuc);
+        var id = Guid.NewGuid().ToString("N");
+        await System.IO.File.WriteAllBytesAsync(Path.Combine(thuMuc, id + ".webp"), lon, ct);
+        await System.IO.File.WriteAllBytesAsync(Path.Combine(thuMuc, id + "_nho.webp"), nho, ct);
+        return Ok(new { duongDan = $"/uploads/bia/{id}.webp", duongDanNho = $"/uploads/bia/{id}_nho.webp" });
+    }
+
     private static bool LaAnhHopLe(byte[] b) =>
         b is [0xFF, 0xD8, 0xFF, ..]
         || b is [0x89, 0x50, 0x4E, 0x47, ..]
         || b is [0x52, 0x49, 0x46, 0x46, _, _, _, _, 0x57, 0x45, 0x42, 0x50, ..];
 
     /// <summary>Giải mã → xoay theo EXIF → thu nhỏ (giữ tỉ lệ, không phóng to) → WebP. Trả null nếu ảnh không giải mã được.</summary>
-    public static byte[]? ChuyenWebP(byte[] du)
+    public static byte[]? ChuyenWebP(byte[] du) => ChuyenWebP(du, RongToiDa, CaoToiDa);
+
+    public static byte[]? ChuyenWebP(byte[] du, int rongToiDa, int caoToiDa)
     {
         using var data = SKData.CreateCopy(du);
         using var codec = SKCodec.Create(data);
@@ -67,7 +99,7 @@ public sealed class TaiLenController(IWebHostEnvironment env) : Controller
         using var thang = XoayTheoExif(goc, codec.EncodedOrigin);
         var src = thang ?? goc;
 
-        var tiLe = Math.Min(1d, Math.Min((double)RongToiDa / src.Width, (double)CaoToiDa / src.Height));
+        var tiLe = Math.Min(1d, Math.Min((double)rongToiDa / src.Width, (double)caoToiDa / src.Height));
         var rong = Math.Max(1, (int)Math.Round(src.Width * tiLe));
         var cao = Math.Max(1, (int)Math.Round(src.Height * tiLe));
         using var nho = tiLe < 1

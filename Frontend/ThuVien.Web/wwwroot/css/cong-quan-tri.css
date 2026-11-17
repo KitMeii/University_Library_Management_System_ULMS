@@ -1,0 +1,20 @@
+/* Trang quản lý phần mở rộng cho cổng bạn đọc (đầu sách, thể loại) trong dashboard trắng – đỏ. Chỉ dùng token file 03 mục B. */
+.qt-nhan-mo-rong {
+  display: inline-block; margin-right: 8px; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--info-50); color: var(--info); border: 1px solid var(--info-100);
+}
+.qt-khu-nhap--dau-sach textarea.qt-o { min-height: 76px; resize: vertical; }
+.qt-mau-gay { display: flex; align-items: center; gap: 8px; }
+.qt-mau-gay .qt-o { flex: 1; min-width: 0; }
+.qt-mau-gay__o {
+  flex: 0 0 auto; width: 18px; height: 36px; border-radius: 3px; border: 1px solid var(--line-dam); background: var(--surface-2);
+}
+.qt-mau-gay__o--trong { background: repeating-linear-gradient(45deg, var(--surface-2) 0 4px, var(--white) 4px 8px); }
+.qt-bieu-tuong-xem {
+  flex: 0 0 auto; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px;
+  background: var(--red-50); color: var(--red-700); font-size: 18px;
+}
+.qt-bia-nho { display: inline-block; width: 24px; height: 36px; border-radius: 2px; overflow: hidden; vertical-align: middle; background: var(--surface-2); }
+.qt-bia-nho img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.qt-bia-nho--chu { box-shadow: inset 3px 0 0 rgba(0, 0, 0, .18); }
+.qt-o--hep { max-width: 220px; }

@@ -8,7 +8,7 @@
 | 2 – Danh mục + quản trị | **Đã duyệt** (16/11/2026) | D34–D43 đã duyệt (D35, D36, D41 theo quyết định chủ dự án); D44 SQL Server cài sẵn; ảnh 4.2.1–4.2.4, 4.6.1–4.6.5 |
 | 3 – Chứng từ + in MB02–MB05 | **Đã duyệt** (16/11/2026) | D45, D46, D48 đã duyệt; D47 sửa theo quyết định chủ dự án (bảng X09); D49 kiểm thử trên ThuVien_Test; ảnh 4.3.1–4.3.4, 4.4.1–4.4.4 |
 | 4 – Báo cáo MB06–MB07 + tổng quan | **Đã duyệt** (16/11/2026) | D50–D54 đã duyệt; X09 ghi vào file 02 (9 bảng mở rộng); ảnh 4.5.1–4.5.2, Tong_quan_N1–N4 → đủ bộ ảnh Bài 4 (`anh_giao_dien/DANH_SACH_ANH.md`) |
-| 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | **Đang làm** | File 03, 04, 05, 10; kệ sách theo ảnh tham khảo |
+| 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | **Đã duyệt** (17/11/2026) | D55–D59, D61 duyệt; D60 chờ số đo máy thật của chủ dự án; ảnh Cong_*, Pha5_* |
 | 6 – Book Preview + đặt chỗ + tài khoản + Quầy đặt chỗ | Chưa làm | |
 | 7 – Trang chủ hoàn chỉnh | Chưa làm | |
 | 8 – Hoàn thiện, prod.yml | Chưa làm | |
@@ -58,6 +58,14 @@
 - Sửa lỗi phát hiện: trang in bị chặn nhúng khung (btnIn Pha 3 in khung trống) – D54; lưới dữ liệu tĩnh ghi sai “1–15 / n dòng”; đường biểu đồ làm mượt vượt điểm dữ liệu.
 - Kiểm thử: tích hợp `Pha4ApiTests` (so truy vấn kiểm chứng MB06, MB07, N1–N4; kỳ 422; quyền 403; nhật ký lập báo cáo), E2E `Pha4Tests` (tổng quan, KPI chi tiết, luồng tổng hợp → lập → xem trước → in, trang in SVG, quyền, điện thoại, axe, CSP thật), ảnh 4.5.1–4.5.2, Tong_quan_N1–N4.
 - D51–D54 và bảng X09 đã duyệt 16/11/2026.
+
+## Pha 5 – đã làm
+- Cổng bạn đọc: header 2 tầng (Times New Roman, giờ mở cửa hôm nay, thanh tiến độ cuộn, menu Offcanvas trên điện thoại, đánh dấu khu đang xem), footer thông tin thư viện; cuộn mượt Lenis 1.3.27 (máy tính) đồng bộ ScrollTrigger; xuất hiện khi cuộn.
+- Hero: 4 tranh minh họa SVG (D56, đọc mọi ảnh trong `wwwroot/img/hero`), chuyển ảnh GSAP theo file 04, nút Tạm dừng/Phát, chấm điều hướng, dừng khi trỏ/focus, ảnh sau decode() xong mới chuyển, giảm chuyển động → mờ chéo.
+- Kệ sách nổi bật coverflow (file 05): một biến `pos` + `layout(pos)`, khối sách CSS 3D (bìa, 2 gáy), cung lùi sâu, thu nhỏ dần, gáy tối dần; chữ trang trí chấm bán sắc; bóng sàn; tên sách đổi theo ký tự; thanh thời gian (năm / thứ hạng); nút ← →, phím, cuộn ngang, kéo có quán tính, bấm gáy, con trỏ tròn “Mở” + bìa nghiêng theo chuột; đổi kệ (Sách mới về, Mượn nhiều nhất, từng thể loại) – yêu cầu mới nhất thắng; state machine (`state-machine.js`); điện thoại: chip kệ, vuốt; không JS: lưới bìa; giảm chuyển động: mờ chéo. Bấm cuốn giữa → “Xem nhanh” (D57).
+- API khosach: `/api/cong/ke-sach` (+ `/danh-sach`), quản lý đầu sách `/api/quan-tri/dau-sach` (gắn/bỏ gắn bản sách – D55), thể loại `/api/quan-tri/the-loai`; tải ảnh bìa 2 cỡ. Trang dashboard Quản lý đầu sách, Quản lý thể loại (nhóm Kho sách – D61).
+- Kiểm thử: tích hợp `Pha5ApiTests` (kệ so truy vấn kiểm chứng, CRUD + ràng buộc + quyền), E2E `Pha5Tests` (header/hero, kệ: phím, nút, bấm gáy, bấm liên tục, kéo, thanh thời gian, đổi kệ, xem nhanh, giảm chuyển động, không JS, điện thoại, axe, CSP thật, số đo khung hình), ảnh `ChupAnhPha5Tests`.
+- D57–D59, D61 duyệt 17/11/2026 (D61: ẩn phần mở rộng ở chế độ chụp ảnh Bài 4, khôi phục 20 ảnh 4.2–4.6 từ df9a031). D60: chủ dự án đo trên máy thật, chưa gửi kết quả; dưới 55 fps thì tối ưu theo file 05 mục 7.
 
 ## Việc còn lại / chuyển pha sau
 - Đặt chỗ mẫu, `dgvDatCho`/`btnNhanDatCho` trong Lập Phiếu mượn, Quầy đặt chỗ → Pha 6.

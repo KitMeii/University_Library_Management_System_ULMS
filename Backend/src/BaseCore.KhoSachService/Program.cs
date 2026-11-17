@@ -12,6 +12,9 @@ builder.Services.AddDbContext<KhoSachDbContext>(o =>
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.KhuVucService>();
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.SachService>();
 builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.ThongKeN3Service>();
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.TheLoaiService>();
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.DauSachService>();
+builder.Services.AddScoped<BaseCore.KhoSachService.NghiepVu.KeSachService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

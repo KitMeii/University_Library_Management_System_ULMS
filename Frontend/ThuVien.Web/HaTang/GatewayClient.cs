@@ -39,6 +39,10 @@ public sealed class GatewayClient(HttpClient http, IHttpContextAccessor? accesso
     public Task<KetQuaApi<T>> LayAsync<T>(string url, string token, CancellationToken ct) =>
         GuiAsync<T>(HttpMethod.Get, url, token, null, ct);
 
+    /// <summary>GET API công khai của cổng bạn đọc (không token) – render phía server, ví dụ kệ sách đầu tiên ở trang chủ.</summary>
+    public Task<KetQuaApi<T>> LayCongKhaiAsync<T>(string url, CancellationToken ct) =>
+        GuiAsync<T>(HttpMethod.Get, url, null, null, ct);
+
     private async Task<KetQuaApi<T>> GuiAsync<T>(HttpMethod method, string url, string? token, object? body, CancellationToken ct)
     {
         using var req = new HttpRequestMessage(method, url);

@@ -1,7 +1,7 @@
 @using ThuVien.Web.Areas.QuanTri.Models
 @{
     ViewData["Title"] = "Tổng quan";
-    var menu = MenuQuanTri.ChoNguoiDung(User).ToList();
+    var menu = MenuQuanTri.ChoNguoiDung(User, CheDoAnhBai4.AnMoRong(Context)).ToList(); // D61
     var maNhom = User.FindFirst(ThuVienClaims.MaNhom)?.Value ?? "";
     // Mỗi nhóm một trang tổng quan (file 09 mục 3); API kiểm tra lại quyền
     var nhom = maNhom switch

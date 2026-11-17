@@ -4,7 +4,7 @@
     var tt = Opt.Value.ThongTin;
     var hienMau = Env.IsDevelopment() && Opt.Value.HienNhanDuLieuMau;
     var duongDanHienTai = Context.Request.Path.Value + Context.Request.QueryString.Value;
-    var menu = MenuQuanTri.ChoNguoiDung(User).ToList();
+    var menu = MenuQuanTri.ChoNguoiDung(User, CheDoAnhBai4.AnMoRong(Context)).ToList(); // D61
     var ten = User.FindFirst(ThuVienClaims.Ten)?.Value ?? "";
     var tenNhom = User.FindFirst(ThuVienClaims.TenNhom)?.Value ?? "";
     var maNhom = User.FindFirst(ThuVienClaims.MaNhom)?.Value ?? "";

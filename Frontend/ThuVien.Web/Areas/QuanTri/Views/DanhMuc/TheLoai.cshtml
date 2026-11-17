@@ -1,0 +1,57 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.QuyenBang
+@{
+    ViewData["Title"] = "Quản lý thể loại";
+    ViewData["NhomMenu"] = "Danh mục";
+}
+@section Css {
+    <link rel="stylesheet" href="/css/cong-quan-tri.css" asp-append-version="true" />
+}
+<section class="qt-giao-dien" id="frmTheLoai" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Quản lý thể loại</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-nhan-mo-rong">Mở rộng – cổng bạn đọc</span>Thể loại dùng cho danh mục thể loại và các kệ thể loại ở cổng bạn đọc; thứ tự hiển thị quyết định thứ tự kệ.@(Model.ChiXem ? " Bạn chỉ có quyền xem." : "")</p>
+        </div>
+    </div>
+
+    <div class="qt-the">
+        <form id="frmChiTiet" class="qt-khu-nhap" novalidate>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaTheLoai">Mã thể loại<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtMaTheLoai" maxlength="10" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtTenTheLoai">Tên thể loại<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtTenTheLoai" maxlength="100" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtBieuTuong">Biểu tượng (Bootstrap Icons)</label>
+                <div class="qt-mau-gay">
+                    <span class="qt-bieu-tuong-xem" aria-hidden="true"><i class="bi bi-bookmark" id="iBieuTuong"></i></span>
+                    <input class="qt-o" id="txtBieuTuong" maxlength="50" readonly autocomplete="off" placeholder="bi-book" />
+                </div>
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtThuTuHienThi">Thứ tự hiển thị</label>
+                <input class="qt-o" id="txtThuTuHienThi" inputmode="numeric" maxlength="3" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtMoTa">Mô tả</label>
+                <input class="qt-o" id="txtMoTa" maxlength="500" readonly autocomplete="off" />
+            </div>
+        </form>
+
+        <div class="qt-thanh-tim">
+            <label class="sr-only" for="txtTimKiem">Từ khóa tìm kiếm</label>
+            <input class="qt-o" id="txtTimKiem" type="search" placeholder="Tìm theo mã, tên, mô tả" autocomplete="off" />
+            <button type="button" class="qt-nut qt-nut--phu" id="btnTimKiem"><i class="bi bi-search" aria-hidden="true"></i>Tìm kiếm</button>
+        </div>
+
+        <div class="qt-luoi mt-3" id="dgvTheLoai" aria-label="Danh sách thể loại"></div>
+
+        <partial name="_HangNutDanhMuc" model="Model" />
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/the-loai.js" asp-append-version="true"></script>
+}

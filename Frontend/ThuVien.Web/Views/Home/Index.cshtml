@@ -1,24 +1,129 @@
+@model ThuVien.Web.Models.TrangChuVm
+@inject IOptions<ThuVienOptions> Opt
 @{
     ViewData["Title"] = "Trang chủ";
+    var tt = Opt.Value.ThongTin;
+    var json = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
 }
-<section class="cong-gioi-thieu">
+@section Css {
+    <link rel="stylesheet" href="/css/trang-chu.css" asp-append-version="true" />
+}
+
+@* ---------- Khu 2: Hero (file 04 mục 2) ---------- *@
+<section class="hero" aria-labelledby="heroTieuDe">
     <div class="cong-container">
-        <h1>Tri thức mở lối – Tương lai rộng mở.</h1>
-        <p>Cổng bạn đọc của hệ thống quản lý mượn trả sách thư viện đại học.</p>
-        <div class="cong-the">
-            <h2><i class="bi bi-cone-striped" aria-hidden="true"></i> Cổng bạn đọc đang được xây dựng</h2>
-            <p class="mb-3">
-                Kệ sách nổi bật, khám phá sách, mở xem sách và đặt chỗ giữ sách 24 giờ sẽ hoàn thiện ở các pha 5–7.
-                Hiện bạn có thể đăng nhập tài khoản bạn đọc đã kích hoạt.
-            </p>
-            @if (!(User.Identity?.IsAuthenticated == true && User.HasClaim(ThuVienClaims.Loai, LoaiTaiKhoan.BanDoc)))
+        <div class="hero__khung" id="heroKhung" role="group" aria-roledescription="carousel" aria-label="Ảnh giới thiệu thư viện">
+            <div class="hero__anh">
+                @for (var i = 0; i < Model.AnhHero.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        <img class="hero__slide dang-hien" src="@Model.AnhHero[i]" alt="" width="1600" height="720" fetchpriority="high" decoding="async" />
+                    }
+                    else
+                    {
+                        <img class="hero__slide" data-src="@Model.AnhHero[i]" alt="" width="1600" height="720" decoding="async" />
+                    }
+                }
+            </div>
+            <div class="hero__phu" aria-hidden="true"></div>
+            <div class="hero__vien" aria-hidden="true"></div>
+            <div class="hero__noi-dung">
+                <p class="hero__nhan">@tt.TenThuVien.ToUpperInvariant()</p>
+                <h1 id="heroTieuDe">Tri thức mở lối – Tương lai rộng mở.</h1>
+                @if (Model.Ke is not null)
+                {
+                    <a class="cong-nut cong-nut--vang" href="/#ke-sach"><i class="bi bi-bookshelf" aria-hidden="true"></i>Xem kệ sách nổi bật</a>
+                }
+            </div>
+            @if (Model.AnhHero.Count > 1)
             {
-                <a class="cong-nut cong-nut--chinh" href="/dang-nhap"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Đăng nhập bạn đọc</a>
-            }
-            else
-            {
-                <p class="mb-0">Xin chào <strong>@User.FindFirst(ThuVienClaims.Ten)?.Value</strong> (@User.FindFirst(ThuVienClaims.MaSvHvCb)?.Value).</p>
+                <div class="hero__dieu-khien">
+                    <div class="hero__cham" role="group" aria-label="Chọn ảnh giới thiệu">
+                        @for (var i = 0; i < Model.AnhHero.Count; i++)
+                        {
+                            <button type="button" class="hero__cham-nut" data-chi-so="@i" aria-label="Ảnh @(i + 1) trên @Model.AnhHero.Count" aria-current="@(i == 0 ? "true" : null)"></button>
+                        }
+                    </div>
+                    <button type="button" class="hero__dung" id="btnHeroDung" aria-pressed="false" aria-label="Tạm dừng trình chiếu">
+                        <i class="bi bi-pause-fill" aria-hidden="true"></i>
+                    </button>
+                </div>
             }
         </div>
+        <p class="hero__mo-ta">Lướt kệ sách nổi bật để xem sách mới về, sách được mượn nhiều và sách theo từng thể loại – số bản còn có thể mượn lấy trực tiếp từ hệ thống quản lý của thư viện.</p>
     </div>
 </section>
+
+@* ---------- Khu 3: Kệ sách nổi bật – coverflow (file 05) ---------- *@
+@if (Model.Ke is not null)
+{
+    <section id="ke-sach" class="coverflow" aria-roledescription="carousel" aria-labelledby="keSachTieuDe" tabindex="-1">
+        <div class="coverflow__deco coverflow__deco--trai" aria-hidden="true"><span>TRI</span><span>THỨC</span></div>
+        <div class="coverflow__deco coverflow__deco--phai" aria-hidden="true"><span>THƯ</span><span>VIỆN</span></div>
+
+        <div class="coverflow__dau cong-container">
+            <h2 class="coverflow__nhan" id="keSachTieuDe">Kệ sách nổi bật</h2>
+            <span class="coverflow__gach" aria-hidden="true"></span>
+            <span class="coverflow__ten-ke" id="tenKeHienTai">@Model.Ke.Ten</span>
+        </div>
+
+        @* Điện thoại: hàng chip tên kệ cuộn ngang (file 05 mục 5b) *@
+        <div class="coverflow__chips" role="group" aria-label="Chọn kệ sách">
+            @foreach (var k in Model.DanhSachKe)
+            {
+                <button type="button" class="coverflow__chip" data-ke="@k.Ma" aria-pressed="@(k.Ma == Model.Ke.Ma ? "true" : "false")">@k.Ten</button>
+            }
+        </div>
+
+        <div class="coverflow__stage" id="cfSanKhau">
+            <div class="coverflow__floor" aria-hidden="true"></div>
+            <ul class="coverflow__track" id="cfKe" aria-label="Sách trên kệ"></ul>
+            <noscript>
+                <ul class="coverflow__luoi">
+                    @foreach (var s in Model.Ke.Sach)
+                    {
+                        <li>
+                            @if (s.AnhBiaNho is not null) { <img src="@s.AnhBiaNho" alt="" width="120" height="180" loading="lazy" /> }
+                            <strong>@s.TenSach</strong><span>@s.TacGia</span>
+                        </li>
+                    }
+                </ul>
+            </noscript>
+        </div>
+
+        <div class="coverflow__caption">
+            <div class="coverflow__hang-tieu-de">
+                <button type="button" class="coverflow__mui-ten" id="cfTruoc" aria-label="Sách trước"><i class="bi bi-arrow-left" aria-hidden="true"></i></button>
+                <h3 class="coverflow__tieu-de" id="cfTieuDe">@Model.Ke.Sach[Model.Ke.Sach.Count / 2].TenSach</h3>
+                <button type="button" class="coverflow__mui-ten" id="cfSau" aria-label="Sách sau"><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+            </div>
+            <p class="coverflow__tac-gia" id="cfTacGia">@Model.Ke.Sach[Model.Ke.Sach.Count / 2].TacGia</p>
+            <hr class="coverflow__gach-ngan" aria-hidden="true" />
+            <p class="coverflow__meta" id="cfMeta"></p>
+        </div>
+
+        <div class="coverflow__timeline cong-container">
+            <div class="coverflow__truc" id="cfTruc" role="slider" tabindex="0" aria-label="Thanh thời gian kệ sách" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+                <div class="coverflow__vach" id="cfVach" aria-hidden="true"></div>
+                <span class="coverflow__cham" id="cfCham" aria-hidden="true"></span>
+            </div>
+        </div>
+
+        <div class="coverflow__shelfnav" role="group" aria-label="Đổi kệ sách">
+            <button type="button" class="coverflow__doi-ke" id="cfKeTruoc" aria-label="Kệ trước"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
+            <button type="button" class="coverflow__doi-ke" id="cfKeSau" aria-label="Kệ sau"><i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+        </div>
+
+        <div class="coverflow__con-tro" id="cfConTro" aria-hidden="true"><span>Mở</span></div>
+        <div class="sr-only" aria-live="polite" id="cfDocTen"></div>
+        <script type="application/json" id="duLieuKe">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new { danhSach = Model.DanhSachKe, ke = Model.Ke }, json))</script>
+    </section>
+}
+@section Scripts {
+    <script type="module" src="/js/cong/hero.js" asp-append-version="true"></script>
+    @if (Model.Ke is not null)
+    {
+        <script type="module" src="/js/cong/coverflow.js" asp-append-version="true"></script>
+    }
+}

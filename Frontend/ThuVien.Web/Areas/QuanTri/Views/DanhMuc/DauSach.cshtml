@@ -1,0 +1,106 @@
+@model ThuVien.Web.Areas.QuanTri.Controllers.QuyenBang
+@{
+    ViewData["Title"] = "Quản lý đầu sách";
+    ViewData["NhomMenu"] = "Danh mục";
+}
+@section Css {
+    <link rel="stylesheet" href="/css/cong-quan-tri.css" asp-append-version="true" />
+}
+<section class="qt-giao-dien" id="frmDauSach" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Quản lý đầu sách</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-nhan-mo-rong">Mở rộng – cổng bạn đọc</span>Đầu sách nhóm các bản sách cùng tên, tác giả để hiển thị ở kệ sách nổi bật và khám phá sách; ảnh bìa, màu gáy, thể loại.@(Model.ChiXem ? " Bạn chỉ có quyền xem." : "")</p>
+        </div>
+    </div>
+
+    <div class="qt-the">
+        <form id="frmChiTiet" class="qt-khu-nhap qt-khu-nhap--dau-sach" novalidate>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaDauSach">Mã đầu sách<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtMaDauSach" maxlength="10" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtTenSach">Tên sách<span class="bat-buoc" aria-hidden="true">*</span></label>
+                <input class="qt-o" id="txtTenSach" maxlength="200" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtTacGia">Tác giả</label>
+                <input class="qt-o" id="txtTacGia" maxlength="100" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="cboTheLoai">Thể loại</label>
+                <select class="qt-o" id="cboTheLoai" disabled><option value="">– Chưa phân loại –</option></select>
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtNhaXuatBan">Nhà xuất bản</label>
+                <input class="qt-o" id="txtNhaXuatBan" maxlength="150" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtNamXb">Năm xuất bản</label>
+                <input class="qt-o" id="txtNamXb" inputmode="numeric" maxlength="4" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtIsbn">ISBN</label>
+                <input class="qt-o" id="txtIsbn" maxlength="20" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMauGay">Màu gáy sách (#RRGGBB)</label>
+                <div class="qt-mau-gay">
+                    <span class="qt-mau-gay__o" id="oMauGay" aria-hidden="true"></span>
+                    <input class="qt-o" id="txtMauGay" maxlength="7" readonly autocomplete="off" placeholder="#123F35" />
+                </div>
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtTuKhoa">Từ khóa (cách nhau bởi dấu phẩy)</label>
+                <input class="qt-o" id="txtTuKhoa" maxlength="300" readonly autocomplete="off" />
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <label class="qt-nhan" for="txtGioiThieu">Giới thiệu</label>
+                <textarea class="qt-o" id="txtGioiThieu" rows="3" maxlength="2000" readonly></textarea>
+            </div>
+            <div class="qt-truong qt-truong--rong">
+                <span class="qt-nhan">Ảnh bìa (JPG, PNG, WebP ≤ 2 MB – lưu 2 cỡ 600×900 và 240×360)</span>
+                <div class="qt-anh-the">
+                    <img id="imgAnhBia" alt="Ảnh bìa đầu sách" width="60" height="90" hidden />
+                    <input type="hidden" id="txtAnhBia" />
+                    <input class="sr-only qt-tep" id="fileAnhBia" type="file" accept="image/jpeg,image/png,image/webp" disabled aria-describedby="tenTepAnhBia" />
+                    <label for="fileAnhBia" class="qt-nut qt-nut--phu qt-nut--nho qt-tep__nut"><i class="bi bi-image" aria-hidden="true"></i>Chọn ảnh…</label>
+                    <button type="button" class="qt-nut qt-nut--phu qt-nut--nho" id="btnBoAnhBia" disabled><i class="bi bi-x-lg" aria-hidden="true"></i>Bỏ ảnh</button>
+                    <span class="small text-secondary" id="tenTepAnhBia">Chưa có ảnh – cổng hiển thị bìa chữ theo màu gáy</span>
+                </div>
+            </div>
+        </form>
+
+        <div class="qt-thanh-tim">
+            <label class="sr-only" for="txtTimKiem">Từ khóa tìm kiếm</label>
+            <input class="qt-o" id="txtTimKiem" type="search" placeholder="Tìm theo mã, tên sách, tác giả, ISBN, từ khóa" autocomplete="off" />
+            <label class="sr-only" for="cboLocTheLoai">Lọc theo thể loại</label>
+            <select class="qt-o qt-o--hep" id="cboLocTheLoai"><option value="">Tất cả thể loại</option></select>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnTimKiem"><i class="bi bi-search" aria-hidden="true"></i>Tìm kiếm</button>
+        </div>
+
+        <div class="qt-luoi mt-3" id="dgvDauSach" aria-label="Danh sách đầu sách"></div>
+
+        <partial name="_HangNutDanhMuc" model="Model" />
+    </div>
+
+    <div class="qt-the" id="khuBanSach" hidden>
+        <h2 class="qt-tieu-muc">Bản sách của đầu sách <span id="lblDauSachChon" class="so-lieu"></span></h2>
+        <p class="small text-secondary">Gắn các bản sách (SACH) vào đầu sách để cổng bạn đọc đếm số bản có thể mượn (bảng mở rộng DAUSACH_BANSACH – GIA_DINH D55).</p>
+        <div class="qt-luoi" id="dgvBanSachDauSach" aria-label="Bản sách đã gắn vào đầu sách"></div>
+        @if (Model.Sua)
+        {
+            <h3 class="qt-tieu-muc mt-3">Gắn thêm bản sách</h3>
+            <div class="qt-thanh-tim">
+                <label class="sr-only" for="txtTimBanSach">Tìm bản sách chưa gắn</label>
+                <input class="qt-o" id="txtTimBanSach" type="search" placeholder="Bản sách chưa gắn đầu sách – tìm theo mã, tên, tác giả" autocomplete="off" />
+                <button type="button" class="qt-nut qt-nut--phu" id="btnTimBanSach"><i class="bi bi-search" aria-hidden="true"></i>Tìm bản sách</button>
+            </div>
+            <div class="qt-luoi mt-2" id="dgvBanSachChuaGan" aria-label="Bản sách chưa gắn đầu sách"></div>
+        }
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/dau-sach.js" asp-append-version="true"></script>
+}

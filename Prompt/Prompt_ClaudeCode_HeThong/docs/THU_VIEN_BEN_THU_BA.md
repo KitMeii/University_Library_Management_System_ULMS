@@ -32,7 +32,9 @@ Chỉ dùng thư viện đã duyệt (file 01, 13, GIA_DINH D17). Phiên bản �
 | Be Vietnam Pro (@fontsource/be-vietnam-pro) | 5.2.8 | SIL OFL 1.1 | Font chữ |
 | Apache ECharts (`dist/echarts.min.js`) | 5.6.0 | Apache-2.0 | Biểu đồ tổng quan N1–N4, báo cáo MB06/MB07 (canvas trên màn hình, SVG khi in – file 09) |
 
-Sẽ thêm ở các pha sau (đã duyệt trong file 01/13): page-flip 2.0.7, Lenis 1.3.x (Pha 5–6), JsBarcode (Pha 6).
+| Lenis (`dist/lenis.min.js`, `lenis.css`) | 1.3.27 (phát hành 15/10/2026) | MIT | Cuộn mượt cổng bạn đọc trên máy tính, đồng bộ ScrollTrigger; tắt trên cảm ứng và khi giảm chuyển động (file 10, 13) |
+
+Sẽ thêm ở các pha sau (đã duyệt trong file 01/13): page-flip 2.0.7 (Pha 6), JsBarcode (Pha 6).
 
 ## Image Docker
 

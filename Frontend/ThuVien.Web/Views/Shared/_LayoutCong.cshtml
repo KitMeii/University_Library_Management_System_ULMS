@@ -3,12 +3,28 @@
     var tt = Opt.Value.ThongTin;
     var laBanDoc = User.Identity?.IsAuthenticated == true && User.HasClaim(ThuVienClaims.Loai, LoaiTaiKhoan.BanDoc);
     var duongDan = Context.Request.Path.Value ?? "/";
+    var laTrangChu = duongDan == "/";
+    // Giờ mở cửa hôm nay (khóa T2…T7, CN – ThuVien:ThongTin:GioMoCua); không cấu hình thì không hiển thị
+    var thu = DateTime.Now.DayOfWeek switch
+    {
+        DayOfWeek.Monday => "T2", DayOfWeek.Tuesday => "T3", DayOfWeek.Wednesday => "T4", DayOfWeek.Thursday => "T5",
+        DayOfWeek.Friday => "T6", DayOfWeek.Saturday => "T7", _ => "CN"
+    };
+    var gioHomNay = tt.GioMoCua.TryGetValue(thu, out var g) ? g : null;
+    // Mục điều hướng: chỉ các khu vực đã có ở trang chủ (Pha 7 thêm Khám phá sách, Danh mục, Hướng dẫn)
+    var menu = new (string Ten, string Href, string Icon)[]
+    {
+        ("Trang chủ", "/", "bi-house"),
+        ("Kệ sách nổi bật", "/#ke-sach", "bi-bookshelf"),
+        ("Thông tin thư viện", "/#thong-tin", "bi-info-circle"),
+    };
 }
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <partial name="_HeadChung" />
     <title>@(ViewData["Title"] is string t ? t + " – " : "")@tt.TenThuVien</title>
+    <link rel="stylesheet" href="/lib/lenis/1.3.27/lenis.css" />
     <link rel="stylesheet" href="/css/tokens-cong.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/base.css" asp-append-version="true" />
     <link rel="stylesheet" href="/css/cong.css" asp-append-version="true" />
@@ -19,10 +35,17 @@
 
     <header class="cong-header">
         <div class="cong-container cong-header__tien-ich">
+            <button type="button" class="cong-lien-ket cong-header__menu d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#congMenu" aria-controls="congMenu" aria-label="Mở menu">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
             <a class="cong-logo" href="/" aria-label="@tt.TenThuVien – Trang chủ">
                 <span class="cong-logo__dau" aria-hidden="true"><i class="bi bi-book-half"></i></span>
                 <span class="cong-logo__ten">@tt.TenThuVien</span>
             </a>
+            @if (gioHomNay is not null)
+            {
+                <span class="cong-header__gio d-none d-md-inline-flex"><i class="bi bi-clock" aria-hidden="true"></i>Hôm nay mở cửa: <strong>@gioHomNay</strong></span>
+            }
             <div class="cong-header__phai">
                 @if (laBanDoc)
                 {
@@ -41,31 +64,58 @@
                 }
             </div>
         </div>
-        <nav class="cong-nav" aria-label="Điều hướng chính">
+        <nav class="cong-nav d-none d-lg-block" aria-label="Điều hướng chính">
             <div class="cong-container">
                 <ul>
-                    <li><a href="/" aria-current="@(duongDan == "/" ? "page" : null)">Trang chủ</a></li>
+                    @foreach (var m in menu)
+                    {
+                        <li><a href="@m.Href" data-muc="@m.Href" aria-current="@(m.Href == "/" && laTrangChu ? "page" : null)">@m.Ten</a></li>
+                    }
                 </ul>
             </div>
         </nav>
         <div class="cong-tien-do-cuon" aria-hidden="true"></div>
     </header>
 
+    @* Điện thoại: menu Offcanvas (file 04 mục 2) *@
+    <div class="offcanvas offcanvas-start cong-offcanvas" tabindex="-1" id="congMenu" aria-labelledby="congMenuTieuDe">
+        <div class="offcanvas-header">
+            <h2 class="offcanvas-title" id="congMenuTieuDe">@tt.TenThuVien</h2>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Đóng menu"></button>
+        </div>
+        <div class="offcanvas-body">
+            @if (gioHomNay is not null)
+            {
+                <p class="cong-offcanvas__gio"><i class="bi bi-clock" aria-hidden="true"></i> Hôm nay mở cửa: <strong>@gioHomNay</strong></p>
+            }
+            <nav aria-label="Điều hướng chính (điện thoại)">
+                <ul>
+                    @foreach (var m in menu)
+                    {
+                        <li><a href="@m.Href" data-muc="@m.Href" data-bs-dismiss="offcanvas" aria-current="@(m.Href == "/" && laTrangChu ? "page" : null)"><i class="bi @m.Icon" aria-hidden="true"></i>@m.Ten</a></li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+
     <main id="noiDung" tabindex="-1">
         @RenderBody()
     </main>
 
-    <footer class="cong-footer">
+    <footer class="cong-footer" id="thong-tin" aria-labelledby="chanTrangTieuDe">
         <div class="cong-container cong-footer__tren">
             <div>
-                <h2>@tt.TenThuVien</h2>
+                <h2 id="chanTrangTieuDe">@tt.TenThuVien</h2>
+                <p class="cong-footer__mo-ta">Hệ thống quản lý mượn trả sách thư viện đại học – tra cứu sách, xem tình trạng còn sách trên kệ.</p>
                 @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <p class="mb-1"><i class="bi bi-geo-alt" aria-hidden="true"></i> @tt.DiaChi</p> }
-                @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <p class="mb-1"><i class="bi bi-telephone" aria-hidden="true"></i> @tt.DienThoai</p> }
+                @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <p class="mb-1"><i class="bi bi-telephone" aria-hidden="true"></i> <a href="tel:@tt.DienThoai">@tt.DienThoai</a></p> }
                 @if (!string.IsNullOrWhiteSpace(tt.Email)) { <p class="mb-1"><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:@tt.Email">@tt.Email</a></p> }
             </div>
             <div>
-                <h3>Tài khoản</h3>
+                <h3>Liên kết</h3>
                 <ul>
+                    <li><a href="/#ke-sach">Kệ sách nổi bật</a></li>
                     <li><a href="/dang-nhap">Đăng nhập bạn đọc</a></li>
                     <li><a href="/quan-tri/dang-nhap">Đăng nhập nhân viên</a></li>
                 </ul>
@@ -74,9 +124,16 @@
             {
                 <div>
                     <h3>Giờ mở cửa</h3>
-                    <ul>
-                        @foreach (var (thu, gio) in tt.GioMoCua) { <li>@thu: @gio</li> }
+                    <ul class="cong-footer__gio">
+                        @foreach (var (k, v) in tt.GioMoCua) { <li class="@(k == thu ? "hom-nay" : null)"><span>@k</span><span>@v</span></li> }
                     </ul>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(tt.NoiQuy))
+            {
+                <div>
+                    <h3>Nội quy</h3>
+                    <p class="mb-0">@tt.NoiQuy</p>
                 </div>
             }
         </div>
@@ -86,6 +143,9 @@
     </footer>
 
     <partial name="_ScriptChung" />
+    <script src="/lib/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="/lib/lenis/1.3.27/lenis.min.js"></script>
+    <script type="module" src="/js/cong/cuon-muot.js" asp-append-version="true"></script>
     <script type="module" src="/js/cong/header.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -42,6 +42,11 @@
   --shelf-bg: #EFEBE3;
   --shelf-deco: rgba(23, 107, 84, .16);
   --shelf-title: #123F35;
+  --shelf-deco-cham: rgba(23, 107, 84, .42); /* chấm bán sắc của chữ trang trí (đậm hơn để tổng thể ≈ --shelf-deco) */
+  --shelf-floor: rgba(11, 42, 37, .22);      /* bóng elip dưới hàng sách */
+  --shelf-nav-bg: rgba(110, 110, 110, .38);   /* nút tròn đổi kệ (nền xám bán trong suốt như ảnh tham khảo) */
+  --book-paper: #F6F1E6;                      /* mặt trên/giấy sách */
+  --hero-phu: rgba(7, 63, 50, .58);           /* lớp phủ Hero (file 04 mục 2) */
   /* Khu tài khoản kính mờ (mục C) */
   --glass-bg: rgba(255, 255, 255, .58);
   --glass-bg-dac: rgba(255, 255, 255, .86);

@@ -53,6 +53,16 @@ public sealed class DanhMucController : Controller
     [QuyenTrang("SACH_R")]
     public IActionResult Sach(string? tienTrinh) => View(new DanhMucSachVm(QuyenBang.Tu(User, "SACH"), tienTrinh,
         CapNhatTinhTrang: User.CoQuyen("TT108") || User.CoQuyen("TT112") || User.CoQuyen("TT116")));
+
+    /// <summary>Quản lý đầu sách (X02, X03 – mở rộng cho cổng bạn đọc, GIA_DINH D55).</summary>
+    [HttpGet("quan-tri/danh-muc/dau-sach")]
+    [QuyenTrang("DAUSACH_R")]
+    public IActionResult DauSach() => View(QuyenBang.Tu(User, "DAUSACH"));
+
+    /// <summary>Quản lý thể loại (X01 – mở rộng cho cổng bạn đọc).</summary>
+    [HttpGet("quan-tri/danh-muc/the-loai")]
+    [QuyenTrang("THELOAI_R")]
+    public IActionResult TheLoai() => View(QuyenBang.Tu(User, "THELOAI"));
 }
 
 public sealed record DanhMucSachVm(QuyenBang Quyen, string? TienTrinh, bool CapNhatTinhTrang);

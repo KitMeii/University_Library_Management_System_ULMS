@@ -17,7 +17,8 @@ public class CongVaDienThoaiTests(TrinhDuyet td)
         await page.FillAsync("#matKhau", "Docgia@123");
         await page.ClickAsync("button[type=submit]");
         await page.WaitForURLAsync(TrinhDuyet.Web + "/");
-        Assert.Contains("Nguyễn Minh Anh", await page.InnerTextAsync("main"));
+        // Pha 5: tên bạn đọc đang đăng nhập hiển thị ở header cổng (trang chủ không còn khối “Xin chào” của Pha 1)
+        Assert.Contains("Nguyễn Minh Anh", await page.InnerTextAsync(".cong-header"));
 
         // Cookie BanDoc không mở được /quan-tri (file 07 mục 5)
         await page.GotoAsync(TrinhDuyet.Web + "/quan-tri");
