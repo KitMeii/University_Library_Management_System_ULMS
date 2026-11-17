@@ -46,6 +46,30 @@ public sealed class TrinhDuyet : IAsyncLifetime
         });
     }
 
+    public const string MatKhauBanDoc = "Docgia@123";
+
+    /// <summary>
+    /// Bộ kiểm thử chạy ở chế độ chụp ảnh Bài 4 (ẩn nhãn DỮ LIỆU MẪU → ẩn phần mở rộng – GIA_DINH D61). Kiểm thử chức năng mở rộng
+    /// (đặt chỗ, Quầy đặt chỗ, btnNhanDatCho…) đặt cookie này để web hiện phần mở rộng (chỉ có tác dụng ở Development – D65).
+    /// </summary>
+    public static async Task BatMoRongAsync(IBrowserContext ctx)
+    {
+        // Đặt bằng document.cookie trên chính trang web (host “web” một nhãn – AddCookiesAsync theo Url không áp dụng được)
+        var p = await ctx.NewPageAsync();
+        await p.GotoAsync(Web + "/kich-hoat");
+        await p.EvaluateAsync("() => { document.cookie = 'ulms-kiem-thu-mo-rong=1; path=/; SameSite=Lax'; }");
+        await p.CloseAsync();
+    }
+
+    public static async Task DangNhapBanDocAsync(IPage page, string maSv, string mk = MatKhauBanDoc)
+    {
+        await page.GotoAsync(Web + "/dang-nhap");
+        await page.FillAsync("#maSvHvCb", maSv);
+        await page.FillAsync("#matKhau", mk);
+        await page.ClickAsync("#frmDangNhapBanDoc button[type=submit]");
+        await page.WaitForURLAsync(u => !u.Contains("/dang-nhap"));
+    }
+
     public static async Task DangNhapNhanVienAsync(IPage page, string ten, string mk = MatKhauMau)
     {
         await page.GotoAsync(Web + "/quan-tri/dang-nhap");

@@ -113,6 +113,8 @@ services:
     environment:
       <<: *dotnet-env
       ConnectionStrings__ThuVien: "Server=${DB_SERVER:-sqlserver};Database=${DB_NAME:-ThuVien};User Id=svc_muontra;Password=${SVC_MUONTRA_PASSWORD};TrustServerCertificate=True"
+      # Tác vụ nền đặt chỗ (file 06 mục 3): chu kỳ quét phút – bộ kiểm thử đặt nhỏ để không phải chờ 5 phút
+      ThuVien__DatCho__ChuKyQuetPhut: ${DATCHO_CHU_KY_PHUT:-5}
     volumes:
       - thuvien-logs:/app/logs
 

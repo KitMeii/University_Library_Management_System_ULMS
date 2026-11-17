@@ -47,6 +47,7 @@
   --shelf-nav-bg: rgba(110, 110, 110, .38);   /* nút tròn đổi kệ (nền xám bán trong suốt như ảnh tham khảo) */
   --book-paper: #F6F1E6;                      /* mặt trên/giấy sách */
   --hero-phu: rgba(7, 63, 50, .58);           /* lớp phủ Hero (file 04 mục 2) */
+  --bp-nen: rgba(11, 42, 37, .55);            /* nền tối dần khi mở Book Preview (file 06 mục 1) */
   /* Khu tài khoản kính mờ (mục C) */
   --glass-bg: rgba(255, 255, 255, .58);
   --glass-bg-dac: rgba(255, 255, 255, .86);

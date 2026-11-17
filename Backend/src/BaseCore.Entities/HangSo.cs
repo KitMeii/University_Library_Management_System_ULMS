@@ -72,7 +72,8 @@ public static class MienGiaTri
         public static readonly string[] TatCa =
         [
             "Đặt chỗ thành công", "Sắp hết hạn giữ", "Hết hạn giữ", "Đã nhận sách",
-            "Sắp đến hạn trả", "Quá hạn trả", "Biên bản vi phạm"
+            "Sắp đến hạn trả", "Quá hạn trả", "Biên bản vi phạm",
+            "Đặt chỗ bị hủy" // bổ sung 17/11/2026 – GIA_DINH D63: nhân viên hủy đặt chỗ tại quầy
         ];
     }
 }

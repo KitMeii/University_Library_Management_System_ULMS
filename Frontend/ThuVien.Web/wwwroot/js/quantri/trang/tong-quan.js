@@ -1,5 +1,6 @@
 // Trang tổng quan theo nhóm (file 08 mục 4, file 09 mục 3, file 10 mục 4): thẻ KPI đếm lên, bấm được → chi tiết;
-// biểu đồ ECharts theo nhóm N1–N4. Đặt chỗ (N1) ẩn đến Pha 6 (GIA_DINH D50).
+// biểu đồ ECharts theo nhóm N1–N4. Đặt chỗ (N1) bật lại từ Pha 6 (GIA_DINH D50) – chỉ vẽ khi trang có ô tương ứng
+// (ẩn ở chế độ chụp ảnh Bài 4 – D61).
 import { api } from '../../api.js';
 import { motion, giamChuyenDong } from '../../motion.config.js';
 import { BieuDo, dauMau, so, tien, tienGon, ngayNgan, ngayDayDu, thangNam, tooltipTruc } from '../../charts/chart-factory.js';
@@ -46,6 +47,20 @@ async function veN1() {
   datKpi('kpiDangMuon', d.dangMuon);
   datKpi('kpiQuaHan', d.quaHan, { tiLe: d.dangMuon ? d.quaHan / d.dangMuon : 0,
     phu: d.dangMuon ? `${phanTram(d.quaHan, d.dangMuon)}% số bản đang mượn` : 'Không có bản sách đang mượn' });
+  datKpi('kpiDatChoDangGiu', d.datChoDangGiu, { tiLe: d.datChoDangGiu ? d.datChoSapHetHan / d.datChoDangGiu : 0,
+    phu: d.datChoSapHetHan ? `${so(d.datChoSapHetHan)} sắp hết hạn (< 2 giờ)` : 'Không có đặt chỗ sắp hết hạn' });
+  if (bieuDo.bdDatCho) {
+    const kq = d.datChoThangNay;
+    bieuDo.bdDatCho.ve({
+      tooltip: { trigger: 'item', formatter: (p) => `${dauMau(p.color)}${p.name}: <b>${so(p.value)}</b> đặt chỗ (${p.percent}%)` },
+      legend: { bottom: 0, left: 'center' },
+      series: [{ name: 'Đặt chỗ theo kết quả', type: 'pie', radius: ['48%', '72%'], center: ['50%', '45%'],
+        label: { formatter: (p) => `${p.percent}%` }, data: kq.filter((x) => x.so > 0).map((x) => ({ name: x.ketQua, value: x.so })) }]
+    }, {
+      rong: tong(kq.map((x) => x.so)) === 0,
+      bang: { cot: ['Kết quả', 'Số đặt chỗ'], dong: kq.map((x) => [x.ketQua, so(x.so)]) }
+    });
+  }
 
   const m30 = d.muonTra30Ngay;
   bieuDo.bdMuonTra30.ve({

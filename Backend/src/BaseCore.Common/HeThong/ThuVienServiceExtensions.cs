@@ -46,6 +46,7 @@ public static class ThuVienServiceExtensions
         services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Muc));
         services.Configure<MatKhauOptions>(builder.Configuration.GetSection(MatKhauOptions.Muc));
         services.Configure<BaseCore.Common.NghiepVu.QuyDinhOptions>(builder.Configuration.GetSection(BaseCore.Common.NghiepVu.QuyDinhOptions.Muc));
+        services.Configure<BaseCore.Common.NghiepVu.DatChoOptions>(builder.Configuration.GetSection(BaseCore.Common.NghiepVu.DatChoOptions.Muc));
         services.AddSingleton<IClock, DongHoHeThong>();
         services.AddSingleton<MocThuHoiPhien>();
         services.AddSingleton(sp => new MatKhauHasher(sp.GetRequiredService<IOptions<MatKhauOptions>>().Value.SoVongLap));

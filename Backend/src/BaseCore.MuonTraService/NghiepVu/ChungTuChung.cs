@@ -86,16 +86,32 @@ public sealed class ChungTuChung(MuonTraDbContext db)
             .OrderBy(x => x.NgayMuon).ThenBy(x => x.MaBanSach).ToList();
     }
 
+    /// <summary>
+    /// Đặt chỗ còn giữ thật sự (“Đang giữ” và chưa quá tg_hethan) – đặt chỗ quá hạn coi như đã hết dù tác vụ nền chưa quét
+    /// (file 06 mục 3).
+    /// </summary>
+    public IQueryable<PhieuDatCho> DatChoConGiu(DateTime bayGio) =>
+        db.PhieuDatCho.Where(d => d.TrangThai == MienGiaTri.TrangThaiDatCho.DangGiu && d.TgHetHan > bayGio);
+
     /// <summary>Khóa ứng dụng theo bản sách trong transaction hiện tại – hai người không cùng cho mượn một bản sách.</summary>
-    public async Task KhoaBanSachAsync(IEnumerable<string> maBanSach, CancellationToken ct)
+    public Task KhoaBanSachAsync(IEnumerable<string> maBanSach, CancellationToken ct) =>
+        KhoaAsync(maBanSach.Order(StringComparer.Ordinal).Select(ma => "ULMS:SACH:" + ma), ct);
+
+    /// <summary>
+    /// Khóa ứng dụng (sp_getapplock, chủ sở hữu = transaction) theo đúng thứ tự truyền vào. Thứ tự khóa toàn hệ thống:
+    /// BANDOC → DAUSACH → SACH (Lập Phiếu mượn chỉ khóa SACH) nên không tạo vòng chờ.
+    /// </summary>
+    public async Task KhoaAsync(IEnumerable<string> taiNguyen, CancellationToken ct)
     {
         var cn = (SqlConnection)db.Database.GetDbConnection();
         var tx = (SqlTransaction)Microsoft.EntityFrameworkCore.Storage.DbContextTransactionExtensions.GetDbTransaction(db.Database.CurrentTransaction!);
-        foreach (var ma in maBanSach.Order(StringComparer.Ordinal))
+        foreach (var r in taiNguyen)
         {
-            await using var cmd = new SqlCommand("EXEC sp_getapplock @Resource = @r, @LockMode = 'Exclusive', @LockOwner = 'Transaction', @LockTimeout = 10000;", cn, tx);
-            cmd.Parameters.AddWithValue("@r", "ULMS:SACH:" + ma);
-            await cmd.ExecuteNonQueryAsync(ct);
+            // sp_getapplock trả mã < 0 (hết thời gian chờ, deadlock) chứ không ném lỗi → kiểm tra để không chạy tiếp khi chưa có khóa
+            await using var cmd = new SqlCommand("DECLARE @kq int; EXEC @kq = sp_getapplock @Resource = @r, @LockMode = 'Exclusive', @LockOwner = 'Transaction', @LockTimeout = 10000; SELECT @kq;", cn, tx);
+            cmd.Parameters.AddWithValue("@r", r);
+            if (Convert.ToInt32(await cmd.ExecuteScalarAsync(ct)) < 0)
+                throw LoiNghiepVu.XungDot("HE_THONG_BAN", "Hệ thống đang xử lý nhiều yêu cầu cùng lúc. Vui lòng thử lại sau ít giây.");
         }
     }
 }

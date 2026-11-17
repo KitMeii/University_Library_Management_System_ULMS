@@ -10,6 +10,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BaseCore.Common\BaseCore.Common.csproj" />
     <ProjectReference Include="..\..\src\BaseCore.Repository\BaseCore.Repository.csproj" />
+    <!-- Kiểm thử quy tắc web không cần chạy máy chủ (CheDoAnhBai4 – D65) -->
+    <ProjectReference Include="..\..\..\Frontend\ThuVien.Web\ThuVien.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\SpecDoc.cs" Link="Shared\SpecDoc.cs" />

@@ -20,6 +20,12 @@ builder.Services.AddScoped<PhieuGiaHanService>();
 builder.Services.AddScoped<PhieuTraService>();
 builder.Services.AddScoped<BaoCaoMuonTraService>();
 builder.Services.AddScoped<ThongKeN1Service>();
+// Pha 6: đặt chỗ 24 giờ, tài khoản bạn đọc, thông báo, tác vụ nền (file 06, 07)
+builder.Services.AddScoped<DatChoService>();
+builder.Services.AddScoped<TaiKhoanBanDocService>();
+builder.Services.AddScoped<TacVuNen>();
+if (builder.Configuration.GetValue("ThuVien:DatCho:ChayTacVuNen", true))
+    builder.Services.AddHostedService<DatChoNenService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

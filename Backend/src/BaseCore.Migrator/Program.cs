@@ -70,6 +70,7 @@ await using (var db = new ThuVienDbContext(options))
         Console.WriteLine("[migrator] Nạp DỮ LIỆU MẪU (Development)...");
         await DuLieuMau.NapAsync(db, hasher, clock);
         await DuLieuMauChungTu.NapAsync(db, clock);
+        await DuLieuMauDatCho.NapAsync(db, clock);
     }
 }
 

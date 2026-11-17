@@ -48,8 +48,16 @@ public sealed class KiemTraAntiforgeryApiMiddleware(RequestDelegate next, IAntif
 /// </summary>
 public sealed class HeaderBaoMatMiddleware(RequestDelegate next)
 {
+    /// <summary>
+    /// Băm SHA-256 đúng nội dung thẻ &lt;style&gt; mà page-flip 2.0.7 (StPageFlip – Book Preview) tự chèn khi nạp (GIA_DINH D69).
+    /// Chỉ cho phép đúng chuỗi CSS này, không mở 'unsafe-inline'. Đổi phiên bản page-flip thì phải tính lại (kiểm thử E2E CSP thật sẽ báo).
+    /// Thư viện gắn thẻ &lt;style&gt; RỖNG vào &lt;head&gt; trước rồi mới thêm nội dung → trình duyệt kiểm tra cả lúc rỗng:
+    /// băm thứ hai là SHA-256 của chuỗi rỗng (thẻ style rỗng không có tác dụng gì).
+    /// </summary>
+    public const string BamStylePageFlip = "'sha256-68ovwuVEgP4KP6803CNhdg6S0jCfEydjM4sM/Qdnc5o=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='";
+
     private const string CspGoc =
-        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; " +
+        "default-src 'self'; script-src 'self'; style-src 'self' " + BamStylePageFlip + "; img-src 'self' data: blob:; font-src 'self'; " +
         "connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; ";
     private const string Csp = CspGoc + "frame-ancestors 'none'";
     private const string CspTrangIn = CspGoc + "frame-ancestors 'self'";

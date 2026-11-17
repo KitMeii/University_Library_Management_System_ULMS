@@ -11,7 +11,7 @@ namespace BaseCore.KhoSachService.NghiepVu;
 /// </summary>
 public static class BanCoTheMuon
 {
-    public static IQueryable<string> Query(KhoSachDbContext db)
+    public static IQueryable<string> Query(KhoSachDbContext db, DateTime bayGio)
     {
         var dangMuon = from cm in db.CtPhieuMuon
                        where !(from x in db.CtPhieuTra
@@ -19,7 +19,8 @@ public static class BanCoTheMuon
                                where pt.SoPMuon == cm.SoPMuon && x.MaBanSach == cm.MaBanSach
                                select 1).Any()
                        select cm.MaBanSach;
-        var dangGiu = db.PhieuDatCho.Where(d => d.TrangThai == MienGiaTri.TrangThaiDatCho.DangGiu).Select(d => d.MaBanSach);
+        // Đặt chỗ quá hạn coi như đã hết dù tác vụ nền chưa quét (file 06 mục 3)
+        var dangGiu = db.PhieuDatCho.Where(d => d.TrangThai == MienGiaTri.TrangThaiDatCho.DangGiu && d.TgHetHan > bayGio).Select(d => d.MaBanSach);
         var choKho = from x in db.CtPhieuTra
                      join pt in db.PhieuTra on x.SoPTra equals pt.SoPTra
                      where (x.TinhTrangTra == MienGiaTri.TinhTrangTra.Mat || x.TinhTrangTra == MienGiaTri.TinhTrangTra.HuHong)

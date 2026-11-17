@@ -46,7 +46,7 @@ const form = new FormDanhMuc({
         dinhDang: (v, d) => nhanTrangThai(dinhDangNgay(v) + (d.theConHan ? '' : ' – hết hạn'), d.theConHan ? 'qt-nhan-tt--ok' : 'qt-nhan-tt--loi') }
     ]
   },
-  khiChon: (d) => { hienAnh(d.anh); anKetQua(); },
+  khiChon: (d) => { hienAnh(d.anh); anKetQua(); napTaiKhoanCong(d?.maBanDoc); },
   khiThem: async () => {
     hienAnh(null);
     anKetQua();
@@ -149,6 +149,35 @@ $('btnKiemTraDK').addEventListener('click', async () => {
     k.replaceChildren(div);
     k.hidden = false;
     await hienSachDangMuon(kq.sachDangMuon);
+  } catch (e) { thongBao(e.message, 'loi'); }
+});
+
+// ---------- Mở rộng (file 07 mục 1): khóa/mở khóa tài khoản cổng bạn đọc – chỉ có khi trang render khối này ----------
+const khuTk = $('khuTaiKhoanCong');
+let tkHienTai = null;
+const ngayGioTk = (v) => { if (!v) return 'chưa đăng nhập'; const [d, t] = String(v).split('T'); return `${dinhDangNgay(d)} ${t.slice(0, 5)}`; };
+function veTaiKhoanCong(tk) {
+  tkHienTai = tk;
+  const lop = tk.tinhTrang === 'Hoạt động' ? 'qt-nhan-tt--ok' : tk.tinhTrang === 'Khóa' ? 'qt-nhan-tt--loi' : 'qt-nhan-tt--canh-bao';
+  $('lblTinhTrangTaiKhoan').replaceChildren(nhanTrangThai(tk.tinhTrang, lop));
+  $('lblDangNhapCuoi').textContent = ngayGioTk(tk.tgDangNhapCuoi);
+  const khoa = tk.tinhTrang !== 'Khóa';
+  $('btnKhoaTaiKhoanCong').querySelector('span').textContent = khoa ? 'Khóa tài khoản cổng' : 'Mở khóa tài khoản cổng';
+  $('btnKhoaTaiKhoanCong').querySelector('i').className = 'bi ' + (khoa ? 'bi-lock' : 'bi-unlock');
+  khuTk.hidden = false;
+}
+async function napTaiKhoanCong(ma) {
+  if (!khuTk) return;
+  if (!ma) { khuTk.hidden = true; return; }
+  try { veTaiKhoanCong(await api.lay(`/api/quan-tri/ban-doc/${encodeURIComponent(ma)}/tai-khoan-cong`)); }
+  catch { khuTk.hidden = true; }
+}
+khuTk && $('btnKhoaTaiKhoanCong').addEventListener('click', async () => {
+  if (!tkHienTai) return;
+  const khoa = tkHienTai.tinhTrang !== 'Khóa';
+  try {
+    veTaiKhoanCong(await api.sua(`/api/quan-tri/ban-doc/${encodeURIComponent(tkHienTai.maBanDoc)}/tai-khoan-cong`, { khoa }));
+    thongBao(khoa ? 'Đã khóa tài khoản cổng bạn đọc.' : 'Đã mở khóa tài khoản cổng bạn đọc.', 'ok');
   } catch (e) { thongBao(e.message, 'loi'); }
 });
 

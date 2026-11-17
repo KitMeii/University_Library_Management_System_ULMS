@@ -92,6 +92,20 @@ Cập nhật: 16/11/2026 (Pha 5).
 | `Cong_Ke_sach.png`, `Cong_Ke_sach_mobile.png` | Kệ sách nổi bật – coverflow gáy sách, kệ “Sách mới về” (thanh thời gian theo năm xuất bản) |
 | `Cong_Ke_sach_Muon_nhieu.png` | Kệ “Mượn nhiều nhất” (thanh thứ hạng) |
 | `Cong_Ke_sach_doi_chieu_tham_khao.png` | Đặt cạnh ảnh tham khảo `tham_khao/hieu_ung_ke_sach_coverflow.png` (file 05 mục 7) |
-| `Cong_Ke_sach_Xem_nhanh.png` | Bấm cuốn giữa → hộp “Xem nhanh” (Book Preview ở Pha 6) |
 | `Cong_Menu_mobile.png` | Menu cổng dạng Offcanvas trên điện thoại |
 | `Pha5_Quan_ly_dau_sach.png`, `Pha5_Quan_ly_the_loai.png` | Dashboard: quản lý đầu sách (gắn bản sách – D55) và thể loại (mở rộng cho cổng bạn đọc) |
+| `Cong_Book_Preview_Dang_mo.png` | Pha 6 – bấm cuốn giữa: bìa bay ra, mở quanh gáy, lật nhanh tờ giấy (khung hình giữa chừng) |
+| `Cong_Book_Preview.png` | Book Preview hai trang: trang trái bìa + thông tin, trang phải giới thiệu + tình trạng + khối hành động |
+| `Cong_Book_Preview_Dang_nhap.png` | Chưa đăng nhập bấm Đặt chỗ → hộp đăng nhập ngay trong trang sách |
+| `Cong_Book_Preview_Ve_giu_cho.png` | Đặt chỗ thành công: vé giữ chỗ (mã vạch Code128, hạn giữ, đếm ngược, quầy nhận, tem ĐÃ GIỮ CHỖ) |
+| `Cong_Book_Preview_Khong_du_dieu_kien.png` | Không đủ điều kiện đặt chỗ: lý do + hướng xử lý ngay trên trang sách |
+| `Cong_Book_Preview_mobile.png`, `Cong_Book_Preview_mobile_trang_2.png` | Điện thoại: một trang, nút Đặt chỗ ghim đáy; lật sang trang 2 (hộp đăng nhập) |
+| `Cong_Tai_khoan_Tong_quan.png`, `Cong_Tai_khoan_Dang_muon.png`, `Cong_Tai_khoan_Dat_cho.png`, `Cong_Tai_khoan_Lich_su.png`, `Cong_Tai_khoan_Yeu_thich.png`, `Cong_Tai_khoan_Thong_bao.png` | Trang cá nhân bạn đọc kính mờ (file 07 mục 3) |
+| `Cong_Tai_khoan_Dat_cho_mobile.png` | Trang cá nhân trên điện thoại – thanh tab dưới đáy |
+| `Cong_Chuong_thong_bao.png` | Chuông thông báo trên header cổng (10 thông báo mới nhất) |
+| `Cong_Kich_hoat.png` | Kích hoạt tài khoản / đặt lại mật khẩu |
+| `Pha6_Tong_quan_N1_dat_cho.png` | Tổng quan N1 có KPI “Đặt chỗ đang giữ” và donut đặt chỗ theo kết quả (mở rộng – D64) |
+| `Pha6_Quay_dat_cho.png` | Quầy đặt chỗ (mở rộng – file 06 mục 5) |
+| `Pha6_Lap_phieu_muon_Nhan_dat_cho.png` | 01.01.03 có khối `dgvDatCho` + `btnNhanDatCho` (mở rộng – **không dùng cho Bài 4**; ảnh Bài 4 4.3.1 không có khối này) |
+| `Pha6_Phieu_soan_sach_A4.png` | Phiếu soạn sách đặt chỗ in A4 (mở rộng) |
+| `Pha6_Danh_muc_ban_doc_Tai_khoan_cong.png` | Danh mục Bạn đọc của N4 có khối khóa/mở khóa tài khoản cổng (mở rộng – D66, không dùng cho Bài 4) |

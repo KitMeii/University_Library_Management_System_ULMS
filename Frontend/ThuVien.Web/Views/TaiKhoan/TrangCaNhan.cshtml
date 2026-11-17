@@ -1,0 +1,38 @@
+@using ThuVien.Web.Controllers
+@{
+    var trang = ViewData["TrangCon"] as string ?? "";
+    var ten = User.FindFirst(ThuVienClaims.Ten)?.Value;
+}
+@section Css {
+    <link rel="stylesheet" href="/css/account.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/tai-khoan.css" asp-append-version="true" />
+}
+<div class="nen-pastel tk-nen">
+    <div class="cong-container tk-bo-cuc">
+        @* Thanh viên thuốc dọc (máy tính) – thanh tab dưới đáy (điện thoại) – file 07 mục 3 *@
+        <nav class="tk-dieu-huong glass-card" aria-label="Trang cá nhân">
+            <p class="tk-dieu-huong__ten"><i class="bi bi-person-circle" aria-hidden="true"></i><span>@ten</span></p>
+            <ul>
+                @foreach (var m in TaiKhoanController.TrangCon)
+                {
+                    var href = m.Ma == "" ? "/tai-khoan" : "/tai-khoan/" + m.Ma;
+                    <li>
+                        <a href="@href" class="tk-vien-thuoc" aria-current="@(m.Ma == trang ? "page" : null)">
+                            <i class="bi @m.Icon" aria-hidden="true"></i><span>@m.Ten</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <section class="tk-noi-dung" id="tkNoiDung" data-trang="@trang" aria-labelledby="tkTieuDe" aria-busy="true">
+            <h1 id="tkTieuDe" class="tk-tieu-de">@ViewData["Title"]</h1>
+            <div id="tkThan" class="tk-luoi">
+                <div class="glass-card tk-the tk-the--cho" aria-hidden="true"></div>
+                <div class="glass-card tk-the tk-the--cho" aria-hidden="true"></div>
+            </div>
+        </section>
+    </div>
+</div>
+@section Scripts {
+    <script type="module" src="/js/cong/tai-khoan.js" asp-append-version="true"></script>
+}

@@ -13,6 +13,7 @@
         _ => ""
     };
     string Loc(string tinhTrang) => "/quan-tri/danh-muc/sach?tinhTrang=" + Uri.EscapeDataString(tinhTrang);
+    var hienDatCho = User.CoQuyen("DATCHO_R") && !CheDoAnhBai4.AnMoRong(Context);
 }
 @section Css {
     <link rel="stylesheet" href="/css/thong-ke.css" asp-append-version="true" />
@@ -35,10 +36,19 @@
             <partial name="_Kpi" model='new KpiVm("kpiLuotMuonHomNay", "Lượt mượn hôm nay", "bi-journal-arrow-up", Href: "/quan-tri/bao-cao/muon-tra?ky=hom-nay")' />
             <partial name="_Kpi" model='new KpiVm("kpiDangMuon", "Đang mượn", "bi-book", ChiTiet: "dang-muon", MoTa: "bản sách chưa trả")' />
             <partial name="_Kpi" model='new KpiVm("kpiQuaHan", "Quá hạn", "bi-alarm", ChiTiet: "qua-han", MoTa: "bản sách quá hạn trả")' />
+            @if (hienDatCho)
+            {
+                @* Đặt chỗ (mở rộng) – bật lại từ Pha 6 (GIA_DINH D50), ẩn ở chế độ chụp ảnh Bài 4 (D61) *@
+                <partial name="_Kpi" model='new KpiVm("kpiDatChoDangGiu", "Đặt chỗ đang giữ", "bi-bookmark-check", Href: "/quan-tri/dat-cho")' />
+            }
         </div>
         <div class="qt-luoi-bieu-do">
             <partial name="_BieuDo" model='new BieuDoVm("bdMuonTra30", "Lượt mượn – trả 30 ngày", Lop: "qt-bieu-do--rong")' />
-            <partial name="_BieuDo" model='new BieuDoVm("bdTop10", "Top 10 sách được mượn nhiều", "12 tháng gần nhất · gộp theo tên sách")' />
+            <partial name="_BieuDo" model='new BieuDoVm("bdTop10", "Top 10 đầu sách được mượn nhiều", "12 tháng gần nhất · theo đầu sách")' />
+            @if (hienDatCho)
+            {
+                <partial name="_BieuDo" model='new BieuDoVm("bdDatCho", "Đặt chỗ theo kết quả trong tháng", "Tháng này · Đã nhận / Hết hạn / Đã hủy")' />
+            }
             <partial name="_BieuDo" model='new BieuDoVm("bdLichMuon", "Lượt mượn theo ngày trong năm", "365 ngày gần nhất")' />
         </div>
     }

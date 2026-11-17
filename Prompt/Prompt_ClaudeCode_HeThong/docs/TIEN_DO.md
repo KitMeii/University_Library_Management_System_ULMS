@@ -9,7 +9,7 @@
 | 3 – Chứng từ + in MB02–MB05 | **Đã duyệt** (16/11/2026) | D45, D46, D48 đã duyệt; D47 sửa theo quyết định chủ dự án (bảng X09); D49 kiểm thử trên ThuVien_Test; ảnh 4.3.1–4.3.4, 4.4.1–4.4.4 |
 | 4 – Báo cáo MB06–MB07 + tổng quan | **Đã duyệt** (16/11/2026) | D50–D54 đã duyệt; X09 ghi vào file 02 (9 bảng mở rộng); ảnh 4.5.1–4.5.2, Tong_quan_N1–N4 → đủ bộ ảnh Bài 4 (`anh_giao_dien/DANH_SACH_ANH.md`) |
 | 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | **Đã duyệt** (17/11/2026) | D55–D59, D61 duyệt; D60 chờ số đo máy thật của chủ dự án; ảnh Cong_*, Pha5_* |
-| 6 – Book Preview + đặt chỗ + tài khoản + Quầy đặt chỗ | Chưa làm | |
+| 6 – Book Preview + đặt chỗ + tài khoản + Quầy đặt chỗ | **Đã duyệt** (17/11/2026) | D62–D71 duyệt (D63 thêm loại “Đặt chỗ bị hủy”, D69 băm CSP thay bản vá); ảnh Cong_Book_Preview*, Cong_Tai_khoan*, Pha6_* |
 | 7 – Trang chủ hoàn chỉnh | Chưa làm | |
 | 8 – Hoàn thiện, prod.yml | Chưa làm | |
 
@@ -67,8 +67,17 @@
 - Kiểm thử: tích hợp `Pha5ApiTests` (kệ so truy vấn kiểm chứng, CRUD + ràng buộc + quyền), E2E `Pha5Tests` (header/hero, kệ: phím, nút, bấm gáy, bấm liên tục, kéo, thanh thời gian, đổi kệ, xem nhanh, giảm chuyển động, không JS, điện thoại, axe, CSP thật, số đo khung hình), ảnh `ChupAnhPha5Tests`.
 - D57–D59, D61 duyệt 17/11/2026 (D61: ẩn phần mở rộng ở chế độ chụp ảnh Bài 4, khôi phục 20 ảnh 4.2–4.6 từ df9a031). D60: chủ dự án đo trên máy thật, chưa gửi kết quả; dưới 55 fps thì tối ưu theo file 05 mục 7.
 
+## Pha 6 – đã làm
+- Đặt chỗ 24 giờ (file 06 mục 2–3): `DatChoService` – 6 điều kiện, mỗi điều kiện mã lỗi + câu thông báo + hướng xử lý; một transaction, khóa ứng dụng BANDOC → DAUSACH → SACH, chọn bản Kệ mở/mã nhỏ nhất, chỉ mục lọc chặn trùng, 409 “Sách vừa được người khác đặt”; mã `DCyyyyMMdd-####`; không đổi SACH.tinhtrang; đặt chỗ quá hạn coi như hết ngay trong mọi truy vấn (muontra, khosach); hết hạn “lười” trước khi đặt (D71).
+- Tác vụ nền `DatChoNenService` (mỗi `ChuKyQuetPhut`, bộ kiểm thử 3 giây): Đang giữ quá hạn → Hết hạn + THONGBAO; nhắc “Sắp hết hạn giữ” một lần; từ 7:00 nhắc “Sắp đến hạn trả” (còn 2 ngày), “Quá hạn trả”. Mọi thời điểm qua IClock.
+- Book Preview (file 06 mục 1): bìa bay từ vị trí nguồn → mở quanh gáy → lật 3 tờ → hai trang giấy; StPageFlip 2.0.7 (máy tính 2 trang, điện thoại 1 trang vuốt, nút Đặt chỗ ghim đáy); đóng bằng ×/Esc/nền/Back, bay về nguồn; liên kết sâu `/sach/{ma}`; giữ focus; giảm chuyển động mờ 0.25s. Đăng nhập ngay trong trang sách rồi tự đặt chỗ; vé giữ chỗ (mã vạch Code128 SVG, đếm ngược lật số, đỏ khi < 2 giờ, tem ĐÃ GIỮ CHỖ + tia); yêu thích; chia sẻ liên kết; lý do không đủ điều kiện ngay trên trang.
+- Tài khoản bạn đọc (file 07): kích hoạt / đặt lại mật khẩu `/kich-hoat` (sai 5 lần khóa 15 phút – D68); trang cá nhân kính mờ `/tai-khoan` 8 trang (tổng quan + biểu đồ cột 12 tháng, đang mượn, đặt chỗ, lịch sử theo năm, vi phạm, yêu thích, thông báo, đổi mật khẩu), thanh viên thuốc dọc / tab đáy trên điện thoại; chuông thông báo header cổng.
+- Nghiệp vụ N1 (mở rộng, ẩn ở chế độ ảnh Bài 4): `dgvDatCho` + `btnNhanDatCho` trong 01.01.03, btnThemSach từ chối bản giữ cho người khác, btnIn chuyển đặt chỗ “Đã nhận” (so_pmuon, ma_nd_xuly) + THONGBAO; trang Quầy đặt chỗ (lọc, đếm ngược, hủy có lý do, in phiếu soạn sách A4); chuông topbar; tổng quan N1 bật lại KPI + donut đặt chỗ, Top 10 theo đầu sách (D64). N4 khóa/mở khóa tài khoản cổng ở Danh mục Bạn đọc (D66).
+- Dữ liệu mẫu: 8 đặt chỗ đủ 4 trạng thái (2 đang giữ còn < 2 giờ) + thông báo + yêu thích.
+- Duyệt 17/11/2026: D63 thêm loại THONGBAO “Đặt chỗ bị hủy” (migration + file 02); D65 thêm kiểm thử Production; D69 bỏ bản vá page-flip, CSP băm SHA-256, kiểm thử giải mã Code128 (`MaVachTests`); xóa 2 đặt chỗ + thông báo do smoke test để lại trong CSDL ThuVien.
+- Kiểm thử: đơn vị `VongDoiDatChoTests`, `CheDoAnhBai4Tests`; tích hợp `Pha6ApiTests` (20 yêu cầu song song → đúng 1 thành công, tua 24 giờ → Hết hạn + thông báo, nhắc 1 lần, nhận tại quầy, từng điều kiện, kích hoạt/khóa tạm, trang cá nhân so truy vấn kiểm chứng, phân quyền); E2E `Pha6Tests` (Book Preview: Back/liên kết sâu/focus/điện thoại/giảm chuyển động/CSP thật/axe; đặt chỗ có đăng nhập trong trang; trang cá nhân + axe; N1 dgvDatCho, Quầy đặt chỗ; chế độ ảnh Bài 4 ẩn phần mở rộng); ảnh `ChupAnhPha6Tests`.
+
 ## Việc còn lại / chuyển pha sau
-- Đặt chỗ mẫu, `dgvDatCho`/`btnNhanDatCho` trong Lập Phiếu mượn, Quầy đặt chỗ → Pha 6.
+- Tìm theo từ khóa từ Book Preview, trang Khám phá sách → Pha 7.
 - `docker-compose.prod.yml` → Pha 8. Kiểm thử đã tách bộ hệ thống riêng (project `ulms-test`, CSDL `ThuVien_Test` – D49).
-- Biểu đồ/KPI đặt chỗ ở Tổng quan N1 (ẩn ở Pha 4 – D50) → bật lại ở Pha 6.
-- Kích hoạt tài khoản bạn đọc, trang cá nhân → Pha 6.
+- Không làm đặt lại mật khẩu qua email (D68 – chủ dự án quyết định): bạn đọc đặt lại tại /kich-hoat hoặc nhờ N4.

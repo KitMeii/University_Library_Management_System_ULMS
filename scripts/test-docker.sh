@@ -22,6 +22,8 @@ doc_env() { grep -E "^$1=" .env 2>/dev/null | tail -n 1 | cut -d= -f2- | tr -d '
 # ---- Bộ hệ thống kiểm thử ----
 export DB_NAME=ThuVien_Test ULMS_NET=thuvien-test-net WEB_PORT=18080 GATEWAY_PORT=15000 SQL_PORT=14330
 export HIEN_NHAN_DU_LIEU_MAU=false TAO_LAI_CSDL=true
+# Tác vụ nền đặt chỗ quét mỗi 3 giây trong bộ kiểm thử (kiểm thử “hết hạn giữ” không phải chờ 5 phút)
+export DATCHO_CHU_KY_PHUT=0.05
 TM_KT=$(doc_env SAO_LUU_THU_MUC_KIEM_THU)
 if [ -z "$TM_KT" ]; then
   case "$(doc_env DB_SERVER)" in

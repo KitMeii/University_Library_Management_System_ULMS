@@ -840,7 +840,7 @@ namespace BaseCore.Migrator.Migrations
 
                     b.ToTable("THONGBAO", "muontra", t =>
                         {
-                            t.HasCheckConstraint("CK_THONGBAO_loai", "[loai] IN (N'Đặt chỗ thành công', N'Sắp hết hạn giữ', N'Hết hạn giữ', N'Đã nhận sách', N'Sắp đến hạn trả', N'Quá hạn trả', N'Biên bản vi phạm')");
+                            t.HasCheckConstraint("CK_THONGBAO_loai", "[loai] IN (N'Đặt chỗ thành công', N'Sắp hết hạn giữ', N'Hết hạn giữ', N'Đã nhận sách', N'Sắp đến hạn trả', N'Quá hạn trả', N'Biên bản vi phạm', N'Đặt chỗ bị hủy')");
                         });
                 });
 

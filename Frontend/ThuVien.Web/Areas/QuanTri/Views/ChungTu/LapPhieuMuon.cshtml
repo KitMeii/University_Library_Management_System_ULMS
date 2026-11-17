@@ -1,6 +1,7 @@
 @{
     ViewData["Title"] = "01.01.03 Lập Phiếu mượn sách";
     ViewData["NhomMenu"] = "Mượn trả sách";
+    var hienDatCho = User.CoQuyen("DATCHO_GH") && !CheDoAnhBai4.AnMoRong(Context);
 }
 <section class="qt-giao-dien" id="frmLapPhieuMuon" aria-labelledby="tieuDeGiaoDien">
     <div class="qt-giao-dien__dau">
@@ -31,6 +32,17 @@
             </div>
         </div>
         <div id="khuDieuKien" class="mt-3" hidden aria-live="polite"></div>
+        @if (hienDatCho)
+        {
+            @* Mở rộng (file 06 mục 4): nhận sách đặt chỗ tại quầy – ẩn ở chế độ chụp ảnh Bài 4 (GIA_DINH D61) *@
+            <div class="qt-dat-cho" id="khuDatCho" hidden>
+                <div class="qt-dat-cho__dau">
+                    <h2 class="qt-tieu-muc mb-0"><i class="bi bi-bookmark-check" aria-hidden="true"></i> Sách đặt chỗ đang giữ</h2>
+                    <button type="button" class="qt-nut qt-nut--chinh" id="btnNhanDatCho"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i>Đưa sách đặt chỗ vào phiếu</button>
+                </div>
+                <div class="qt-luoi" id="dgvDatCho" aria-label="Sách đặt chỗ đang giữ của Bạn đọc"></div>
+            </div>
+        }
     </div>
 
     <div class="qt-the">

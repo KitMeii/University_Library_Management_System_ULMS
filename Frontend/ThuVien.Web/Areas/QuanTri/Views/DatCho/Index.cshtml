@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Quầy đặt chỗ";
+    ViewData["NhomMenu"] = "Mượn trả sách";
+    var huyDuoc = User.CoQuyen("DATCHO_GH");
+}
+<section class="qt-giao-dien" id="frmQuayDatCho" data-huy-duoc="@(huyDuoc ? "1" : "0")" aria-labelledby="tieuDeGiaoDien">
+    <div class="qt-giao-dien__dau">
+        <div>
+            <h1 id="tieuDeGiaoDien">Quầy đặt chỗ</h1>
+            <p class="qt-giao-dien__phu"><span class="qt-ma-tien-trinh qt-ma-tien-trinh--mo-rong">Mở rộng</span>Đặt chỗ 24 giờ của bạn đọc trên cổng. Nhận sách cho bạn đọc tại <a href="/quan-tri/phieu-muon/lap">01.01.03 Lập Phiếu mượn sách</a> (nút “Đưa sách đặt chỗ vào phiếu”).</p>
+        </div>
+        <a class="qt-nut qt-nut--phu" id="btnInPhieuSoan" href="/quan-tri/in/phieu-soan-sach" target="_blank" rel="noopener"><i class="bi bi-printer" aria-hidden="true"></i>In phiếu soạn sách</a>
+    </div>
+    <div class="qt-the">
+        <div class="qt-khu-nhap">
+            <div class="qt-truong">
+                <label class="qt-nhan" for="cboTrangThai">Trạng thái</label>
+                <select class="qt-o" id="cboTrangThai">
+                    <option>Đang giữ</option>
+                    <option>Đã nhận</option>
+                    <option>Hết hạn</option>
+                    <option>Đã hủy</option>
+                    <option>Tất cả</option>
+                </select>
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpTuNgay">Đặt từ ngày</label>
+                <input class="qt-o" id="dtpTuNgay" type="date" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="dtpDenNgay">Đến ngày</label>
+                <input class="qt-o" id="dtpDenNgay" type="date" />
+            </div>
+            <div class="qt-truong">
+                <label class="qt-nhan" for="txtMaSV">Mã SV/HV/CB</label>
+                <input class="qt-o" id="txtMaSV" maxlength="15" autocomplete="off" placeholder="Tìm theo mã" />
+            </div>
+            <div class="qt-truong d-flex align-items-end">
+                <button type="button" class="qt-nut qt-nut--chinh" id="btnLoc"><i class="bi bi-funnel" aria-hidden="true"></i>Lọc</button>
+            </div>
+        </div>
+        <p class="mb-0 d-flex gap-3 flex-wrap">
+            <span class="qt-thong-ke-nho__o">Số đặt chỗ <strong class="so-lieu" id="soDatCho">0</strong></span>
+            <span class="qt-thong-ke-nho__o">Sắp hết hạn (&lt; 2 giờ) <strong class="so-lieu" id="soSapHetHan">0</strong></span>
+        </p>
+        <div class="qt-luoi mt-3" id="dgvDatChoQuay" aria-label="Danh sách đặt chỗ"></div>
+        <p class="small text-secondary mt-2 mb-0">Nhấp đúp vào dòng “Đang giữ” để hủy đặt chỗ (bắt buộc nhập lý do).</p>
+        <div class="qt-hang-nut" role="group" aria-label="Nút lệnh">
+            @if (huyDuoc)
+            {
+                <button type="button" class="qt-nut qt-nut--nguy-hiem" id="btnHuyDatCho" disabled><i class="bi bi-x-circle" aria-hidden="true"></i>Hủy đặt chỗ</button>
+            }
+            <button type="button" class="qt-nut qt-nut--phu qt-hang-nut__phai" id="btnDong"><i class="bi bi-box-arrow-left" aria-hidden="true"></i>Đóng</button>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script type="module" src="/js/quantri/trang/quay-dat-cho.js" asp-append-version="true"></script>
+}

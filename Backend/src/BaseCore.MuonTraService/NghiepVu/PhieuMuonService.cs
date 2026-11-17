@@ -64,19 +64,26 @@ public sealed class PhieuMuonService(MuonTraDbContext db, IClock clock, ChungTuC
                 ?? throw LoiNghiepVu.KhongTimThay("KHONG_TIM_THAY_BAN_SACH", $"Không có bản sách {ma} trong danh mục sách.");
         var dangMuon = await chung.BanDangMuon().AnyAsync(x => x == ma, ct);
         var choKho = !dangMuon && await chung.BanChoKhoXuLy().AnyAsync(x => x == ma, ct);
+        // Mở rộng (file 06 mục 4): bản sách đang được giữ chỗ cho bạn đọc khác → từ chối
+        var bayGio = clock.BayGio;
+        var giu = await chung.DatChoConGiu(bayGio).Where(d => d.MaBanSach == ma && d.MaBanDoc != bd.MaBanDoc)
+            .Select(d => (DateTime?)d.TgHetHan).FirstOrDefaultAsync(ct);
         string? lyDo = s.TinhTrang != TT.SanSang ? $"Bản sách {ma} đang ở tình trạng “{s.TinhTrang}”, không đáp ứng được."
                      : dangMuon ? $"Bản sách {ma} đang được cho mượn theo phiếu khác, không đáp ứng được."
                      : choKho ? $"Bản sách {ma} được trả ở tình trạng mất/hư hỏng, chờ Bộ phận kho sách cập nhật – không đáp ứng được."
+                     : giu is { } den ? $"Bản sách đang được giữ chỗ cho bạn đọc khác đến {den:HH:mm dd/MM}."
                      : null;
         IReadOnlyList<BanSachMuonDto> thayThe = [];
         if (lyDo is not null)
         {
             var banMuon = chung.BanDangMuon();
             var choKhoXuLy = chung.BanChoKhoXuLy();
+            var giuKhac = chung.DatChoConGiu(bayGio).Where(d => d.MaBanDoc != bd.MaBanDoc).Select(d => d.MaBanSach);
             thayThe = await (from x in db.Sach.AsNoTracking()
                              join kv in db.KhuVuc on x.MaKhuVuc equals kv.MaKhuVuc
                              where x.MaBanSach != ma && x.TenSach == s.TenSach && x.TacGia == s.TacGia
                                    && x.TinhTrang == TT.SanSang && !banMuon.Contains(x.MaBanSach) && !choKhoXuLy.Contains(x.MaBanSach)
+                                   && !giuKhac.Contains(x.MaBanSach)
                              orderby x.MaBanSach
                              select new BanSachMuonDto(x.MaBanSach, x.TenSach, x.TacGia, x.MaKhuVuc, kv.ViTri, x.TinhTrang)).Take(5).ToListAsync(ct);
         }
@@ -166,14 +173,21 @@ public sealed class PhieuMuonService(MuonTraDbContext db, IClock clock, ChungTuC
                 await chung.KhoaBanSachAsync(moi.Select(d => d.MaBanSach!), c);
                 var banMuon = chung.BanDangMuon();
                 var choKhoXuLy = chung.BanChoKhoXuLy();
+                var bayGioKt = clock.BayGio;
+                var giuKhac = chung.DatChoConGiu(bayGioKt).Where(g => g.MaBanDoc != bd.MaBanDoc);
                 var sach = await db.Sach.Where(x => maNhap.Contains(x.MaBanSach))
-                    .Select(x => new { x.MaBanSach, x.TenSach, x.TinhTrang, DangMuon = banMuon.Contains(x.MaBanSach) || choKhoXuLy.Contains(x.MaBanSach) }).ToListAsync(c);
+                    .Select(x => new
+                    {
+                        x.MaBanSach, x.TenSach, x.TinhTrang, DangMuon = banMuon.Contains(x.MaBanSach) || choKhoXuLy.Contains(x.MaBanSach),
+                        GiuDen = giuKhac.Where(g => g.MaBanSach == x.MaBanSach).Select(g => (DateTime?)g.TgHetHan).FirstOrDefault()
+                    }).ToListAsync(c);
                 var loi = new KiemTraDuLieu();
                 foreach (var d in moi)
                 {
                     var s = sach.FirstOrDefault(x => x.MaBanSach == d.MaBanSach);
                     if (s is null) loi.Them("chiTiet", $"Không có bản sách {d.MaBanSach} trong danh mục sách.");
                     else if (s.TinhTrang != TT.SanSang || s.DangMuon) loi.Them("chiTiet", $"Bản sách {d.MaBanSach} không còn sẵn sàng để cho mượn.");
+                    else if (s.GiuDen is { } den) loi.Them("chiTiet", $"Bản sách {d.MaBanSach} đang được giữ chỗ cho bạn đọc khác đến {den:HH:mm dd/MM}.");
                 }
                 loi.NemNeuCoLoi();
 
@@ -215,6 +229,33 @@ public sealed class PhieuMuonService(MuonTraDbContext db, IClock clock, ChungTuC
             await NhatKyGhi.ThemAsync(db, maNd, noiDung, clock.BayGio, c);
             await db.SaveChangesAsync(c);
 
+            // Mở rộng (file 06 mục 4): đặt chỗ của Bạn đọc có bản sách vừa đưa vào phiếu → “Đã nhận”, cùng transaction
+            var soNhan = 0;
+            if (moi.Count > 0)
+            {
+                var bayGio = clock.BayGio;
+                var maMoi = moi.Select(d => d.MaBanSach!).ToList();
+                var nhan = await (from g in db.PhieuDatCho
+                                  join ds in db.DauSach on g.MaDauSach equals ds.MaDauSach
+                                  where g.MaBanDoc == bd.MaBanDoc && g.TrangThai == MienGiaTri.TrangThaiDatCho.DangGiu
+                                        && g.TgHetHan > bayGio && maMoi.Contains(g.MaBanSach)
+                                  select new { g, ds.TenSach }).ToListAsync(c);
+                foreach (var x in nhan)
+                {
+                    x.g.TrangThai = MienGiaTri.TrangThaiDatCho.DaNhan;
+                    x.g.TgXuLy = bayGio;
+                    x.g.MaNdXuLy = maNd;
+                    x.g.SoPMuon = pm.SoPMuon;
+                    db.ThongBao.Add(new ThongBao
+                    {
+                        MaBanDoc = bd.MaBanDoc, Loai = "Đã nhận sách", TgTao = bayGio, LienKet = DatChoService.LienKetDatCho(x.g.MaDatCho),
+                        NoiDung = $"Bạn đã nhận sách đặt chỗ “{x.TenSach}” (mã {x.g.MaDatCho}) theo Phiếu mượn sách {pm.SoPMuon}."
+                    });
+                }
+                soNhan = nhan.Count;
+                if (soNhan > 0) await db.SaveChangesAsync(c);
+            }
+
             var thongBao = cheDo switch
             {
                 "moi" => $"Đã lưu Phiếu mượn sách {pm.SoPMuon} ({moi.Count} bản).",
@@ -222,6 +263,7 @@ public sealed class PhieuMuonService(MuonTraDbContext db, IClock clock, ChungTuC
                 _ => $"Đã cập nhật Phiếu mượn sách {pm.SoPMuon}."
             };
             if (moi.Count > 0) thongBao += " Thông tin sách đã cho mượn đã chuyển cho Bộ phận kho sách.";
+            if (soNhan > 0) thongBao += $" Đã giao {soNhan} sách đặt chỗ.";
             return new KetQuaLuuChungTu(pm.SoPMuon, thongBao, cheDo == "moi");
         }, ct);
     }

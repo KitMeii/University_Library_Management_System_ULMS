@@ -51,7 +51,7 @@ public sealed partial class DauSachService(KhoSachDbContext db, IClock clock)
 
     private IQueryable<DauSachDto> Query()
     {
-        var coTheMuon = BanCoTheMuon.Query(db);
+        var coTheMuon = BanCoTheMuon.Query(db, clock.BayGio);
         return from d in db.DauSach.AsNoTracking()
                join t in db.TheLoai on d.MaTheLoai equals t.MaTheLoai into tl
                from t in tl.DefaultIfEmpty()

@@ -31,10 +31,10 @@ Chỉ dùng thư viện đã duyệt (file 01, 13, GIA_DINH D17). Phiên bản �
 | GSAP (core, Flip, ScrollTrigger, Observer, Draggable) | 3.13.0 | GSAP Standard License (miễn phí từ 3.13) | Chuyển động |
 | Be Vietnam Pro (@fontsource/be-vietnam-pro) | 5.2.8 | SIL OFL 1.1 | Font chữ |
 | Apache ECharts (`dist/echarts.min.js`) | 5.6.0 | Apache-2.0 | Biểu đồ tổng quan N1–N4, báo cáo MB06/MB07 (canvas trên màn hình, SVG khi in – file 09) |
-
 | Lenis (`dist/lenis.min.js`, `lenis.css`) | 1.3.27 (phát hành 15/10/2026) | MIT | Cuộn mượt cổng bạn đọc trên máy tính, đồng bộ ScrollTrigger; tắt trên cảm ứng và khi giảm chuyển động (file 10, 13) |
+| page-flip (StPageFlip – `dist/js/page-flip.module.js`) | **2.0.7 (ghim)** – sha256 `b718faafca6856bff51629baedeff601e2cc59482e951105bdbd6e46978cca38` | MIT | Lật trang Book Preview: máy tính 2 trang, điện thoại 1 trang vuốt lật (file 06, 13). **Không sửa thư viện**: thẻ `<style>` nó tự chèn được CSP cho phép bằng băm `sha256-68ovwuVEgP4KP6803CNhdg6S0jCfEydjM4sM/Qdnc5o=` (nội dung) + `sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=` (thẻ rỗng lúc vừa gắn) (GIA_DINH D69) – đổi phiên bản phải tính lại băm |
 
-Sẽ thêm ở các pha sau (đã duyệt trong file 01/13): page-flip 2.0.7 (Pha 6), JsBarcode (Pha 6).
+Mã vạch Code128 trên vé giữ chỗ: tự vẽ SVG (`wwwroot/js/cong/ma-vach.js`, file 13 cho phép “hoặc tự vẽ SVG”) – không dùng JsBarcode.
 
 ## Image Docker
 

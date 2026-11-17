@@ -65,6 +65,7 @@ function xoaTrang() {
   hienBanDoc(null);
   $('khuDieuKien').hidden = true;
   $('khuDapUng').hidden = true;
+  anDatCho();
   luoi.tc.duLieuTinh = [];
   luoi.tai();
   $('lblTongSoBan').textContent = '0';
@@ -95,8 +96,54 @@ async function timBanDoc() {
     hienKetQua($('khuDieuKien'), { loai: 'ok', tieuDe: `${kq.banDoc.hoTen} đủ điều kiện mượn.`, dong });
     veLuoi();
     $('txtMaBanSach').focus();
+    await napDatCho();
   } catch (e) { baoLoi(e); }
 }
+
+// ---------- Mở rộng (file 06 mục 4): dgvDatCho, btnNhanDatCho – chỉ có khi tài khoản có DATCHO_GH và không ở chế độ ảnh Bài 4 ----------
+const khuDatCho = document.getElementById('khuDatCho');
+let datCho = [];
+const luoiDatCho = khuDatCho ? new LuoiDuLieu($('dgvDatCho'), {
+  khoa: 'maDatCho', duLieuTinh: [], rong: 'Bạn đọc không có sách đặt chỗ đang giữ.',
+  cot: [
+    { ten: 'maDatCho', nhan: 'Mã đặt chỗ' },
+    { ten: 'tenSach', nhan: 'Tên sách' },
+    { ten: 'maBanSach', nhan: 'Mã bản sách' },
+    { ten: 'viTri', nhan: 'Vị trí' },
+    { ten: 'tgHetHan', nhan: 'Hạn giữ còn lại', dinhDang: (v) => conLai(v) }
+  ]
+}) : null;
+
+function conLai(hetHan) {
+  const phut = Math.max(0, Math.floor((new Date(hetHan) - Date.now()) / 60000));
+  const chu = `${Math.floor(phut / 60)} giờ ${String(phut % 60).padStart(2, '0')} phút`;
+  return phut < 120 ? nhanTrangThai(chu, 'qt-nhan-tt--loi') : chu;
+}
+
+function anDatCho() {
+  if (!khuDatCho) return;
+  datCho = [];
+  khuDatCho.hidden = true;
+}
+
+async function napDatCho() {
+  if (!khuDatCho || !s.banDoc) return;
+  try {
+    datCho = await api.lay('/api/quan-tri/dat-cho/ban-doc/' + encodeURIComponent(s.banDoc.maBanDoc));
+  } catch { datCho = []; }
+  khuDatCho.hidden = datCho.length === 0;
+  luoiDatCho.tc.duLieuTinh = datCho;
+  luoiDatCho.tai();
+}
+
+/** btnNhanDatCho: thêm các bản sách đang giữ vào dgvChiTiet như btnThemSach (vẫn qua toàn bộ kiểm tra của 01.01.03). */
+async function nhanDatCho() {
+  for (const d of datCho) {
+    if (s.dong.some((x) => x.maBanSach === d.maBanSach)) continue;
+    await themSach(d.maBanSach);
+  }
+}
+if (khuDatCho) $('btnNhanDatCho').addEventListener('click', nhanDatCho);
 
 // ---------- btnTimPhieu ----------
 async function timPhieu() {

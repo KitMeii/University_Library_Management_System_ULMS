@@ -4,6 +4,7 @@
 // Mọi thông số ở motion.config.js (motion.coverflow). Tương tác đi qua state machine (file 10 mục 2).
 import { motion, giamChuyenDong } from '../motion.config.js';
 import { MayTrangThai } from '../state-machine.js';
+import { moBookPreview } from './book-preview.js';
 
 const cf = motion.coverflow;
 const $ = (id) => document.getElementById(id);
@@ -133,6 +134,7 @@ function taoCuon(s, i) {
   const li = document.createElement('li');
   li.className = 'book';
   li.dataset.index = i;
+  li.dataset.maDauSach = s.maDauSach;
   const mau = mauDoc(s.mauGay);
   li.style.setProperty('--mau', mau.nen); // CSSOM – không phải style nội tuyến (CSP)
   if (mau.sang) li.classList.add('book--sang');
@@ -387,45 +389,12 @@ function keLienKe(huong) {
   return danhSachKe[(i + huong + danhSachKe.length) % danhSachKe.length].ma;
 }
 
-// ---------------- Mở sách (Book Preview ở Pha 6 – Pha 5: hộp “Xem nhanh”) ----------------
+// ---------------- Mở sách: Book Preview (file 06 mục 1) – bìa bay ra từ đúng cuốn giữa ----------------
 function moSach(i) {
   const s = sach[i];
   goc.dispatchEvent(new CustomEvent('coverflow:mo-sach', { detail: { sach: s, phanTu: sachLi[i].mat } }));
-  return new Promise((xong) => {
-    const el = document.createElement('div');
-    el.className = 'modal fade cong-xem-nhanh';
-    el.tabIndex = -1;
-    el.setAttribute('aria-labelledby', 'xemNhanhTieuDe');
-    el.innerHTML = `
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header"><h2 class="modal-title" id="xemNhanhTieuDe"></h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button></div>
-          <div class="modal-body cong-xem-nhanh__than">
-            <div class="cong-xem-nhanh__bia"></div>
-            <dl class="cong-xem-nhanh__tt"></dl>
-          </div>
-        </div>
-      </div>`;
-    el.querySelector('h2').textContent = s.tenSach;
-    const bia = el.querySelector('.cong-xem-nhanh__bia');
-    const mau = mauDoc(s.mauGay);
-    bia.style.setProperty('--mau', mau.nen);
-    if (s.anhBiaLon) { const img = document.createElement('img'); img.src = s.anhBiaLon; img.alt = 'Bìa sách ' + s.tenSach; bia.append(img); }
-    else { bia.append(biaChu(s)); if (mau.sang) bia.classList.add('book--sang'); }
-    const dl = el.querySelector('dl');
-    const dong = [['Tác giả', s.tacGia || '—'], ['Năm xuất bản', s.namXb ?? '—'], ['Thể loại', s.tenTheLoai || '—'],
-      ['Còn có thể mượn', s.soBanCoTheMuon > 0 ? `${s.soBanCoTheMuon} bản` : 'Đang được mượn hết'], ['Lượt mượn 90 ngày', s.soLuotMuon]];
-    for (const [k, v] of dong) {
-      const dt = document.createElement('dt'); dt.textContent = k;
-      const dd = document.createElement('dd'); dd.textContent = v;
-      dl.append(dt, dd);
-    }
-    document.body.append(el);
-    const modal = new bootstrap.Modal(el);
-    el.addEventListener('hidden.bs.modal', () => { el.remove(); sachLi[i]?.nut.focus({ preventScroll: true }); xong(); });
-    modal.show();
-  });
+  return moBookPreview(s.maDauSach, { nguon: sachLi[i].mat, duLieuNhanh: s })
+    .then(() => sachLi[i]?.nut.focus({ preventScroll: true }));
 }
 
 // ---------------- Tương tác (file 05 mục 5) ----------------

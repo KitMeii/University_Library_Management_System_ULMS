@@ -55,14 +55,6 @@ public class ChupAnhPha5Tests(TrinhDuyet td)
                 """);
             await ss.ScreenshotAsync(new() { Path = Path.Combine(TrinhDuyet.ThuMucAnh, "Cong_Ke_sach_doi_chieu_tham_khao.png"), FullPage = true });
         }
-
-        // Mở cuốn giữa → Xem nhanh
-        await p.ClickAsync("#cfSau");
-        await p.WaitForTimeoutAsync(900);
-        await p.ClickAsync("#ke-sach .book[aria-current='true'] .book__body");
-        await p.WaitForSelectorAsync(".cong-xem-nhanh.show");
-        await p.WaitForTimeoutAsync(500);
-        await TrinhDuyet.ChupAsync(p, "Cong_Ke_sach_Xem_nhanh");
     }
 
     [Fact]

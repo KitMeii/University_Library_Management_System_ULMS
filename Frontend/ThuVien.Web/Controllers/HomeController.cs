@@ -15,6 +15,20 @@ public sealed class HomeController(GatewayClient gateway, IWebHostEnvironment en
 {
     private static readonly string[] DuoiAnh = [".svg", ".webp", ".jpg", ".jpeg", ".png", ".avif"];
 
+    /// <summary>
+    /// Liên kết sâu tới một đầu sách (file 06 mục 1): trang chủ + Book Preview tự mở. Không có trang chi tiết riêng.
+    /// </summary>
+    [HttpGet("/sach/{maDauSach}")]
+    public async Task<IActionResult> Sach(string maDauSach, CancellationToken ct)
+    {
+        var ma = (maDauSach ?? string.Empty).Trim().ToUpperInvariant();
+        var s = await gateway.LayCongKhaiAsync<SachTomTatCong>("/api/cong/sach/" + Uri.EscapeDataString(ma), ct);
+        if (s.MaHttp == StatusCodes.Status404NotFound) return NotFound();
+        ViewData["MoSach"] = ma;
+        if (s.DuLieu is not null) ViewData["Title"] = s.DuLieu.TenSach;
+        return await Index(ct);
+    }
+
     [HttpGet("/")]
     public async Task<IActionResult> Index(CancellationToken ct)
     {
@@ -24,7 +38,7 @@ public sealed class HomeController(GatewayClient gateway, IWebHostEnvironment en
         KeSachCong? ke = null;
         if (danhSach.Count > 0)
             ke = (await gateway.LayCongKhaiAsync<KeSachCong>("/api/cong/ke-sach?ke=" + Uri.EscapeDataString(danhSach[0].Ma), ct)).DuLieu;
-        return View(new TrangChuVm(AnhHero(), danhSach, ke is { Sach.Count: > 0 } ? ke : null));
+        return View("Index", new TrangChuVm(AnhHero(), danhSach, ke is { Sach.Count: > 0 } ? ke : null));
     }
 
     /// <summary>Ảnh Hero: mọi tệp ảnh trong wwwroot/img/hero theo thứ tự tên (GIA_DINH D56 – thay ảnh thật không sửa code).</summary>

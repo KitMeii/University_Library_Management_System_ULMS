@@ -90,6 +90,16 @@
         <partial name="_HangNutDanhMuc" model="Model" />
     </div>
 
+    @if (User.CoQuyen("QT040001") && !CheDoAnhBai4.AnMoRong(Context))
+    {
+        @* Mở rộng (file 07 mục 1): Bộ phận quản trị hệ thống khóa/mở khóa tài khoản cổng – ẩn ở chế độ chụp ảnh Bài 4 (D61) *@
+        <div class="qt-the" id="khuTaiKhoanCong" hidden>
+            <h2 class="qt-the__tieu-de">Tài khoản cổng bạn đọc <span class="qt-ma-tien-trinh qt-ma-tien-trinh--mo-rong">Mở rộng</span></h2>
+            <p class="mb-2">Tình trạng: <span id="lblTinhTrangTaiKhoan">–</span> · Đăng nhập gần nhất: <span id="lblDangNhapCuoi">–</span></p>
+            <button type="button" class="qt-nut qt-nut--phu" id="btnKhoaTaiKhoanCong"><i class="bi bi-lock" aria-hidden="true"></i><span>Khóa tài khoản cổng</span></button>
+        </div>
+    }
+
     <div class="qt-the" id="khuSachDangMuon" hidden>
         <h2 class="qt-the__tieu-de">Sách Bạn đọc đang mượn</h2>
         <div class="qt-luoi" id="dgvSachDangMuon" aria-label="Sách Bạn đọc đang mượn"></div>

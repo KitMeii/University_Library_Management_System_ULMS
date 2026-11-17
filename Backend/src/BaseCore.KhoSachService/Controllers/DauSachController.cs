@@ -104,3 +104,13 @@ public sealed class KeSachController(KeSachService service) : ControllerBase
     [HttpGet("danh-sach")]
     public Task<List<MucKe>> DanhSach(CancellationToken ct) => service.DanhSachKeAsync(ct);
 }
+
+/// <summary>Dữ liệu Book Preview (file 06 mục 7: GET /api/cong/sach/{maDauSach}) – công khai.</summary>
+[ApiController]
+[Route("api/cong/sach")]
+[AllowAnonymous]
+public sealed class SachCongController(KeSachService service) : ControllerBase
+{
+    [HttpGet("{maDauSach}")]
+    public Task<SachPreviewDto> Sach(string maDauSach, CancellationToken ct) => service.SachAsync(maDauSach, ct);
+}

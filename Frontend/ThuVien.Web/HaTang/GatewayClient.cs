@@ -14,6 +14,7 @@ public sealed record DangNhapNhanVienKq(
     string Token, string MaDangNhap, string MaNd, string TenNd, string TenDangNhap,
     string MaNhom, string TenNhom, List<string> Quyen, bool PhaiDoiMatKhau, string ManHinhMacDinh);
 
+public sealed record ThongBaoKq(string ThongBao);
 public sealed record DangNhapBanDocKq(string Token, string MaBanDoc, string HoTen, string MaSvHvCb, string DoiTuong);
 
 /// <summary>Gọi gateway từ phía server của web (đăng nhập, đăng xuất…). Chuyển tiếp IP người dùng.</summary>
@@ -34,6 +35,10 @@ public sealed class GatewayClient(HttpClient http, IHttpContextAccessor? accesso
 
     public Task<KetQuaApi<DangNhapBanDocKq>> DangNhapBanDocAsync(string maSvHvCb, string matKhau, CancellationToken ct) =>
         GuiAsync<DangNhapBanDocKq>(HttpMethod.Post, "/api/cong/dang-nhap", null, new { maSvHvCb, matKhau }, ct);
+
+    /// <summary>Kích hoạt tài khoản / đặt lại mật khẩu bạn đọc (file 07 mục 1).</summary>
+    public Task<KetQuaApi<ThongBaoKq>> KichHoatBanDocAsync(object yeuCau, CancellationToken ct) =>
+        GuiAsync<ThongBaoKq>(HttpMethod.Post, "/api/cong/kich-hoat", null, yeuCau, ct);
 
     /// <summary>GET bất kỳ API nào bằng token của người dùng (trang in chứng từ render phía server).</summary>
     public Task<KetQuaApi<T>> LayAsync<T>(string url, string token, CancellationToken ct) =>

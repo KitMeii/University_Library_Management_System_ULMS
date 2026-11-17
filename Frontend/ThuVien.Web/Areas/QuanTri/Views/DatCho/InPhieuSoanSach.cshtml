@@ -1,0 +1,52 @@
+@model ThuVien.Web.Areas.QuanTri.Models.KhungIn
+@using ThuVien.Web.Areas.QuanTri.Models
+@{
+    Layout = "_LayoutIn";
+    var ds = (List<DatChoQuayIn>)Model.DuLieu;
+    var nguoiLap = ViewData["NguoiLap"] as string;
+    // Nhóm theo khu vực (Kệ mở trước, rồi Kho) để người soạn đi một vòng lấy sách
+    var nhom = ds.GroupBy(x => new { x.LoaiKhuVuc, x.MaKhuVuc, x.ViTri })
+        .OrderBy(g => g.Key.LoaiKhuVuc == "Kệ mở" ? 0 : 1).ThenBy(g => g.Key.MaKhuVuc).ToList();
+}
+@* Mở rộng (file 06 mục 5): danh sách bản sách cần lấy từ kệ/kho để chuẩn bị trước cho bạn đọc đến nhận – A4 *@
+<article class="in-to" id="phieuSoanSach">
+    <header class="in-dau">
+        <div class="in-dau__truong">@Model.TenTruong<br /><strong>Bộ phận mượn trả sách</strong></div>
+        <div class="in-dau__mau">Mở rộng – không thuộc bộ mẫu MB</div>
+    </header>
+    <h1 class="in-tieu-de">PHIẾU SOẠN SÁCH ĐẶT CHỖ</h1>
+    <p class="in-dong-ngay">Lập lúc @Model.So · @ds.Count bản sách đang được giữ chỗ</p>
+
+    @if (ds.Count == 0)
+    {
+        <p>Không có đặt chỗ nào đang giữ.</p>
+    }
+    @foreach (var g in nhom)
+    {
+        <h2 class="in-muc">@g.Key.LoaiKhuVuc · @g.Key.MaKhuVuc – @g.Key.ViTri (@g.Count() bản)</h2>
+        <table class="in-bang">
+            <thead>
+                <tr><th>STT</th><th>Mã bản sách</th><th>Tên sách</th><th>Mã đặt chỗ</th><th>Bạn đọc</th><th>Hạn giữ</th><th>Đã lấy</th></tr>
+            </thead>
+            <tbody>
+                @{ var i = 0; }
+                @foreach (var x in g.OrderBy(x => x.TgHetHan))
+                {
+                    <tr>
+                        <td class="so">@(++i)</td>
+                        <td>@x.MaBanSach</td>
+                        <td>@x.TenSach</td>
+                        <td>@x.MaDatCho</td>
+                        <td>@x.HoTen (@x.MaSvHvCb)</td>
+                        <td>@x.TgHetHan.ToString("HH:mm dd/MM")</td>
+                        <td class="o-danh-dau">☐</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <div class="in-ky">
+        <div><strong>Người lập</strong><br /><em>(Ký, ghi rõ họ tên)</em><br /><br /><br />@nguoiLap</div>
+        <div><strong>Người soạn sách</strong><br /><em>(Ký, ghi rõ họ tên)</em></div>
+    </div>
+</article>

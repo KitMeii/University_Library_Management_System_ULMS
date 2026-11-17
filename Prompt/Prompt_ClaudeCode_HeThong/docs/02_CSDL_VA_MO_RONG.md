@@ -85,7 +85,7 @@ Chỉ mục duy nhất có điều kiện:
 |---|---|---|
 | **ma_thongbao** | bigint identity | PK |
 | ma_bandoc | nvarchar(10) | FK → BANDOC |
-| loai | nvarchar(30) | ∈ {Đặt chỗ thành công, Sắp hết hạn giữ, Hết hạn giữ, Đã nhận sách, Sắp đến hạn trả, Quá hạn trả, Biên bản vi phạm} |
+| loai | nvarchar(30) | ∈ {Đặt chỗ thành công, Sắp hết hạn giữ, Hết hạn giữ, Đã nhận sách, Sắp đến hạn trả, Quá hạn trả, Biên bản vi phạm, Đặt chỗ bị hủy} – “Đặt chỗ bị hủy” bổ sung 17/11/2026 (GIA_DINH D63): khi nhân viên hủy đặt chỗ tại quầy |
 | noidung | nvarchar(500) | |
 | lienket | nvarchar(260) | null |
 | tg_tao | datetime2(0) | |

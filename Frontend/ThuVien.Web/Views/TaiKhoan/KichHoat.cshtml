@@ -1,0 +1,62 @@
+@model ThuVien.Web.Controllers.KichHoatVm
+@{
+    ViewData["Title"] = "Kích hoạt tài khoản";
+    string? Loi(string truong) => Model.LoiTruong is { } t && t.TryGetValue(truong, out var v) ? v : null;
+}
+@section Css {
+    <link rel="stylesheet" href="/css/account.css" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/tai-khoan.css" asp-append-version="true" />
+}
+<div class="nen-pastel">
+    <div class="cong-container">
+        <div class="glass-card hop-dang-nhap hop-kich-hoat">
+            <h1>Kích hoạt tài khoản</h1>
+            <p class="phu">Nhập đúng thông tin trên thẻ bạn đọc để đặt mật khẩu. Đã có tài khoản nhưng quên mật khẩu cũng dùng trang này để đặt lại.</p>
+
+            @if (!string.IsNullOrEmpty(Model.ThongBaoThanhCong))
+            {
+                <div class="cong-thanh-cong" role="status" id="thongBaoThanhCong">
+                    <i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>@Model.ThongBaoThanhCong</span>
+                </div>
+                <a class="cong-nut cong-nut--chinh" href="/dang-nhap"><i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Đăng nhập</a>
+            }
+            else
+            {
+                @if (!string.IsNullOrEmpty(Model.ThongBaoLoi))
+                {
+                    <div class="cong-loi" role="alert" id="thongBaoLoi">
+                        <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i><span>@Model.ThongBaoLoi</span>
+                    </div>
+                }
+                <form method="post" asp-antiforgery="true" action="/kich-hoat" id="frmKichHoat" novalidate>
+                    <div class="cong-truong">
+                        <label for="maSvHvCb">Mã SV/HV/CB</label>
+                        <input class="cong-o" id="maSvHvCb" name="MaSvHvCb" value="@Model.MaSvHvCb" autocomplete="username" maxlength="15" required autofocus />
+                    </div>
+                    <div class="cong-truong">
+                        <label for="soTheBd">Số thẻ bạn đọc</label>
+                        <input class="cong-o" id="soTheBd" name="SoTheBd" value="@Model.SoTheBd" maxlength="15" required />
+                    </div>
+                    <div class="cong-truong">
+                        <label for="ngaySinh">Ngày sinh</label>
+                        <input class="cong-o" id="ngaySinh" name="NgaySinh" type="date" value="@Model.NgaySinh?.ToString("yyyy-MM-dd")" required />
+                    </div>
+                    <div class="cong-truong">
+                        <label for="matKhauMoi">Mật khẩu mới</label>
+                        <input class="cong-o" id="matKhauMoi" name="MatKhau" type="password" autocomplete="new-password" minlength="8" required
+                               aria-describedby="goiYMatKhau @(Loi("matKhau") is null ? null : "loiMatKhau")" />
+                        <small class="cong-goi-y" id="goiYMatKhau">Ít nhất 8 ký tự, gồm cả chữ và số.</small>
+                        @if (Loi("matKhau") is { } l1) { <small class="cong-loi-truong" id="loiMatKhau">@l1</small> }
+                    </div>
+                    <div class="cong-truong">
+                        <label for="nhapLai">Nhập lại mật khẩu</label>
+                        <input class="cong-o" id="nhapLai" name="NhapLai" type="password" autocomplete="new-password" required />
+                        @if (Loi("nhapLai") is { } l2) { <small class="cong-loi-truong">@l2</small> }
+                    </div>
+                    <button type="submit" class="cong-nut cong-nut--chinh" id="btnKichHoat"><i class="bi bi-shield-check" aria-hidden="true"></i> Kích hoạt / đặt mật khẩu</button>
+                </form>
+                <p class="cong-duoi-form">Đã có mật khẩu? <a href="/dang-nhap">Đăng nhập</a></p>
+            }
+        </div>
+    </div>
+</div>

@@ -12,3 +12,6 @@ public sealed record KeSachCong(string Ma, string Ten, string Truc, List<SachTre
 /// <param name="AnhHero">Ảnh Hero theo thứ tự tên tệp trong wwwroot/img/hero (GIA_DINH D56).</param>
 /// <param name="Ke">Kệ đầu tiên (render phía server – không có JS vẫn xem được lưới bìa, file 05 mục 6); null nếu không có dữ liệu.</param>
 public sealed record TrangChuVm(IReadOnlyList<string> AnhHero, IReadOnlyList<MucKeCong> DanhSachKe, KeSachCong? Ke);
+
+/// <summary>Phần tối thiểu của /api/cong/sach/{ma} dùng cho liên kết sâu (tiêu đề trang).</summary>
+public sealed record SachTomTatCong(string MaDauSach, string TenSach);

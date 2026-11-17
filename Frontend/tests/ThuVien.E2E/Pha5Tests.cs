@@ -145,7 +145,7 @@ public class Pha5Tests(TrinhDuyet td)
     }
 
     [Fact]
-    public async Task Coverflow_KeoChuot_QuanTinh_BamCuonGiua_XemNhanh()
+    public async Task Coverflow_KeoChuot_QuanTinh_BamCuonGiua_MoBookPreview()
     {
         await using var ctx = await td.MayTinhAsync();
         var p = await TrangChuAsync(ctx);
@@ -161,14 +161,14 @@ public class Pha5Tests(TrinhDuyet td)
         Assert.True(sau > giua, $"Kéo sang trái phải tới sách sau ({giua} → {sau})");
         Assert.True(sau - giua <= 5 + 4, "Quán tính có giới hạn");
 
-        // Bấm cuốn giữa → hộp Xem nhanh (Book Preview ở Pha 6); Esc đóng, focus về cuốn giữa
+        // Bấm cuốn giữa → Book Preview (Pha 6); Esc đóng, focus về cuốn giữa
         await p.Locator("#ke-sach .book[aria-current='true'] .book__body").ClickAsync();
-        await p.WaitForSelectorAsync(".cong-xem-nhanh.show");
-        await p.WaitForTimeoutAsync(500); // Bootstrap chỉ nhận Esc sau khi hộp thoại mở xong
+        await p.WaitForSelectorAsync(".bp.bp--da-mo");
+        // Book Preview đã mở xong (bp--da-mo) – Esc đóng ngay
         Assert.Equal("MO_SACH", await p.EvaluateAsync<string>("() => document.getElementById('ke-sach').dataset.trangThai"));
-        Assert.Contains("Còn có thể mượn", await p.InnerTextAsync(".cong-xem-nhanh"));
+        Assert.True(await p.IsVisibleAsync(".bp-tinh-trang__so"), "Book Preview hiện tình trạng còn bản có thể mượn");
         await p.Keyboard.PressAsync("Escape");
-        await p.WaitForSelectorAsync(".cong-xem-nhanh", new() { State = WaitForSelectorState.Detached });
+        await p.WaitForSelectorAsync(".bp", new() { State = WaitForSelectorState.Detached });
         await ChoSanSangAsync(p);
         Assert.True(await p.EvaluateAsync<bool>("() => document.activeElement.closest('.book')?.getAttribute('aria-current') === 'true'"));
     }
@@ -250,7 +250,7 @@ public class Pha5Tests(TrinhDuyet td)
         await c.ClickAsync("#cfKeSau");
         await c.WaitForTimeoutAsync(1200);
         await c.Locator("#ke-sach .book[aria-current='true'] .book__body").ClickAsync();
-        await c.WaitForSelectorAsync(".cong-xem-nhanh.show");
+        await c.WaitForSelectorAsync(".bp.bp--da-mo");
         viPham.AddRange(await c.EvaluateAsync<string[]>("() => window.__csp || []"));
         Assert.True(viPham.Count == 0, "Vi phạm CSP: " + string.Join(" | ", viPham.Distinct()));
     }

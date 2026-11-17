@@ -51,7 +51,7 @@ public sealed class KeSachService(KhoSachDbContext db, IClock clock)
     {
         var n = Math.Clamp(gioiHan ?? GioiHanMacDinh, 1, 81);
         ke = (ke ?? KeMoi).Trim();
-        var coTheMuon = BanCoTheMuon.Query(db);
+        var coTheMuon = BanCoTheMuon.Query(db, clock.BayGio);
         var tu = TuNgayMuonNhieu;
         var goc = from d in db.DauSach.AsNoTracking()
                   where db.DauSachBanSach.Any(x => x.MaDauSach == d.MaDauSach)
@@ -99,4 +99,38 @@ public sealed class KeSachService(KhoSachDbContext db, IClock clock)
         if (truc == "nam") sach = sach.OrderBy(x => x.NamXb ?? int.MaxValue).ThenBy(x => x.TenSach, StringComparer.Ordinal);
         return new KeSachDto(ke, ten, truc, sach.ToList());
     }
+
+    /// <summary>
+    /// Dữ liệu Book Preview (file 06 mục 1): thông tin đầu sách + số bản có thể mượn + khu vực của các bản (Kệ mở/Kho).
+    /// Phần “đặt chỗ của tôi” lấy ở muontra (GET /api/cong/dat-cho/dau-sach/{ma}) – GIA_DINH D62.
+    /// </summary>
+    public async Task<SachPreviewDto> SachAsync(string? maDauSach, CancellationToken ct)
+    {
+        var ma = (maDauSach ?? string.Empty).Trim().ToUpperInvariant();
+        var d = await (from x in db.DauSach.AsNoTracking()
+                       join t in db.TheLoai on x.MaTheLoai equals t.MaTheLoai into tl
+                       from t in tl.DefaultIfEmpty()
+                       where x.MaDauSach == ma
+                       select new { x, t.TenTheLoai }).SingleOrDefaultAsync(ct)
+                ?? throw LoiNghiepVu.KhongTimThay("KHONG_TIM_THAY_DAU_SACH", "Không tìm thấy sách.");
+        var coTheMuon = BanCoTheMuon.Query(db, clock.BayGio);
+        var ban = await (from b in db.DauSachBanSach
+                         join s in db.Sach on b.MaBanSach equals s.MaBanSach
+                         join kv in db.KhuVuc on s.MaKhuVuc equals kv.MaKhuVuc
+                         where b.MaDauSach == ma
+                         select new { kv.LoaiKhuVuc, kv.ViTri, CoThe = coTheMuon.Contains(s.MaBanSach) }).ToListAsync(ct);
+        var khuVuc = ban.Where(x => x.CoThe).GroupBy(x => new { x.LoaiKhuVuc, x.ViTri })
+            .Select(g => new KhuVucCoSach(g.Key.LoaiKhuVuc, g.Key.ViTri, g.Count()))
+            .OrderBy(k => k.LoaiKhuVuc == BaseCore.Entities.MienGiaTri.LoaiKhuVuc.KeMo ? 0 : 1).ThenBy(k => k.ViTri).ToList();
+        var tuKhoa = (d.x.TuKhoa ?? string.Empty).Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase).Take(12).ToList();
+        return new SachPreviewDto(d.x.MaDauSach, d.x.TenSach, d.x.TacGia, d.x.NhaXuatBan, d.x.NamXb, d.x.Isbn, d.x.MaTheLoai, d.TenTheLoai,
+            d.x.GioiThieu, tuKhoa, d.x.AnhBia, BanCoTheMuon.AnhNho(d.x.AnhBia), d.x.MauGay, ban.Count, ban.Count(x => x.CoThe), khuVuc);
+    }
 }
+
+public sealed record KhuVucCoSach(string LoaiKhuVuc, string ViTri, int SoBan);
+
+public sealed record SachPreviewDto(string MaDauSach, string TenSach, string? TacGia, string? NhaXuatBan, int? NamXb, string? Isbn,
+    string? MaTheLoai, string? TenTheLoai, string? GioiThieu, IReadOnlyList<string> TuKhoa, string? AnhBiaLon, string? AnhBiaNho,
+    string? MauGay, int TongSoBan, int SoBanCoTheMuon, IReadOnlyList<KhuVucCoSach> KhuVuc);

@@ -23,3 +23,7 @@ public sealed record KhungIn(string MaMau, string TenMau, string KhoGiay, string
 
 /// <summary>Đầu tờ in của một liên.</summary>
 public sealed record DauIn(KhungIn Khung, int Lien, string BoPhan, string DongNgay);
+
+/// <summary>Một đặt chỗ ở Quầy đặt chỗ (mở rộng – file 06 mục 5), khớp JSON /api/quan-tri/dat-cho.</summary>
+public sealed record DatChoQuayIn(string MaDatCho, string MaBanDoc, string HoTen, string MaSvHvCb, string MaDauSach, string TenSach,
+    string MaBanSach, string MaKhuVuc, string ViTri, string LoaiKhuVuc, DateTime TgDat, DateTime TgHetHan, string TrangThai);

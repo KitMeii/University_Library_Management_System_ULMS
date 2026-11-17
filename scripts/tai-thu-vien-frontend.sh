@@ -19,3 +19,8 @@ tai $J/lenis@1.3.27/dist/lenis.css lib/lenis/1.3.27/lenis.css
 for w in 400 500 600 700; do for s in vietnamese latin latin-ext; do
   tai $J/@fontsource/be-vietnam-pro@5.2.8/files/be-vietnam-pro-$s-$w-normal.woff2 fonts/be-vietnam-pro/be-vietnam-pro-$s-$w-normal.woff2
 done; done
+# Pha 6 – lật trang Book Preview (file 13: StPageFlip, gói npm page-flip 2.0.7, MIT)
+tai $J/page-flip@2.0.7/dist/js/page-flip.module.js lib/page-flip/2.0.7/page-flip.module.js
+# KHÔNG sửa thư viện: thẻ <style> nó tự chèn được CSP cho phép bằng băm SHA-256 (HeaderBaoMatMiddleware.BamStylePageFlip – D69).
+# Ghim đúng 2.0.7: tệp tải về phải có sha256 = b718faafca6856bff51629baedeff601e2cc59482e951105bdbd6e46978cca38
+echo "b718faafca6856bff51629baedeff601e2cc59482e951105bdbd6e46978cca38  lib/page-flip/2.0.7/page-flip.module.js" | sha256sum -c -

@@ -86,3 +86,10 @@ main { display: grid; gap: 16px; justify-items: center; padding: 16px; }
   .in-bang tr { break-inside: avoid; }
   .in-tieu-de { color: #000; }
 }
+
+/* Phiếu soạn sách đặt chỗ (mở rộng – file 06 mục 5) */
+#phieuSoanSach .in-dau { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
+#phieuSoanSach .in-dau__mau { font-style: italic; color: #555; }
+#phieuSoanSach .in-dong-ngay { text-align: center; margin: 0 0 12px; }
+#phieuSoanSach .so, #phieuSoanSach .o-danh-dau { text-align: center; }
+#phieuSoanSach .in-ky { display: flex; justify-content: space-around; text-align: center; margin-top: 24px; }

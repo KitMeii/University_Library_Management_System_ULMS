@@ -16,11 +16,17 @@ public sealed record MucMenu(string Ten, string DuongDan, string[] Quyen, string
 /// </summary>
 public static class CheDoAnhBai4
 {
+    /// <summary>
+    /// Cookie chỉ dùng cho kiểm thử E2E chức năng mở rộng trên bộ hệ thống kiểm thử (cũng ở chế độ ẩn nhãn): có cookie này thì
+    /// hiện phần mở rộng. Chỉ có tác dụng ở Development – Production luôn hiện đủ, không phụ thuộc cookie.
+    /// </summary>
+    public const string CookieKiemThuMoRong = "ulms-kiem-thu-mo-rong";
+
     public static bool AnMoRong(HttpContext ctx)
     {
         var env = ctx.RequestServices.GetRequiredService<IWebHostEnvironment>();
         var opt = ctx.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<ThuVienOptions>>().Value;
-        return env.IsDevelopment() && !opt.HienNhanDuLieuMau;
+        return env.IsDevelopment() && !opt.HienNhanDuLieuMau && !ctx.Request.Cookies.ContainsKey(CookieKiemThuMoRong);
     }
 }
 
@@ -40,6 +46,8 @@ public static class MenuQuanTri
             new("01.01.03 Lập Phiếu mượn sách", "/quan-tri/phieu-muon/lap", ["TT012"], "bi-journal-arrow-up", 3),
             new("01.02.01 Lập Phiếu gia hạn sách", "/quan-tri/phieu-gia-han/lap", ["TT030"], "bi-calendar-plus", 3),
             new("01.02.02 Lập Phiếu trả sách", "/quan-tri/phieu-tra/lap", ["TT043"], "bi-journal-arrow-down", 3),
+            // Mở rộng (file 06 mục 5) – ẩn ở chế độ chụp ảnh Bài 4 (D61)
+            new("Quầy đặt chỗ", "/quan-tri/dat-cho", ["DATCHO_R"], "bi-bookmark-check", 6, MoRong: true),
         ]),
         new("Xử lý vi phạm", "bi-exclamation-octagon",
         [

@@ -11,8 +11,24 @@ namespace BaseCore.MuonTraService.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/quan-tri/ban-doc")]
-public sealed class BanDocController(BanDocService service) : ControllerBase
+public sealed class BanDocController(BanDocService service, TaiKhoanBanDocService taiKhoan) : ControllerBase
 {
+    public sealed record YeuCauKhoa(bool Khoa);
+
+    /// <summary>Tình trạng tài khoản cổng bạn đọc (file 07 mục 1 – mở rộng, Bộ phận quản trị hệ thống: QT040001).</summary>
+    [HttpGet("{ma}/tai-khoan-cong")]
+    [YeuCauQuyen("QT040001")]
+    public Task<TinhTrangTaiKhoanCongDto> TaiKhoanCong(string ma, CancellationToken ct) => taiKhoan.TinhTrangAsync(ma, ct);
+
+    /// <summary>Khóa / mở khóa tài khoản cổng bạn đọc (ghi nhật ký).</summary>
+    [HttpPut("{ma}/tai-khoan-cong")]
+    [YeuCauQuyen("QT040001")]
+    public async Task<TinhTrangTaiKhoanCongDto> KhoaTaiKhoanCong(string ma, YeuCauKhoa yc, CancellationToken ct)
+    {
+        await taiKhoan.DoiTinhTrangAsync(ma, yc.Khoa, User.MaNd(), ct);
+        return await taiKhoan.TinhTrangAsync(ma, ct);
+    }
+
     [HttpGet]
     [YeuCauQuyen("BANDOC_R")]
     public Task<KetQuaTrang<BanDocDto>> DanhSach([FromQuery] ThamSoLuoi ts, CancellationToken ct) => service.DanhSachAsync(ts, ct);

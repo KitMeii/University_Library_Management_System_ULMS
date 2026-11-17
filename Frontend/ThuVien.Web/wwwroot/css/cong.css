@@ -128,3 +128,33 @@ body.cong { background: var(--bg); color: var(--text); }
 .cong-footer__gio li.hom-nay { font-weight: 700; color: var(--forest); }
 .cong-nut--vang { background: var(--gold); color: var(--midnight); }
 .cong-nut--vang:hover { background: var(--champagne); color: var(--midnight); }
+
+/* ───────────── Pha 6: chuông thông báo header cổng (file 07 mục 4) ───────────── */
+.cong-chuong { position: relative; }
+.cong-chuong__nut { position: relative; }
+.cong-chuong__so {
+  position: absolute; top: 2px; right: 0; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  background: var(--gold); color: var(--midnight); font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+}
+.cong-chuong__hop { font-family: var(--font); width: min(380px, calc(100vw - 24px)); padding: 0; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+.cong-chuong__dau {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--forest);
+}
+.cong-chuong__doc-het { border: 0; background: none; color: var(--emerald); font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px; }
+.cong-chuong__ds { list-style: none; margin: 0; padding: 0; max-height: 380px; overflow-y: auto; }
+.cong-chuong__trong { padding: 18px 14px; color: var(--text-2); font-size: 14px; text-align: center; }
+.cong-chuong__xem {
+  display: block; padding: 10px 14px; text-align: center; border-top: 1px solid var(--border); color: var(--emerald);
+  font-weight: 600; font-size: 14px; text-decoration: none;
+}
+.tb-dong + .tb-dong { border-top: 1px solid var(--border); }
+.tb-dong__noi { display: flex; gap: 12px; align-items: flex-start; padding: 12px 30px 12px 14px; color: var(--text); text-decoration: none; position: relative; }
+a.tb-dong__noi:hover { background: var(--sage-1); }
+a.tb-dong__noi:focus-visible { outline: none; box-shadow: inset var(--focus); }
+.tb-dong__noi > .bi { font-size: 18px; color: var(--emerald); margin-top: 2px; }
+.tb-dong__than { display: grid; gap: 2px; min-width: 0; font-size: 13px; }
+.tb-dong__than strong { font-size: 13px; color: var(--forest); }
+.tb-dong__nd { color: var(--text); }
+.tb-dong__than time { color: var(--text-2); font-size: 12px; }
+.tb-dong--moi { background: rgba(198, 161, 91, .1); }
+.tb-dong__cham { position: absolute; right: 12px; top: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }

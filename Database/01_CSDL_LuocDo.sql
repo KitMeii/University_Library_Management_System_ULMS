@@ -1013,3 +1013,32 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261117130609_LoaiThongBaoDatChoBiHuy'
+)
+BEGIN
+    ALTER TABLE [muontra].[THONGBAO] DROP CONSTRAINT [CK_THONGBAO_loai];
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261117130609_LoaiThongBaoDatChoBiHuy'
+)
+BEGIN
+    EXEC(N'ALTER TABLE [muontra].[THONGBAO] ADD CONSTRAINT [CK_THONGBAO_loai] CHECK ([loai] IN (N''Đặt chỗ thành công'', N''Sắp hết hạn giữ'', N''Hết hạn giữ'', N''Đã nhận sách'', N''Sắp đến hạn trả'', N''Quá hạn trả'', N''Biên bản vi phạm'', N''Đặt chỗ bị hủy''))');
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261117130609_LoaiThongBaoDatChoBiHuy'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261117130609_LoaiThongBaoDatChoBiHuy', N'10.0.14');
+END;
+
+COMMIT;
+GO
+
