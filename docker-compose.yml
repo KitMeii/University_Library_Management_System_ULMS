@@ -10,6 +10,8 @@ x-dotnet-env: &dotnet-env
   DOTNET_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
   Jwt__SecretKey: ${JWT_SECRET_KEY:?Thiếu JWT_SECRET_KEY trong .env}
   MatKhau__SoVongLap: ${MATKHAU_SO_VONG_LAP:-600000}
+  # Bộ nhớ đệm ngắn kệ sách / thống kê tổng quan (file 11 mục 3); bộ kiểm thử chức năng đặt 0
+  ThuVien__BoNhoDem__Giay: ${BO_NHO_DEM_GIAY:-60}
 
 x-service: &service
   restart: unless-stopped
@@ -150,6 +152,19 @@ services:
       <<: *dotnet-env
       Gateway__Url: http://gateway:8080
       ThuVien__HienNhanDuLieuMau: ${HIEN_NHAN_DU_LIEU_MAU:-false}
+      # Thông tin thư viện (GIA_DINH D21, D75) – trống thì không hiển thị
+      ThuVien__ThongTin__TenTruong: "${THUVIEN_TEN_TRUONG:-[TÊN TRƯỜNG CỦA BẠN]}"
+      ThuVien__ThongTin__DiaChi: "${THUVIEN_DIA_CHI:-}"
+      ThuVien__ThongTin__Email: "${THUVIEN_EMAIL:-}"
+      ThuVien__ThongTin__DienThoai: "${THUVIEN_DIEN_THOAI:-}"
+      ThuVien__ThongTin__NoiQuy: "${THUVIEN_NOI_QUY:-}"
+      ThuVien__ThongTin__GioMoCua__T2: "${THUVIEN_GIO_T2:-}"
+      ThuVien__ThongTin__GioMoCua__T3: "${THUVIEN_GIO_T3:-}"
+      ThuVien__ThongTin__GioMoCua__T4: "${THUVIEN_GIO_T4:-}"
+      ThuVien__ThongTin__GioMoCua__T5: "${THUVIEN_GIO_T5:-}"
+      ThuVien__ThongTin__GioMoCua__T6: "${THUVIEN_GIO_T6:-}"
+      ThuVien__ThongTin__GioMoCua__T7: "${THUVIEN_GIO_T7:-}"
+      ThuVien__ThongTin__GioMoCua__CN: "${THUVIEN_GIO_CN:-}"
     depends_on:
       gateway: { condition: service_healthy }
     ports:

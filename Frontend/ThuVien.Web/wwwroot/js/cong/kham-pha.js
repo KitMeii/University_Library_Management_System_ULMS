@@ -75,7 +75,10 @@ function taoThe(s) {
     bia.append(img);
   } else {
     const mau = s.mauGay || '#176B54';
-    bia.classList.add('the-sach__bia--chu', doSang(mau) > 0.45 ? 'sang' : 'toi');
+    const L = doSang(mau);
+    bia.classList.add('the-sach__bia--chu', L > 0.45 ? 'sang' : 'toi');
+    // Chữ trắng trên màu gáy tầm trung (vd #A9793E) dưới 4.5:1 (WCAG AA) → phủ tối 28% dưới chữ
+    if (L <= 0.45 && 1.05 / (L + 0.05) < 4.5) bia.classList.add('phu-toi');
     bia.style.setProperty('--mau-bia', mau); // CSSOM – CSP cho phép
     const ten = document.createElement('span'); ten.className = 'the-sach__bia-ten'; ten.textContent = s.tenSach;
     const tg = document.createElement('span'); tg.className = 'the-sach__bia-tg'; tg.textContent = s.tacGia || '';
@@ -150,7 +153,8 @@ async function tai({ them = false } = {}) {
  * Chỉ dùng transform/opacity (CSSOM, hợp CSP).
  */
 async function doiLuoi(ds) {
-  const cu = new Map([...luoi.children].map((c) => [c.dataset.ma, c]));
+  // Chỉ thẻ sách thật (khung giữ chỗ trang đầu không có data-ma) – khung bị thay ngay, không hiệu ứng
+  const cu = new Map([...luoi.children].filter((c) => c.dataset.ma).map((c) => [c.dataset.ma, c]));
   const moi = ds.map((s) => cu.get(s.maDauSach) ?? taoThe(s));
   const roi = [...cu.values()].filter((c) => !moi.includes(c));
   if (!gsap || giamChuyenDong()) { luoi.replaceChildren(...moi); return; }

@@ -33,6 +33,34 @@ public static class BanCoTheMuon
             .Select(s => s.MaBanSach);
     }
 
+    /// <summary>
+    /// Số bản có thể mượn theo đầu sách – MỘT truy vấn gộp (GROUP BY) để nối trái vào danh sách đầu sách, thay cho đếm tương quan
+    /// từng đầu sách (Pha 8 – hiệu năng: 5.000 đầu sách × anti-join 200.000 dòng mượn mất &gt; 800 ms; gộp một lần ~100 ms).
+    /// </summary>
+    public static IQueryable<SoTheoDauSach> TheoDauSach(KhoSachDbContext db, DateTime bayGio)
+    {
+        var coTheMuon = Query(db, bayGio);
+        return from x in db.DauSachBanSach
+               where coTheMuon.Contains(x.MaBanSach)
+               group x by x.MaDauSach into g
+               select new SoTheoDauSach { MaDauSach = g.Key, So = g.Count() };
+    }
+
+    /// <summary>Lượt mượn theo đầu sách từ ngày <paramref name="tu"/> (“Mượn nhiều”) – một truy vấn gộp.</summary>
+    public static IQueryable<SoTheoDauSach> LuotMuonTheoDauSach(KhoSachDbContext db, DateOnly tu) =>
+        from cm in db.CtPhieuMuon
+        where cm.NgayMuon >= tu
+        join x in db.DauSachBanSach on cm.MaBanSach equals x.MaBanSach
+        group x by x.MaDauSach into g
+        select new SoTheoDauSach { MaDauSach = g.Key, So = g.Count() };
+
     /// <summary>Ảnh bìa: AnhBia lưu bản lớn “/uploads/bia/{id}.webp”, bản nhỏ cùng tên thêm “_nho”.</summary>
     public static string? AnhNho(string? anhBia) => anhBia is null ? null : anhBia[..^5] + "_nho.webp";
+}
+
+/// <summary>Kết quả gộp theo đầu sách (dùng trong truy vấn EF – thuộc tính init để nối được).</summary>
+public sealed class SoTheoDauSach
+{
+    public string MaDauSach { get; init; } = null!;
+    public int So { get; init; }
 }

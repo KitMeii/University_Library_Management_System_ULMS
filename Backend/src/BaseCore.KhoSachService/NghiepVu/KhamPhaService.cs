@@ -1,3 +1,4 @@
+using BaseCore.Common.HeThong;
 using BaseCore.Common.Loi;
 using BaseCore.Common.ThoiGian;
 using BaseCore.KhoSachService.DuLieu;
@@ -17,7 +18,7 @@ public sealed record SoLieuThuVien(int SoDauSach, int SoBanSach, int SoBanDoc, i
 /// “Lập trình”, “dien” khớp “điện”) trên tên sách, tác giả, ISBN, từ khóa;
 /// nhiều từ thì mỗi từ phải khớp ít nhất một trường.
 /// </summary>
-public sealed class KhamPhaService(KhoSachDbContext db, IClock clock)
+public sealed class KhamPhaService(KhoSachDbContext db, IClock clock, BoNhoDemNgan nhoDem)
 {
     public const string CollationTim = "Latin1_General_100_CI_AI";
     public const int SoNgayMuonNhieu = 365;
@@ -36,8 +37,10 @@ public sealed class KhamPhaService(KhoSachDbContext db, IClock clock)
         var t = Math.Max(1, trang ?? 1);
         var n = Math.Clamp(coTrang ?? 12, 1, 48);
 
-        var coTheMuon = BanCoTheMuon.Query(db, clock.BayGio);
-        var tu = clock.HomNay.AddDays(-(SoNgayMuonNhieu - 1));
+        // Số bản có thể mượn và lượt mượn 365 ngày theo đầu sách: BẢN ĐỒ dùng chung (hai truy vấn gộp, bộ nhớ đệm ngắn 60 giây như
+        // dữ liệu kệ sách – file 11 mục 3). SQL chỉ còn lọc chữ/thể loại/năm; “chỉ còn sách” và “mượn nhiều” xử lý trên bản đồ
+        // (Pha 8 hiệu năng: 50.000 bản sách, 200.000 dòng mượn – trước đây tính lại anti-join trong cả truy vấn đếm lẫn truy vấn trang).
+        var banDo = await BanDoDauSachAsync(ct);
         var goc = from d in db.DauSach.AsNoTracking()
                   where db.DauSachBanSach.Any(x => x.MaDauSach == d.MaDauSach)
                   join tl in db.TheLoai on d.MaTheLoai equals tl.MaTheLoai into g
@@ -45,12 +48,7 @@ public sealed class KhamPhaService(KhoSachDbContext db, IClock clock)
                   select new
                   {
                       d.MaDauSach, d.TenSach, d.TacGia, d.NamXb, d.MaTheLoai, TenTheLoai = tl.TenTheLoai, d.AnhBia, d.MauGay, d.NgayTao,
-                      d.Isbn, d.TuKhoa,
-                      SoBanCoTheMuon = db.DauSachBanSach.Count(x => x.MaDauSach == d.MaDauSach && coTheMuon.Contains(x.MaBanSach)),
-                      SoLuotMuon = (from cm in db.CtPhieuMuon
-                                    join x in db.DauSachBanSach on cm.MaBanSach equals x.MaBanSach
-                                    where x.MaDauSach == d.MaDauSach && cm.NgayMuon >= tu
-                                    select 1).Count()
+                      d.Isbn, d.TuKhoa
                   };
 
         foreach (var tuDon in q.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Take(6))
@@ -65,21 +63,53 @@ public sealed class KhamPhaService(KhoSachDbContext db, IClock clock)
         if (!string.IsNullOrWhiteSpace(theLoai)) { var ma = theLoai.Trim(); goc = goc.Where(x => x.MaTheLoai == ma); }
         if (namTu is { } nt) goc = goc.Where(x => x.NamXb >= nt);
         if (namDen is { } nd) goc = goc.Where(x => x.NamXb <= nd);
-        if (conSach) goc = goc.Where(x => x.SoBanCoTheMuon > 0);
 
+        // “Mượn nhiều”: SQL xếp theo khóa phụ (tên sách, mã) rồi sắp xếp ỔN ĐỊNH theo lượt mượn giảm dần trên bản đồ
+        // = ORDER BY lượt DESC, tên, mã như trước
         goc = sapXep switch
         {
             "ten" => goc.OrderBy(x => EF.Functions.Collate(x.TenSach, "Vietnamese_100_CI_AS")).ThenBy(x => x.MaDauSach),
-            "muon-nhieu" => goc.OrderByDescending(x => x.SoLuotMuon).ThenBy(x => x.TenSach).ThenBy(x => x.MaDauSach),
+            "muon-nhieu" => goc.OrderBy(x => x.TenSach).ThenBy(x => x.MaDauSach),
             "nam" => goc.OrderByDescending(x => x.NamXb).ThenBy(x => x.TenSach).ThenBy(x => x.MaDauSach),
             _ => goc.OrderByDescending(x => x.NgayTao).ThenByDescending(x => x.MaDauSach)
         };
 
-        var tong = await goc.CountAsync(ct);
-        var ds = await goc.Skip((t - 1) * n).Take(n).ToListAsync(ct);
-        return new KetQuaKhamPha(tong, t, n, ds.Select(x => new SachTrenKe(x.MaDauSach, x.TenSach, x.TacGia, x.NamXb, x.MaTheLoai,
-            x.TenTheLoai, BanCoTheMuon.AnhNho(x.AnhBia), x.AnhBia, x.MauGay, x.SoBanCoTheMuon, x.SoLuotMuon, null)).ToList());
+        int CoThe(string ma) => banDo.TryGetValue(ma, out var v) ? v.CoThe : 0;
+        int Luot(string ma) => banDo.TryGetValue(ma, out var v) ? v.Luot : 0;
+        SachTrenKe Ra(string ma, string ten, string? tg, int? nam, string? maTl, string? tenTl, string? anh, string? mau) =>
+            new(ma, ten, tg, nam, maTl, tenTl, BanCoTheMuon.AnhNho(anh), anh, mau, CoThe(ma), Luot(ma), null);
+
+        // Có từ khóa: quét LIKE không dấu chỉ MỘT lần (lấy mã theo thứ tự rồi phân trang trong bộ nhớ) thay vì hai lần COUNT + trang
+        if (!conSach && sapXep != "muon-nhieu" && q.Length == 0)
+        {
+            // Đường nhanh: lọc, sắp xếp, phân trang hoàn toàn trong SQL
+            var tong = await goc.CountAsync(ct);
+            var trangDs = await goc.Skip((t - 1) * n).Take(n).ToListAsync(ct);
+            return new KetQuaKhamPha(tong, t, n, trangDs.Select(x => Ra(x.MaDauSach, x.TenSach, x.TacGia, x.NamXb, x.MaTheLoai, x.TenTheLoai, x.AnhBia, x.MauGay)).ToList());
+        }
+
+        // Cần bản đồ để lọc/sắp xếp: lấy mã các đầu sách khớp (đã theo thứ tự SQL), lọc + sắp xếp ổn định trong bộ nhớ, rồi nạp trang
+        var dsKhop = await goc.Select(x => x.MaDauSach).ToListAsync(ct);
+        IEnumerable<string> loc = dsKhop;
+        if (conSach) loc = loc.Where(m => CoThe(m) > 0);
+        if (sapXep == "muon-nhieu") loc = loc.OrderByDescending(Luot);
+        var dsMa = loc.ToList();
+        var maTrang = dsMa.Skip((t - 1) * n).Take(n).ToList();
+        var chiTiet = (await goc.Where(x => maTrang.Contains(x.MaDauSach)).ToListAsync(ct)).ToDictionary(x => x.MaDauSach);
+        return new KetQuaKhamPha(dsMa.Count, t, n, maTrang.Select(m => chiTiet[m])
+            .Select(x => Ra(x.MaDauSach, x.TenSach, x.TacGia, x.NamXb, x.MaTheLoai, x.TenTheLoai, x.AnhBia, x.MauGay)).ToList());
     }
+
+    /// <summary>Bản đồ mã đầu sách → (số bản có thể mượn, lượt mượn 365 ngày) – bộ nhớ đệm ngắn dùng chung.</summary>
+    private Task<Dictionary<string, (int CoThe, int Luot)>> BanDoDauSachAsync(CancellationToken ct) =>
+        nhoDem.LayAsync("ban-do-dau-sach", async c =>
+        {
+            var coThe = await BanCoTheMuon.TheoDauSach(db, clock.BayGio).ToDictionaryAsync(x => x.MaDauSach, x => x.So, c);
+            var luot = await BanCoTheMuon.LuotMuonTheoDauSach(db, clock.HomNay.AddDays(-(SoNgayMuonNhieu - 1)))
+                .ToDictionaryAsync(x => x.MaDauSach, x => x.So, c);
+            return coThe.Keys.Union(luot.Keys)
+                .ToDictionary(k => k, k => (coThe.GetValueOrDefault(k), luot.GetValueOrDefault(k)));
+        });
 
     /// <summary>Khu 4: thể loại có ít nhất 1 đầu sách (không hiện ô rỗng – file 04 mục 1).</summary>
     public async Task<List<TheLoaiCong>> TheLoaiAsync(CancellationToken ct)

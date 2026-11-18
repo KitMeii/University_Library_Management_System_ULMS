@@ -8,6 +8,11 @@ using ThuVien.Web.HaTang;
 if (HealthProbe.LaYeuCauKiemTra(args)) return await HealthProbe.ChayAsync();
 
 var builder = WebApplication.CreateBuilder(args);
+// Pha 8: không lộ header Server; Razor xuất tiếng Việt nguyên dạng (không mã hóa &#x..; từng ký tự – trang nhẹ hơn),
+// ký tự đặc biệt HTML vẫn được mã hóa
+builder.WebHost.ConfigureKestrel(o => o.AddServerHeader = false);
+builder.Services.Configure<Microsoft.Extensions.WebEncoders.WebEncoderOptions>(o =>
+    o.TextEncoderSettings = new System.Text.Encodings.Web.TextEncoderSettings(System.Text.Unicode.UnicodeRanges.All));
 builder.AddThuVienLogging("web");
 
 builder.Services.Configure<ThuVienOptions>(builder.Configuration.GetSection(ThuVienOptions.Muc));

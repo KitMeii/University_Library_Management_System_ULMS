@@ -99,6 +99,7 @@ public sealed class DatChoCongController(DatChoService service) : ControllerBase
     private string Ma => User.FindFirst(ThuVienClaims.MaBanDoc)!.Value;
 
     [HttpPost]
+    [EnableRateLimiting(GioiHanTanSuat.DatCho)]
     public Task<KetQuaDatCho> Dat(YeuCauDatCho yc, CancellationToken ct) => service.DatAsync(Ma, yc.MaDauSach, ct);
 
     [HttpDelete("{maDatCho}")]

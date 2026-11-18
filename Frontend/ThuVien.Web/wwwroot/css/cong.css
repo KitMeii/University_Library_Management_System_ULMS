@@ -107,6 +107,8 @@ body.cong { background: var(--bg); color: var(--text); }
   font: 700 15px/1.2 var(--font-header); background: var(--hdr-hover-bg); color: var(--hdr-text);
 }
 .cong-header__gio strong { color: var(--hdr-hover); }
+/* Pha 8: một dòng, không đẩy tên thư viện xuống hai dòng ở 1366 px */
+.cong-header__gio { white-space: nowrap; flex-shrink: 0; }
 .cong-header__menu { font-size: 26px !important; padding: 6px 8px !important; }
 .cong-offcanvas { background: var(--hdr-bg); color: var(--hdr-text); font-family: var(--font-header); max-width: 86vw; }
 .cong-offcanvas .offcanvas-title { font-size: 22px; font-weight: 700; }

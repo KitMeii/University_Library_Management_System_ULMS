@@ -158,4 +158,23 @@ public class Pha7MtaTests(TrinhDuyet td)
         await p.Keyboard.PressAsync("ArrowDown");
         Assert.Equal("none", await p.EvaluateAsync<string>("() => getComputedStyle(document.getElementById('dd-huong-dan')).transform"));
     }
+    [Fact]
+    public async Task ThongTinThuVien_Khu8_CotLienHe_NoiQuyTuQuyDinh()
+    {
+        await using var ctx = await td.MayTinhAsync();
+        var p = await MoTrangChuAsync(ctx);
+        // Bộ kiểm thử dùng .env có THUVIEN_* (D75): khu 8 + cột Liên hệ footer hiện
+        Assert.Equal(1, await p.Locator("#thong-tin-thu-vien").CountAsync());
+        Assert.Equal(1, await p.Locator("#cotLienHe").CountAsync());
+        Assert.True(await p.Locator("#cotLienHe .cong-footer__lien-he li").CountAsync() >= 1);
+        // Giờ mở cửa gộp ngày, đúng một dòng “hôm nay”
+        Assert.Equal(1, await p.Locator("#lstGioMoCua li.hom-nay").CountAsync());
+        Assert.Equal(1, await p.Locator("#cotLienHe .cong-footer__gio li.hom-nay").CountAsync());
+        // Nội quy lấy số liệu thật từ /api/cong/quy-dinh
+        var qd = await p.EvaluateAsync<int[]>("async () => { const q = await (await fetch('/api/cong/quy-dinh')).json(); return [q.soGioGiu, q.toiDaDangGiu, q.soNgayGiaHan]; }");
+        var noiQuy = await p.TextContentAsync("#lstNoiQuy") ?? "";
+        Assert.Contains($"{qd[0]} giờ", noiQuy);
+        Assert.Contains($"{qd[1]} đặt chỗ", noiQuy);
+        Assert.Contains($"Gia hạn thêm {qd[2]} ngày", noiQuy);
+    }
 }

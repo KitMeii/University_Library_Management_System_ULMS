@@ -136,7 +136,7 @@ public class Pha6Tests(TrinhDuyet td)
         {
             ViewportSize = new() { Width = 1366, Height = 768 }, Locale = "vi-VN", ReducedMotion = ReducedMotion.Reduce, BypassCSP = false
         });
-        await ctx.AddInitScriptAsync("() => document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI + ' ' + (e.sample || '')))");
+        await ctx.AddInitScriptAsync("(() => document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI + ' ' + (e.sample || ''))))()");
         var p = await ctx.NewPageAsync();
         var viPham = new List<string>();
         p.Console += (_, m) => { if (m.Text.Contains("Content Security Policy") || m.Text.Contains("Refused to")) viPham.Add(m.Text); };

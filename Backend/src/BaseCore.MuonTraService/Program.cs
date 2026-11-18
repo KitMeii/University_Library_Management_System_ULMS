@@ -9,7 +9,8 @@ if (HealthProbe.LaYeuCauKiemTra(args)) return await HealthProbe.ChayAsync();
 var builder = WebApplication.CreateBuilder(args);
 builder.AddThuVienService("muontra").AddDbContextCheck<MuonTraDbContext>("csdl");
 builder.Services.AddDbContext<MuonTraDbContext>(o =>
-    o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure()));
+    o.UseSqlServer(builder.Configuration.GetConnectionString("ThuVien"), sql => sql.EnableRetryOnFailure())
+     .AddInterceptors(new BaseCore.MuonTraService.DuLieu.GoiYTruyVanInterceptor()));
 builder.Services.AddThuVienRateLimit(builder.Configuration);
 builder.Services.AddScoped<XacThucBanDocService>();
 builder.Services.AddScoped<TraCuuMuonTra>();

@@ -1,0 +1,30 @@
+# Reverse proxy HTTPS cho ULMS (docker-compose.prod.yml – file 14 mục 4).
+# ULMS_DOMAIN = tên miền thật (vd thuvien.truong.edu.vn) → Caddy tự xin chứng chỉ Let's Encrypt (cần mở cổng 80/443 ra Internet).
+# ULMS_DOMAIN = localhost hoặc địa chỉ IP nội bộ → Caddy dùng CA nội bộ (cài chứng chỉ gốc lên máy trạm – xem HUONG_DAN_TRIEN_KHAI.md).
+{
+	email {$ULMS_ACME_EMAIL:admin@localhost}
+}
+
+{$ULMS_DOMAIN:localhost} {
+	encode zstd gzip
+	# Tải ảnh bìa/ảnh thẻ tối đa 2 MB (file 11) – chặn thân yêu cầu quá lớn từ trước
+	request_body {
+		max_size 5MB
+	}
+	header {
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+	reverse_proxy web:8080 {
+		header_up X-Forwarded-Proto {scheme}
+		health_uri /health
+		health_interval 15s
+	}
+	log {
+		output file /var/log/caddy/truy-cap.log {
+			roll_size 20MiB
+			roll_keep 10
+		}
+		format json
+	}
+}

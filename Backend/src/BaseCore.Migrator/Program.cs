@@ -18,6 +18,13 @@ if (args is ["--xuat-sql", var thuMucSql])
     await XuatSql.ChayAsync(thuMucSql);
     return 0;
 }
+// GIA_DINH D77: sinh script một lần cập nhật từ khóa mẫu cho CSDL đang dùng
+if (args is ["--sql-tu-khoa-mau", var tepSql])
+{
+    await File.WriteAllTextAsync(tepSql, DuLieuMau.SqlCapNhatTuKhoaMau(), new System.Text.UTF8Encoding(true));
+    Console.WriteLine($"Đã ghi {tepSql}");
+    return 0;
+}
 if (args is ["--bam-mat-khau", var mkCanBam])
 {
     if (!MatKhauHasher.DatChinhSach(mkCanBam))

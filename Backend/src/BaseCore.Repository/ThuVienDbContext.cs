@@ -186,7 +186,8 @@ public class ThuVienDbContext(DbContextOptions options) : DbContext(options)
             e.HasOne<PhieuMuon>().WithMany().HasForeignKey(x => x.SoPMuon).OnDelete(DeleteBehavior.Restrict);
             e.HasOne<BanDoc>().WithMany().HasForeignKey(x => x.MaBanDoc).OnDelete(DeleteBehavior.Restrict);
             // SPEC 6.2.3: mỗi so_pmuon chỉ có một Phiếu trả
-            e.HasIndex(x => x.SoPMuon).IsUnique();
+            // Pha 8 hiệu năng: kèm ngaytra để truy vấn “chưa trả tính đến ngày” (MB06, tổng quan) khỏi tra khóa từng dòng (465 → 176 ms với 200.000 dòng)
+            e.HasIndex(x => x.SoPMuon).IsUnique().IncludeProperties(x => x.NgayTra);
             e.HasIndex(x => x.NgayTra);
         });
         m.Entity<CtPhieuTra>(e =>

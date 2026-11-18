@@ -1,3 +1,5 @@
+using BaseCore.Common.Loi;
+using BaseCore.DTO.Common;
 using BaseCore.Common.NghiepVu;
 using BaseCore.Common.ThoiGian;
 using BaseCore.Entities;
@@ -22,7 +24,8 @@ public sealed record DongHinhThuc(string HtThanhToan, int SoBienBan, decimal Ton
 public sealed record BaoCaoViPhamDto(
     DateOnly TuNgay, DateOnly DenNgay,
     int SoBienBan, int SoTruongHop, decimal TongTienViPham, decimal TongTienDaThu, decimal TongTienChuaThu,
-    IReadOnlyList<DongTheoKhoanThu> TheoKhoanThu, IReadOnlyList<DongHinhThuc> TheoHinhThuc, IReadOnlyList<DongBienBanBaoCao> BienBan);
+    IReadOnlyList<DongTheoKhoanThu> TheoKhoanThu, IReadOnlyList<DongHinhThuc> TheoHinhThuc, IReadOnlyList<DongBienBanBaoCao> BienBan,
+    int SoDongBienBan = 0, int CoTrang = 0);
 
 public sealed record KyBaoCaoNhap(DateOnly? TuNgay, DateOnly? DenNgay);
 public sealed record KetQuaLapBaoCao(DateOnly NgayLap, string ThongBao);
@@ -35,7 +38,33 @@ public sealed record KetQuaLapBaoCao(DateOnly NgayLap, string ThongBao);
 /// </summary>
 public sealed class BaoCaoViPhamService(ViPhamDbContext db, IClock clock)
 {
-    public async Task<BaoCaoViPhamDto> TongHopAsync(DateOnly? tuNgay, DateOnly? denNgay, CancellationToken ct)
+    /// <summary>Cỡ trang mặc định bảng chi tiết khi XEM TRƯỚC (GIA_DINH D82).</summary>
+    public const int CoTrangMacDinh = 50;
+
+    /// <summary>
+    /// btnTongHop (02.05.01) – xem trước: số liệu tổng hợp, theo khoản thu, theo hình thức tính trên TOÀN kỳ; bảng bạn đọc vi phạm
+    /// (dgvBienBan) chỉ trả trang đầu kèm tổng số dòng – trang sau qua <see cref="ChiTietAsync"/>.
+    /// </summary>
+    public async Task<BaoCaoViPhamDto> TongHopAsync(DateOnly? tuNgay, DateOnly? denNgay, int? coTrang, CancellationToken ct)
+    {
+        var n = Math.Clamp(coTrang ?? CoTrangMacDinh, 1, 200);
+        var d = await DayDuAsync(tuNgay, denNgay, ct);
+        return d with { BienBan = d.BienBan.Take(n).ToList(), CoTrang = n };
+    }
+
+    /// <summary>Một trang của bảng bạn đọc vi phạm khi xem trước (bang = bien-ban).</summary>
+    public async Task<KetQuaTrang<DongBienBanBaoCao>> ChiTietAsync(string bang, DateOnly? tuNgay, DateOnly? denNgay, int? trang, int? coTrang,
+        CancellationToken ct)
+    {
+        if (bang != "bien-ban") new KiemTraDuLieu().Them("bang", "Bảng chi tiết không hợp lệ (bien-ban).").NemNeuCoLoi();
+        var n = Math.Clamp(coTrang ?? CoTrangMacDinh, 1, 200);
+        var t = Math.Max(1, trang ?? 1);
+        var d = await DayDuAsync(tuNgay, denNgay, ct);
+        return new KetQuaTrang<DongBienBanBaoCao>(d.BienBan.Count, t, n, d.BienBan.Skip((t - 1) * n).Take(n).ToList());
+    }
+
+    /// <summary>Đủ toàn bộ dòng của kỳ – dữ liệu trang in MB07 (02.05.02 – TT096, TT097).</summary>
+    public async Task<BaoCaoViPhamDto> DayDuAsync(DateOnly? tuNgay, DateOnly? denNgay, CancellationToken ct)
     {
         var (tu, den) = KyBaoCao.KiemTra(tuNgay, denNgay, clock.HomNay);
         var tuTg = tu.ToDateTime(TimeOnly.MinValue);
@@ -68,7 +97,7 @@ public sealed class BaoCaoViPhamService(ViPhamDbContext db, IClock clock)
 
         return new BaoCaoViPhamDto(tu, den, dsBienBan.Count, chiTiet.Count, chiTiet.Sum(c => c.ThanhTien),
             dsBienBan.Where(b => b.DaThanhToan).Sum(b => b.TongTien), dsBienBan.Where(b => !b.DaThanhToan).Sum(b => b.TongTien),
-            theoKhoanThu, theoHinhThuc, dsBienBan);
+            theoKhoanThu, theoHinhThuc, dsBienBan, dsBienBan.Count, 0);
     }
 
     /// <summary>02.05.02 btnIn: kiểm tra kỳ, ngày lập tự sinh, ghi nhật ký in báo cáo MB07 (TT098).</summary>

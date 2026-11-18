@@ -11,7 +11,7 @@
 | 5 – Cổng: header, hero, coverflow + đầu sách/thể loại | **Đã duyệt** (17/11/2026) | D55–D59, D61 duyệt; D60 chờ số đo máy thật của chủ dự án; ảnh Cong_*, Pha5_* |
 | 6 – Book Preview + đặt chỗ + tài khoản + Quầy đặt chỗ | **Đã duyệt** (17/11/2026) | D62–D71 duyệt (D63 thêm loại “Đặt chỗ bị hủy”, D69 băm CSP thay bản vá); ảnh Cong_Book_Preview*, Cong_Tai_khoan*, Pha6_* |
 | 7 – Trang chủ hoàn chỉnh + học từ trang tham khảo | **Xong, đã commit + push theo yêu cầu chủ dự án** (18/11/2026) | D78 (FLIP bằng GSAP core) và D79 (THAM_KHAO_MTA) đã duyệt; D72–D77 *chờ duyệt* (D75 cần chủ dự án cung cấp thông tin thư viện); ảnh Cong_Trang_chu_hoan_chinh*, Cong_Kham_pha*, Cong_Huong_dan*, Cong_Menu*, Cong_Header_thu_gon, so_sanh_mta/ |
-| 8 – Hoàn thiện, prod.yml | Chưa làm | |
+| 8 – Hoàn thiện, mobile, bảo mật, hiệu năng, prod.yml, tài liệu | **Đã duyệt, đã commit + push** (18/11/2026) – nghiệm thu cuối chờ D60 | D72–D85 duyệt (D82: phân trang xem trước MB06/MB07; còn một điểm mở: xem trước kỳ 12 tháng); D60 chờ số đo fps máy thật |
 
 ## Pha 1 – đã làm
 - Git: init, xóa bí mật, commit gốc `a3c44a2` + push; commit xóa riêng `3c0956d` (chưa push – push khi Pha 1 được duyệt).
@@ -89,7 +89,21 @@
 - Sửa kiểm thử tích hợp tính “hôm nay” theo giờ máy (UTC trong container) – lệch một ngày từ 00:00 đến 07:00 giờ Việt Nam; nay dùng `GioVietNam.HomNay` trùng IClock của service.
 - Kiểm thử bổ sung: E2E `Pha7MtaTests` (menu thả xuống bằng bàn phím + nạp thể loại + bấm thể loại lọc không tải lại, nhóm thu gọn điện thoại, mũi tên Hero chuột/bàn phím, nút lên đầu + header thu gọn, CSP không unsafe, giảm chuyển động); ảnh `ChupAnhPha7Tests.Chup_DieuHuong_ThamKhao`; ảnh so sánh trước/sau trong `anh_giao_dien/so_sanh_mta/`.
 
+## Pha 8 – đã làm
+- Quyết định Pha 7 (18/11/2026): D72–D74, D76 duyệt; D77 – script một lần `Database/mot_lan/D77_cap_nhat_tu_khoa_mau.sql` (sinh từ migrator `--sql-tu-khoa-mau`), đã chạy trên ThuVien: 60/60 đầu sách mẫu, chạy lại 0; D79 – header điện thoại không thu gọn; xóa nhánh `wip/pha7-mta`.
+- D75 – thông tin thư viện qua `.env` (`THUVIEN_*`, chỗ giữ `[ĐỊA CHỈ]`, `[EMAIL]`, `[SỐ ĐIỆN THOẠI]`, giờ mở cửa ví dụ): header “Hôm nay: …” (giờ Việt Nam), cột **Liên hệ** footer, **khu 8** trang chủ (giờ mở cửa gộp ngày, nội quy sinh từ `/api/cong/quy-dinh`).
+- Triển khai: `docker-compose.prod.yml` + Caddy 2.10.2 (`deploy/Caddyfile`: HTTPS tự động / CA nội bộ, HTTP → HTTPS, HSTS, nén, ẩn Server, log truy cập), chỉ Caddy mở cổng (D80); `scripts/kiem-tra-trien-khai.sh` – nghiệm thu file 14 mục 8 trên bộ riêng (prod + SQL Server trong Docker); PowerShell `scripts/test-docker.ps1`, `scripts/trien-khai.ps1` (D81).
+- Bảo mật: giới hạn tần suất đặt chỗ 10/phút/phiên (D83); web không lộ header `Server`; cookie Secure/HttpOnly/SameSite qua HTTPS; kiểm tra không có bí mật trong image, mọi image chạy user `app`.
+- Hiệu năng (D82): truy vấn gộp số bản có thể mượn/lượt mượn, bộ nhớ đệm 60 giây (kệ sách, số liệu, bản đồ khu Khám phá, tổng quan N1–N4), tìm N3 so khớp nhị phân chữ hoa, tìm không dấu quét một lần, chỉ mục `IX_PHIEUTRA_so_pmuon INCLUDE (ngaytra)` (migration `ChiMucPhieuTraNgayTra`, file 02, `Database/01`); image web 942 → 376 MB.
+- Hoàn thiện (D84, D85): tương phản bìa chữ màu tầm trung, liên kết mô tả dashboard, liên hệ khu 8; khung giữ chỗ khu Khám phá (CLS `/kham-pha` 0,135 → đạt); sửa bộ đo CLS/CSP trong E2E (init script không chạy); Razor xuất tiếng Việt nguyên dạng; build 0 cảnh báo; viên giờ mở cửa header gọn một dòng.
+- Tài liệu: `docs/HUONG_DAN_TRIEN_KHAI.md`, `docs/HUONG_DAN_SU_DUNG.md`, README (bảng tài liệu, lệnh hiệu năng/kiểm tra triển khai/prod, phiên bản Caddy), THU_VIEN_BEN_THU_BA.
+- Kiểm thử mới: `Pha8Tests` (axe **mọi** trang dashboard theo đúng nhóm + mọi trang cổng; iPhone 13 và Pixel 7 không tràn ngang trên mọi trang + sidebar thành Offcanvas; Pixel 7 kệ/Book Preview/tab đáy; LCP < 2,5 s, CLS < 0,05), `Pha7MtaTests.ThongTinThuVien_Khu8…`, `ThongTinThuVienTests` (đơn vị), `HieuNangTests`; ảnh `ChupAnhPha8Tests` (bản điện thoại mọi giao diện).
+- D82 (chủ dự án quyết 18/11/2026): **xem trước** MB06/MB07 phân trang bảng chi tiết 50 dòng/trang (`/chi-tiet/{bang}`), số liệu tổng hợp + biểu đồ tính toàn kỳ; **bản in** `/in` đủ dòng; lưới ≤ 50 dòng giữ nguyên dạng tĩnh (ảnh Bài 4 4.5.1–4.5.2 không đổi). Kiểm thử `Pha8ApiTests` (2), E2E `BaoCaoMuonTra_XemTruoc_PhanTrang_KpiKhongDoi_BanInDuKy`.
+- Kết quả cuối (18/11/2026): đơn vị 82/82, ảnh 39/39, tích hợp 104/104, E2E 124/124, kiểm tra triển khai 28/28; build 0 cảnh báo. Hiệu năng (50.112 bản sách, 200.040 dòng CT_PHIEUMUON, 200.030 dòng CT_PHIEUTRA): mọi API tương tác P95 5–235 ms (< 300) – gồm xem trước MB06 tháng 213 ms, trang chi tiết 21–189 ms, MB07 18–33 ms; bản in MB06 tháng 794 ms (< 1.000). Điểm mở: xem trước MB06 **12 tháng** P50 ~205 ms, P95 dao động 290–390 ms giữa các lần đo (D82). Lần gọi đầu khi bộ nhớ đệm hết hạn: kệ sách ~1,1–1,2 s, bản đồ Khám phá ~2,1 s (tối đa một lần mỗi 60 giây). Kệ sách: 59,6 fps CPU thường, 26,3 fps CPU chậm 4× (container không GPU; dao động 26–37 giữa các lần).
+
 ## Việc còn lại / chuyển pha sau
-- Thông tin thư viện (ThuVien:ThongTin – giờ mở cửa, địa chỉ, email, điện thoại, nội quy): chờ chủ dự án cung cấp (D21, D75).
-- `docker-compose.prod.yml` → Pha 8. Kiểm thử đã tách bộ hệ thống riêng (project `ulms-test`, CSDL `ThuVien_Test` – D49).
+- Thông tin thư viện thật: thay chỗ giữ `THUVIEN_*` trong `.env` máy chủ trước khi mở cho bạn đọc (D75, HUONG_DAN_TRIEN_KHAI mục 3.3).
+- D60: chủ dự án gửi số đo fps máy thật trước nghiệm thu Pha 8.
+- Chính sách mật khẩu SQL (D85 – chủ dự án quyết 18/11/2026): dev giữ mật khẩu `.env` hiện có, không kiểm tra; máy chủ thật / SQL Server trong Docker: ≥ 8 ký tự, hoa, thường, số, ký tự đặc biệt – `scripts/trien-khai.sh prod` (`.ps1`) báo lỗi rõ nếu không đạt.
+- Kiểm thử chạy trên bộ hệ thống riêng (project `ulms-test`, CSDL `ThuVien_Test` – D49).
 - Không làm đặt lại mật khẩu qua email (D68 – chủ dự án quyết định): bạn đọc đặt lại tại /kich-hoat hoặc nhờ N4.

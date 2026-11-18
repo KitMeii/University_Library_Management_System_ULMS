@@ -1,0 +1,68 @@
+# Triển khai trên máy chủ thư viện (file 14 mục 4, HUONG_DAN_TRIEN_KHAI.md):
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Khi chỉ định -f, docker-compose.override.yml (Development, dữ liệu mẫu) KHÔNG được nạp.
+# - Production, không nạp dữ liệu mẫu, không ẩn/hiện nhãn mẫu, không xóa – tạo lại CSDL.
+# - Không mở cổng nội bộ: web, gateway, các service, SQL Server chỉ nằm trong mạng thuvien-net.
+# - Một cổng vào duy nhất: Caddy (HTTPS 443, 80 chuyển hướng sang HTTPS) → web:8080.
+# - Log: volume thuvien-logs (ứng dụng) và thuvien-caddy-logs (truy cập).
+
+x-production: &production
+  ASPNETCORE_ENVIRONMENT: Production
+  DOTNET_ENVIRONMENT: Production
+
+services:
+  sqlserver:
+    # Cách 1 (SQL Server trong Docker): không mở cổng 1433 ra máy chủ; quản trị bằng `docker compose exec` hoặc SSH tunnel
+    ports: !reset []
+
+  migrator:
+    environment:
+      <<: *production
+      ThuVien__NapDuLieuMau: "false"
+      ThuVien__TaoLaiCsdl: "false"
+
+  quantri:
+    environment: *production
+  khosach:
+    environment: *production
+  muontra:
+    environment:
+      <<: *production
+      ThuVien__DatCho__ChuKyQuetPhut: "5"
+  vipham:
+    environment: *production
+  gateway:
+    environment: *production
+    ports: !reset []
+
+  web:
+    environment:
+      <<: *production
+      ThuVien__HienNhanDuLieuMau: "false"
+    # Không mở cổng web ra máy chủ – chỉ đi qua Caddy
+    ports: !reset []
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    networks: [thuvien-net]
+    mem_limit: 256m
+    depends_on:
+      web: { condition: service_healthy }
+    environment:
+      TZ: Asia/Ho_Chi_Minh
+      ULMS_DOMAIN: ${ULMS_DOMAIN:-localhost}
+      ULMS_ACME_EMAIL: ${ULMS_ACME_EMAIL:-admin@localhost}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - thuvien-caddy-data:/data
+      - thuvien-caddy-config:/config
+      - thuvien-caddy-logs:/var/log/caddy
+
+volumes:
+  thuvien-caddy-data:
+  thuvien-caddy-config:
+  thuvien-caddy-logs:

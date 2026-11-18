@@ -18,7 +18,7 @@ services:
   khosach:
     environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development }
   muontra:
-    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development, GioiHanTanSuat__DangNhapMoiPhut: "300" }
+    environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development, GioiHanTanSuat__DangNhapMoiPhut: "300", GioiHanTanSuat__DatChoMoiPhut: "300" }
   vipham:
     environment: { ASPNETCORE_ENVIRONMENT: Development, DOTNET_ENVIRONMENT: Development }
 

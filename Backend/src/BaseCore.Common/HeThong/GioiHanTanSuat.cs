@@ -12,11 +12,13 @@ namespace BaseCore.Common.HeThong;
 public static class GioiHanTanSuat
 {
     public const string DangNhap = "dang-nhap";
+    public const string DatCho = "dat-cho";
 
     /// <summary>Số lần đăng nhập mỗi phút cho một IP: cấu hình "GioiHanTanSuat:DangNhapMoiPhut" (mặc định 10).</summary>
     public static IServiceCollection AddThuVienRateLimit(this IServiceCollection services, IConfiguration config)
     {
         var moiPhut = config.GetValue("GioiHanTanSuat:DangNhapMoiPhut", 10);
+        var datChoMoiPhut = config.GetValue("GioiHanTanSuat:DatChoMoiPhut", 10);
         return services.AddRateLimiter(o =>
         {
             o.OnRejected = (ctx, _) => new ValueTask(XuLyLoiMiddleware.GhiAsync(ctx.HttpContext,
@@ -25,6 +27,11 @@ public static class GioiHanTanSuat
             o.AddPolicy(DangNhap, http => RateLimitPartition.GetFixedWindowLimiter(
                 DiaChiNguoiDung(http),
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = moiPhut, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+            // Đặt chỗ / hủy đặt chỗ: theo từng bạn đọc (mỗi phiên đăng nhập một JWT – middleware giới hạn chạy trước xác thực),
+            // không có token thì theo IP. Cấu hình "GioiHanTanSuat:DatChoMoiPhut" (mặc định 10).
+            o.AddPolicy(DatCho, http => RateLimitPartition.GetFixedWindowLimiter(
+                http.Request.Headers.Authorization.ToString() is { Length: > 20 } tk ? "tk:" + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(tk))) : "ip:" + DiaChiNguoiDung(http),
+                _ => new FixedWindowRateLimiterOptions { PermitLimit = datChoMoiPhut, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
         });
     }
 

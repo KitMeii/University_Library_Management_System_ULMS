@@ -240,7 +240,7 @@ public class Pha5Tests(TrinhDuyet td)
         Assert.True(loi.Count == 0, string.Join("\n", loi.Select(v => $"{v.Id}: {v.Help} – " + string.Join("; ", v.Nodes.Select(n => n.Target)))));
 
         await using var csp = await td.MayTinhCspThatAsync();
-        await csp.AddInitScriptAsync("() => document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI + ' ' + (e.sample || '')))");
+        await csp.AddInitScriptAsync("(() => document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI + ' ' + (e.sample || ''))))()");
         var c = await csp.NewPageAsync();
         var viPham = new List<string>();
         c.Console += (_, m) => { if (m.Text.Contains("Content Security Policy") || m.Text.Contains("Refused to")) viPham.Add(m.Text); };

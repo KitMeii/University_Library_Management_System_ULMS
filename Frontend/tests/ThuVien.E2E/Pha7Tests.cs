@@ -185,12 +185,12 @@ public class Pha7Tests(TrinhDuyet td)
     {
         await using var ctx = await td.MayTinhCspThatAsync();
         await ctx.AddInitScriptAsync("""
-            () => {
+            (() => {
               document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI));
               window.__cls = 0;
               new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; })
                 .observe({ type: 'layout-shift', buffered: true });
-            }
+            })();
             """);
         var p = await ctx.NewPageAsync();
         var viPham = new List<string>();

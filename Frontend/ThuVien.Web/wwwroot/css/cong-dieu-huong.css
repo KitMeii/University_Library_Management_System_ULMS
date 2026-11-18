@@ -97,3 +97,7 @@ html.bp-dang-mo .cong-len-dau { display: none; }
   .cong-nav__con { transform: none; }
   .cong-len-dau { animation: none; }
 }
+
+/* ── Cột Liên hệ footer (D75) ── */
+.cong-footer__tieu-de-phu { margin-top: 20px !important; }
+.cong-footer__lien-he li { overflow-wrap: anywhere; }

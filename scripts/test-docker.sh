@@ -5,9 +5,10 @@
 #   - Mỗi lần chạy: xóa + tạo lại ThuVien_Test (dữ liệu mẫu sạch) → chạy kiểm thử → dọn .bak kiểm thử → gỡ bộ kiểm thử.
 #   - Tệp sao lưu kiểm thử ghi vào SAO_LUU_THU_MUC_KIEM_THU (.env), không ghi vào thư mục Backup thật.
 # Dùng image đã build bởi:  docker compose up -d --build
-# Dùng:  sh scripts/test-docker.sh [unit|integration|e2e|anh|all]   (mặc định all)
+# Dùng:  sh scripts/test-docker.sh [unit|integration|e2e|anh|all|hieunang]   (mặc định all)
 #   all = đơn vị → chụp bộ ảnh (CSDL sạch) → tích hợp → E2E
 #   anh = chỉ chụp bộ ảnh giao diện; e2e = E2E (không gồm chụp ảnh)
+#   hieunang = nạp 50.000 bản sách + 200.000 dòng chi tiết vào ThuVien_Test, đo P95 từng API (file 11 mục 3) – chạy riêng
 #   GIU_LAI=1 sh scripts/test-docker.sh …  giữ bộ kiểm thử sau khi chạy (web: http://localhost:18080)
 # Kết quả .trx ở artifacts/test-results, ảnh giao diện ở Prompt/Prompt_ClaudeCode_HeThong/docs/anh_giao_dien
 set -e
@@ -24,6 +25,8 @@ export DB_NAME=ThuVien_Test ULMS_NET=thuvien-test-net WEB_PORT=18080 GATEWAY_POR
 export HIEN_NHAN_DU_LIEU_MAU=false TAO_LAI_CSDL=true
 # Tác vụ nền đặt chỗ quét mỗi 3 giây trong bộ kiểm thử (kiểm thử “hết hạn giữ” không phải chờ 5 phút)
 export DATCHO_CHU_KY_PHUT=0.05
+# Kiểm thử chức năng so số liệu ngay sau khi ghi → tắt bộ nhớ đệm 60 giây; đo hiệu năng giữ cấu hình thật (60 giây)
+[ "$LOAI" = hieunang ] && export BO_NHO_DEM_GIAY=60 || export BO_NHO_DEM_GIAY=0
 TM_KT=$(doc_env SAO_LUU_THU_MUC_KIEM_THU)
 if [ -z "$TM_KT" ]; then
   case "$(doc_env DB_SERVER)" in
@@ -56,6 +59,8 @@ chay_unit() {
 khoi_dong() {
   echo "== Khởi động bộ kiểm thử (ulms-test, CSDL $DB_NAME, sao lưu: $SAO_LUU_THU_MUC) =="
   trap don_dep EXIT
+  # Bộ kiểm thử còn sót từ lần chạy bị ngắt (vd GIU_LAI=1, hoặc dừng giữa chừng) → gỡ hẳn để migrator chạy lại, tạo lại CSDL sạch
+  $KT down -v --remove-orphans > /dev/null 2>&1 || true
   $KT up -d --remove-orphans
   i=0
   until [ "$(docker inspect -f '{{.State.Health.Status}}' ulms-test-web-1 2>/dev/null)" = healthy ]; do
@@ -69,7 +74,7 @@ chay_tich_hop() {
   echo "== Kiểm thử tích hợp (gateway, service, SQL Server – $DB_NAME) =="
   docker run --rm --network $NET --env-file .env $CHUNG -v ulms-build:/tmp/ulms \
     -e ULMS_GATEWAY=http://gateway:8080 -e DB_NAME=$DB_NAME -e "SAO_LUU_THU_MUC=$SAO_LUU_THU_MUC" mcr.microsoft.com/dotnet/sdk:10.0 \
-    sh -c "dotnet $TEST --logger 'trx;LogFileName=integration.trx' Backend/tests/BaseCore.IntegrationTests" || LOI=1
+    sh -c "dotnet $TEST --logger 'trx;LogFileName=${2:-integration}.trx' --filter '${1:-Loai!=HieuNang}' Backend/tests/BaseCore.IntegrationTests" || LOI=1
 }
 
 # $1: bộ lọc; $2: tên tệp kết quả
@@ -81,9 +86,10 @@ chay_e2e() {
 }
 
 case "$LOAI" in unit|all) chay_unit ;; esac
-case "$LOAI" in integration|e2e|anh|all) khoi_dong ;; esac
+case "$LOAI" in integration|e2e|anh|all|hieunang) khoi_dong ;; esac
 case "$LOAI" in anh|all) echo "== Chụp bộ ảnh giao diện (CSDL sạch) =="; chay_e2e "FullyQualifiedName~ChupAnh" anh.trx ;; esac
 case "$LOAI" in integration|all) chay_tich_hop ;; esac
+case "$LOAI" in hieunang) echo "== Hiệu năng API (dữ liệu lớn) =="; chay_tich_hop "Loai=HieuNang" hieunang ;; esac
 case "$LOAI" in e2e|all) echo "== E2E (Playwright) =="; chay_e2e "${E2E_LOC:-FullyQualifiedName!~ChupAnh}" e2e.trx ;; esac
 
 [ $LOI = 0 ] && echo "== Tất cả kiểm thử đạt ==" || echo "== CÓ KIỂM THỬ KHÔNG ĐẠT – xem artifacts/test-results =="

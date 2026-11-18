@@ -225,27 +225,64 @@
     </section>
 }
 
-@* ---------- Khu 8: Thông tin thư viện (appsettings ThuVien:ThongTin – chỉ hiện khi đã có dữ liệu thật, D21) ---------- *@
-@if (tt.GioMoCua.Count > 0 || !string.IsNullOrWhiteSpace(tt.DiaChi) || !string.IsNullOrWhiteSpace(tt.Email) || !string.IsNullOrWhiteSpace(tt.DienThoai) || !string.IsNullOrWhiteSpace(tt.NoiQuy))
+@* ---------- Khu 8: Thông tin thư viện (ThuVien:ThongTin qua .env THUVIEN_* – D21, D75; trường trống không hiện) ---------- *@
+@if (tt.CoGioMoCua || tt.CoLienHe || !string.IsNullOrWhiteSpace(tt.NoiQuy))
 {
+    var thuNay = ThuVien.Web.HaTang.ThongTinThuVien.ThuHomNay();
+    var qd8 = Model.KhamPha.QuyDinh;
     <section id="thong-tin-thu-vien" class="thong-tin-tv" aria-labelledby="thongTinTieuDe">
         <div class="cong-container">
-            <header class="cong-khu__dau" data-xuat-hien>
-                <p class="cong-khu__nhan">Thông tin thư viện</p>
-                <h2 class="cong-khu__tieu-de" id="thongTinTieuDe">@tt.TenThuVien</h2>
+            <header class="cong-khu__dau cong-khu__dau--hang" data-xuat-hien>
+                <div>
+                    <p class="cong-khu__nhan">Thông tin thư viện</p>
+                    <h2 class="cong-khu__tieu-de" id="thongTinTieuDe">@tt.TenThuVien</h2>
+                </div>
             </header>
             <div class="thong-tin-tv__luoi">
-                @if (tt.GioMoCua.Count > 0)
+                @if (tt.CoGioMoCua)
                 {
-                    <div><h3>Giờ mở cửa</h3><ul class="thong-tin-tv__gio">@foreach (var (k, v) in tt.GioMoCua) { <li><span>@k</span><span>@v</span></li> }</ul></div>
+                    <div class="thong-tin-tv__o" data-xuat-hien>
+                        <h3><i class="bi bi-clock" aria-hidden="true"></i>Giờ mở cửa</h3>
+                        <ul class="thong-tin-tv__gio" id="lstGioMoCua">
+                            @foreach (var (nhan, gio, coHomNay) in tt.GioGop(thuNay))
+                            {
+                                <li class="@(coHomNay ? "hom-nay" : null)"><span>@nhan</span><span>@gio</span></li>
+                            }
+                        </ul>
+                    </div>
                 }
-                <div>
-                    <h3>Liên hệ</h3>
-                    @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <p><i class="bi bi-geo-alt" aria-hidden="true"></i> @tt.DiaChi</p> }
-                    @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <p><i class="bi bi-telephone" aria-hidden="true"></i> <a href="tel:@tt.DienThoai">@tt.DienThoai</a></p> }
-                    @if (!string.IsNullOrWhiteSpace(tt.Email)) { <p><i class="bi bi-envelope" aria-hidden="true"></i> <a href="mailto:@tt.Email">@tt.Email</a></p> }
-                </div>
-                @if (!string.IsNullOrWhiteSpace(tt.NoiQuy)) { <div><h3>Nội quy</h3><p>@tt.NoiQuy</p></div> }
+                @if (tt.CoLienHe)
+                {
+                    <div class="thong-tin-tv__o" data-xuat-hien>
+                        <h3><i class="bi bi-geo-alt" aria-hidden="true"></i>Liên hệ</h3>
+                        <ul class="thong-tin-tv__lien-he">
+                            @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <li><i class="bi bi-geo-alt" aria-hidden="true"></i><span>@tt.DiaChi</span></li> }
+                            @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <li><i class="bi bi-telephone" aria-hidden="true"></i><a href="tel:@tt.DienThoai">@tt.DienThoai</a></li> }
+                            @if (!string.IsNullOrWhiteSpace(tt.Email)) { <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:@tt.Email">@tt.Email</a></li> }
+                        </ul>
+                    </div>
+                }
+                @* Nội quy (D75): quy định mượn trả SPEC mục 4 + đặt chỗ – số liệu lấy từ GET /api/cong/quy-dinh, không lặp cấu hình (D74) *@
+                @if (qd8 is not null || !string.IsNullOrWhiteSpace(tt.NoiQuy))
+                {
+                    <div class="thong-tin-tv__o" data-xuat-hien>
+                        <h3><i class="bi bi-journal-check" aria-hidden="true"></i>Nội quy mượn trả</h3>
+                        <ul class="thong-tin-tv__noi-quy" id="lstNoiQuy">
+                            @if (qd8 is not null)
+                            {
+                                foreach (var d in qd8.DoiTuong)
+                                {
+                                    <li>@d.DoiTuong: mượn tối đa <strong>@d.SoBanToiDa bản</strong>, trong <strong>@d.SoNgayMuon ngày</strong>.</li>
+                                }
+                                <li>Gia hạn thêm @qd8.SoNgayGiaHan ngày, mỗi bản tối đa @qd8.SoLanGiaHanToiDa lần.</li>
+                                <li>Được mượn khi thẻ còn hạn, không có sách quá hạn chưa trả và không có biên bản chưa thanh toán.</li>
+                                <li>Đặt chỗ trực tuyến: sách được giữ <strong>@qd8.SoGioGiu giờ</strong>, tối đa <strong>@qd8.ToiDaDangGiu đặt chỗ</strong> cùng lúc.</li>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(tt.NoiQuy)) { <li>@tt.NoiQuy</li> }
+                        </ul>
+                        <a class="cong-khu__xem" href="/huong-dan">Xem hướng dẫn đầy đủ <i class="bi bi-caret-right-fill" aria-hidden="true"></i></a>
+                    </div>
+                }
             </div>
         </div>
     </section>

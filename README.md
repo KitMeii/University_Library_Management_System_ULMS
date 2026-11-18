@@ -6,6 +6,12 @@ Gồm hai mặt:
 
 Toàn bộ hệ thống chạy bằng **Docker Compose**: 4 service nghiệp vụ, API Gateway và ứng dụng web. CSDL là SQL Server 2022 – chọn **SQL Server cài sẵn trên máy** (mở bằng SSMS) hoặc **SQL Server trong Docker** (mục 2.1).
 
+| Tài liệu | Dành cho |
+|---|---|
+| `README.md` (tệp này) | Máy phát triển: cài đặt, chạy, kiểm thử |
+| [`HUONG_DAN_TRIEN_KHAI.md`](Prompt/Prompt_ClaudeCode_HeThong/docs/HUONG_DAN_TRIEN_KHAI.md) | Triển khai máy chủ thư viện: `docker-compose.prod.yml`, HTTPS, sao lưu, cập nhật, xử lý sự cố |
+| [`HUONG_DAN_SU_DUNG.md`](Prompt/Prompt_ClaudeCode_HeThong/docs/HUONG_DAN_SU_DUNG.md) | Người dùng: bạn đọc và nhân viên N1–N4, có ảnh chụp |
+
 ## 1. Yêu cầu
 
 | Thành phần | Ghi chú |
@@ -69,7 +75,10 @@ CSDL `ThuVien` có 4 schema: `quantri`, `khosach`, `muontra`, `vipham` – mỗi
 | Xem trạng thái | `docker compose ps` |
 | Xem log | `docker compose logs -f web muontra` |
 | Build toàn solution (không cần SDK) | `sh scripts/build-docker.sh` |
-| Kiểm thử (đơn vị + ảnh + tích hợp + E2E) | `docker compose up -d --build` (build image) → `sh scripts/test-docker.sh` (hoặc `unit`, `integration`, `e2e`, `anh`) |
+| Kiểm thử (đơn vị + ảnh + tích hợp + E2E) | `docker compose up -d --build` (build image) → `sh scripts/test-docker.sh` (hoặc `unit`, `integration`, `e2e`, `anh`) – Windows PowerShell: `.\scripts\test-docker.ps1` |
+| Đo hiệu năng API (50.000 bản sách, 200.000 dòng chi tiết – P95 < 300 ms) | `sh scripts/test-docker.sh hieunang` → `artifacts/test-results/hieu_nang_api.json` |
+| Kiểm tra nghiệm thu triển khai (prod + SQL Server trong Docker, bộ riêng) | `sh scripts/kiem-tra-trien-khai.sh` → `artifacts/test-results/kiem_tra_trien_khai.txt` |
+| Chạy như máy chủ thật | `sh scripts/trien-khai.sh prod` (Windows: `.\scripts\trien-khai.ps1 prod`) – kiểm tra mật khẩu SQL theo chính sách máy chủ thật rồi `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build` (HUONG_DAN_TRIEN_KHAI.md). Máy dev không bị kiểm tra |
 | Chụp bộ ảnh Bài 4 (CSDL sạch, không nhãn DỮ LIỆU MẪU) | `sh scripts/test-docker.sh anh` |
 
 **Kiểm thử không đụng CSDL `ThuVien`** (GIA_DINH D49): `scripts/test-docker.sh` dựng bộ hệ thống riêng (project `ulms-test`, web cổng 18080) trên CSDL **`ThuVien_Test`**, xóa – tạo lại CSDL này + dữ liệu mẫu mỗi lần chạy, chạy xong thì gỡ bộ kiểm thử (`GIU_LAI=1` để giữ lại xem). Dùng SQL Server cài sẵn thì đặt `SAO_LUU_THU_MUC_KIEM_THU` trong `.env` – thư mục riêng cho tệp sao lưu do kiểm thử tạo (vd thư mục tạm của dịch vụ `C:\Windows\ServiceProfiles\MSSQLSERVER\AppData\Local\Temp\ULMS_KiemThu`), **không phải thư mục Backup thật**; tệp `.bak` kiểm thử được dọn sau mỗi lần chạy.
@@ -100,7 +109,9 @@ migrator: chạy một lần – migration, login/quyền SQL, dữ liệu khở
 | `Frontend/tests/ThuVien.E2E/` | Playwright E2E + chụp ảnh |
 | `Prompt/Prompt_ClaudeCode_HeThong/docs/` | Đặc tả, kế hoạch, tiến độ, giả định |
 | `Database/` | Kịch bản `.sql` tạo CSDL bằng SSMS (sinh từ migrator) |
-| `scripts/` | Build/test trong Docker, sinh dữ liệu quyền từ SPEC, sinh cấu hình gateway, xuất kịch bản SQL, tải thư viện frontend |
+| `scripts/` | Build/test trong Docker (`.sh` và `.ps1`), kiểm tra triển khai, sinh dữ liệu quyền từ SPEC, sinh cấu hình gateway, xuất kịch bản SQL, tải thư viện frontend |
+| `deploy/` | `Caddyfile` – reverse proxy HTTPS cho `docker-compose.prod.yml` |
+| `Database/mot_lan/` | Kịch bản dữ liệu chạy một lần (vd D77 cập nhật từ khóa mẫu) |
 
 ## 5. Phiên bản
 
@@ -108,13 +119,15 @@ migrator: chạy một lần – migration, login/quyền SQL, dữ liệu khở
 |---|---|
 | .NET / ASP.NET Core / EF Core | 10 (image `mcr.microsoft.com/dotnet/sdk:10.0`, `aspnet:10.0`), EF Core 10.0.14 |
 | SQL Server | 2022 – cài sẵn trên máy, hoặc image `mcr.microsoft.com/mssql/server:2022-CU27-GDR2-ubuntu-22.04` |
+| Caddy (reverse proxy HTTPS, chỉ prod) | image `caddy:2.10.2-alpine` |
 | SkiaSharp | 3.119.2 (ảnh thẻ → WebP) |
 | Ocelot | 25.0.2 |
 | YARP | 2.3.0 |
 | Serilog.AspNetCore | 10.0.0 |
 | Playwright .NET | 1.64.1 (image `mcr.microsoft.com/playwright/dotnet:v1.64.1-noble`) |
 | Bootstrap / Bootstrap Icons | 5.3.3 / 1.11.3 (tự host trong `wwwroot/lib`) |
-| GSAP | 3.13.0 (tự host) |
+| GSAP (core, ScrollTrigger, Observer, Draggable) | 3.13.0 (tự host) |
+| Lenis / page-flip / ECharts | 1.3.27 / 2.0.7 / 5.6.0 (tự host); mã vạch Code128 tự vẽ SVG – xem THU_VIEN_BEN_THU_BA.md |
 | Font Be Vietnam Pro | @fontsource 5.2.8 (tự host) |
 
 Chi tiết giấy phép thư viện bên thứ ba: `Prompt/Prompt_ClaudeCode_HeThong/docs/THU_VIEN_BEN_THU_BA.md`.

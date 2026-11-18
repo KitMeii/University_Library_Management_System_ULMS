@@ -4,13 +4,10 @@
     var laBanDoc = User.Identity?.IsAuthenticated == true && User.HasClaim(ThuVienClaims.Loai, LoaiTaiKhoan.BanDoc);
     var duongDan = Context.Request.Path.Value ?? "/";
     var laTrangChu = duongDan == "/";
-    // Giờ mở cửa hôm nay (khóa T2…T7, CN – ThuVien:ThongTin:GioMoCua); không cấu hình thì không hiển thị
-    var thu = DateTime.Now.DayOfWeek switch
-    {
-        DayOfWeek.Monday => "T2", DayOfWeek.Tuesday => "T3", DayOfWeek.Wednesday => "T4", DayOfWeek.Thursday => "T5",
-        DayOfWeek.Friday => "T6", DayOfWeek.Saturday => "T7", _ => "CN"
-    };
-    var gioHomNay = tt.GioMoCua.TryGetValue(thu, out var g) ? g : null;
+    // Giờ mở cửa hôm nay theo giờ Việt Nam (khóa T2…T7, CN – ThuVien:ThongTin:GioMoCua); không cấu hình thì không hiển thị
+    var thu = ThongTinThuVien.ThuHomNay();
+    var gioHomNay = tt.GioCua(thu);
+    var nghiHomNay = gioHomNay is not null && gioHomNay.StartsWith("Nghỉ", StringComparison.OrdinalIgnoreCase);
     // Vùng điều hướng (file 04 mục 1): các khu của trang chủ; trang con cuộn về đúng khu qua neo
     var menu = new (string Ten, string Href, string Icon)[]
     {
@@ -59,7 +56,7 @@
             </a>
             @if (gioHomNay is not null)
             {
-                <span class="cong-header__gio d-none d-md-inline-flex"><i class="bi bi-clock" aria-hidden="true"></i>Hôm nay mở cửa: <strong>@gioHomNay</strong></span>
+                <span class="cong-header__gio d-none d-xl-inline-flex" title="@(nghiHomNay ? "Hôm nay thư viện nghỉ" : "Giờ mở cửa hôm nay")"><i class="bi bi-clock" aria-hidden="true"></i>Hôm nay: <strong>@gioHomNay</strong></span>
             }
             <div class="cong-header__phai">
                 <a class="cong-lien-ket" id="lnkTimKiem" href="/kham-pha" aria-label="Tìm kiếm sách" aria-current="@(duongDan == "/kham-pha" ? "page" : null)">
@@ -146,7 +143,7 @@
         <div class="offcanvas-body">
             @if (gioHomNay is not null)
             {
-                <p class="cong-offcanvas__gio"><i class="bi bi-clock" aria-hidden="true"></i> Hôm nay mở cửa: <strong>@gioHomNay</strong></p>
+                <p class="cong-offcanvas__gio"><i class="bi bi-clock" aria-hidden="true"></i> @(nghiHomNay ? "Hôm nay:" : "Hôm nay mở cửa:") <strong>@gioHomNay</strong></p>
             }
             <nav aria-label="Điều hướng chính (điện thoại)">
                 <ul>
@@ -193,11 +190,6 @@
                 <span class="cong-logo__dau cong-footer__logo" aria-hidden="true"><i class="bi bi-book-half"></i></span>
                 <h2 id="chanTrangTieuDe">@tt.TenThuVien</h2>
                 <p class="cong-footer__mo-ta">Hệ thống quản lý mượn trả sách thư viện đại học – tra cứu sách, xem tình trạng còn sách trên kệ, đặt chỗ và nhận sách tại quầy.</p>
-                <ul class="cong-footer__lien-he">
-                    @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <li><i class="bi bi-geo-alt" aria-hidden="true"></i><span>@tt.DiaChi</span></li> }
-                    @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <li><i class="bi bi-telephone" aria-hidden="true"></i><a href="tel:@tt.DienThoai">@tt.DienThoai</a></li> }
-                    @if (!string.IsNullOrWhiteSpace(tt.Email)) { <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:@tt.Email">@tt.Email</a></li> }
-                </ul>
             </div>
             <div class="cong-footer__cot">
                 <h3>Liên kết</h3>
@@ -210,20 +202,25 @@
                     <li><a href="/quan-tri/dang-nhap">Đăng nhập nhân viên</a></li>
                 </ul>
             </div>
-            @if (tt.GioMoCua.Count > 0 || !string.IsNullOrWhiteSpace(tt.NoiQuy))
+            @* Cột Liên hệ (D75): địa chỉ, điện thoại, email, giờ mở cửa – trường trống không hiện *@
+            @if (tt.CoLienHe || tt.CoGioMoCua)
             {
-                <div class="cong-footer__cot">
-                    @if (tt.GioMoCua.Count > 0)
+                <div class="cong-footer__cot" id="cotLienHe">
+                    <h3>Liên hệ</h3>
+                    @if (tt.CoLienHe)
                     {
-                        <h3>Giờ mở cửa</h3>
-                        <ul class="cong-footer__gio">
-                            @foreach (var (k, v) in tt.GioMoCua) { <li class="@(k == thu ? "hom-nay" : null)"><span>@k</span><span>@v</span></li> }
+                        <ul class="cong-footer__lien-he">
+                            @if (!string.IsNullOrWhiteSpace(tt.DiaChi)) { <li><i class="bi bi-geo-alt" aria-hidden="true"></i><span>@tt.DiaChi</span></li> }
+                            @if (!string.IsNullOrWhiteSpace(tt.DienThoai)) { <li><i class="bi bi-telephone" aria-hidden="true"></i><a href="tel:@tt.DienThoai">@tt.DienThoai</a></li> }
+                            @if (!string.IsNullOrWhiteSpace(tt.Email)) { <li><i class="bi bi-envelope" aria-hidden="true"></i><a href="mailto:@tt.Email">@tt.Email</a></li> }
                         </ul>
                     }
-                    @if (!string.IsNullOrWhiteSpace(tt.NoiQuy))
+                    @if (tt.CoGioMoCua)
                     {
-                        <h3>Nội quy</h3>
-                        <p class="mb-0">@tt.NoiQuy</p>
+                        <h3 class="cong-footer__tieu-de-phu">Giờ mở cửa</h3>
+                        <ul class="cong-footer__gio">
+                            @foreach (var (nhan, gio, coHomNay) in tt.GioGop(thu)) { <li class="@(coHomNay ? "hom-nay" : null)"><span>@nhan</span><span>@gio</span></li> }
+                        </ul>
                     }
                 </div>
             }

@@ -123,3 +123,25 @@ Cập nhật: 16/11/2026 (Pha 5).
 | `Cong_Footer_ba_cot.png` | Footer 3 cột + hoa văn kệ sách nét mảnh tự vẽ |
 | `Cong_Menu_dien_thoai_nhom.png` | Menu điện thoại: nhóm “Danh mục” thu gọn đang mở |
 | `so_sanh_mta/so_sanh_*.png` | Ảnh ghép TRƯỚC / SAU khi áp dụng THAM_KHAO_MTA: trang chủ máy tính, điện thoại, khu Danh mục, Hướng dẫn, Thư viện bằng số (`truoc_*.png` chụp trước thay đổi) |
+
+## Pha 8 – bản điện thoại của mọi giao diện (iPhone 13, 390×844 – file 11 mục 6)
+
+Không thay ảnh Bài 4: ảnh điện thoại có hậu tố `_mobile`, ảnh máy tính tương ứng giữ nguyên.
+
+| Tệp | Nội dung |
+|---|---|
+| `4.2.2_Danh_muc_khoan_thu_mobile.png` | Danh mục khoản thu (N2) |
+| `4.2.3_Danh_muc_ban_doc_mobile.png` | Danh mục Bạn đọc (N1) |
+| `4.2.4_Danh_muc_khu_vuc_mobile.png` | Danh mục khu vực (N3) |
+| `4.3.2_Lap_phieu_gia_han_mobile.png` | Lập Phiếu gia hạn |
+| `4.3.3_Lap_phieu_tra_mobile.png` | Lập Phiếu trả |
+| `4.3.4_Lap_bien_ban_vi_pham_mobile.png` | Lập Biên bản vi phạm |
+| `4.6.3_Cap_quyen_mobile.png` | Cấp quyền |
+| `4.6.4_Nhat_ky_Hoat_dong_mobile`, `4.6.4_Nhat_ky_Lich_su_dang_nhap_mobile.png` | Nhật ký |
+| `4.6.5_Sao_luu_phuc_hoi_mobile.png` | Sao lưu – phục hồi |
+| `Tong_quan_N2_mobile`, `Tong_quan_N3_mobile`, `Tong_quan_N4_mobile.png` | Tổng quan N2–N4 |
+| `Pha5_Quan_ly_dau_sach_mobile`, `Pha5_Quan_ly_the_loai_mobile.png` | Quản lý đầu sách, thể loại |
+| `Pha6_Quay_dat_cho_mobile.png` | Quầy đặt chỗ |
+| `Cong_Kham_pha_toan_trang_mobile`, `Cong_Huong_dan_mobile`, `Cong_Kich_hoat_mobile.png` | Cổng: /kham-pha, /huong-dan, /kich-hoat |
+| `Cong_Tai_khoan_*_mobile.png` | Trang cá nhân: tổng quan, đang mượn, lịch sử, vi phạm, yêu thích, thông báo, đổi mật khẩu |
+| `Cong_Tai_khoan_Vi_pham`, `Cong_Tai_khoan_Doi_mat_khau.png` | Hai trang cá nhân bản máy tính (trước chưa có) |

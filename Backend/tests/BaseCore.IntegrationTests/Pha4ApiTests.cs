@@ -96,9 +96,13 @@ public class Pha4ApiTests
         Assert.Equal(muon, theoNgay.Sum(x => x.GetProperty("muon").GetInt32()));
         Assert.Equal(giaHan, theoNgay.Sum(x => x.GetProperty("giaHan").GetInt32()));
         Assert.Equal(tra, theoNgay.Sum(x => x.GetProperty("tra").GetInt32()));
-        Assert.Equal(muon, d.GetProperty("luotMuon").GetArrayLength());
-        Assert.Equal(tra, d.GetProperty("luotTra").GetArrayLength());
-        Assert.Equal(quaHan, d.GetProperty("sachQuaHan").GetArrayLength());
+        // Xem trước (D82): tổng số dòng của từng bảng chi tiết = truy vấn kiểm chứng; trang đầu tối đa 50 dòng
+        Assert.Equal(muon, d.GetProperty("soDongLuotMuon").GetInt32());
+        Assert.Equal(Math.Min(50, muon), d.GetProperty("luotMuon").GetArrayLength());
+        Assert.Equal(tra, d.GetProperty("soDongLuotTra").GetInt32());
+        Assert.Equal(Math.Min(50, tra), d.GetProperty("luotTra").GetArrayLength());
+        Assert.Equal(quaHan, d.GetProperty("soDongSachQuaHan").GetInt32());
+        Assert.Equal(Math.Min(50, quaHan), d.GetProperty("sachQuaHan").GetArrayLength());
         Assert.All(d.GetProperty("sachQuaHan").EnumerateArray(), x => Assert.True(x.GetProperty("soNgayQuaHan").GetInt32() > 0));
     }
 
@@ -182,7 +186,8 @@ public class Pha4ApiTests
             Assert.Equal(k.GetProperty("soTruongHop").GetInt32(), k.GetProperty("soTruongHopDaThanhToan").GetInt32() + k.GetProperty("soTruongHopChuaThanhToan").GetInt32());
         }
         Assert.Equal(d.GetProperty("tongTienViPham").GetDecimal(), d.GetProperty("theoKhoanThu").EnumerateArray().Sum(k => k.GetProperty("tongTien").GetDecimal()));
-        Assert.Equal(d.GetProperty("soBienBan").GetInt32(), d.GetProperty("bienBan").GetArrayLength());
+        Assert.Equal(d.GetProperty("soBienBan").GetInt32(), d.GetProperty("soDongBienBan").GetInt32());
+        Assert.Equal(Math.Min(50, d.GetProperty("soBienBan").GetInt32()), d.GetProperty("bienBan").GetArrayLength());
     }
 
     // ---------- Quyền SPEC 3.4 ----------

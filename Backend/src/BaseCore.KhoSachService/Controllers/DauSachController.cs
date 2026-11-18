@@ -1,3 +1,4 @@
+using BaseCore.Common.HeThong;
 using BaseCore.Common.Auth;
 using BaseCore.DTO.Common;
 using BaseCore.KhoSachService.NghiepVu;
@@ -96,20 +97,22 @@ public sealed class TheLoaiController(TheLoaiService service) : ControllerBase
 [ApiController]
 [Route("api/cong/ke-sach")]
 [AllowAnonymous]
-public sealed class KeSachController(KeSachService service) : ControllerBase
+public sealed class KeSachController(KeSachService service, BoNhoDemNgan nhoDem) : ControllerBase
 {
     [HttpGet]
-    public Task<KeSachDto> Ke([FromQuery] string? ke, [FromQuery] int? gioiHan, CancellationToken ct) => service.KeAsync(ke, gioiHan, ct);
+    // Bộ nhớ đệm ngắn 60 giây cho kệ sách (file 11 mục 3)
+    public Task<KeSachDto> Ke([FromQuery] string? ke, [FromQuery] int? gioiHan, CancellationToken ct) =>
+        nhoDem.LayAsync($"ke:{ke}:{gioiHan}", c => service.KeAsync(ke, gioiHan, c));
 
     [HttpGet("danh-sach")]
-    public Task<List<MucKe>> DanhSach(CancellationToken ct) => service.DanhSachKeAsync(ct);
+    public Task<List<MucKe>> DanhSach(CancellationToken ct) => nhoDem.LayAsync("ke:danh-sach", service.DanhSachKeAsync);
 }
 
 /// <summary>Dữ liệu Book Preview (file 06 mục 7: GET /api/cong/sach/{maDauSach}) – công khai.</summary>
 [ApiController]
 [Route("api/cong/sach")]
 [AllowAnonymous]
-public sealed class SachCongController(KeSachService service, KhamPhaService khamPha) : ControllerBase
+public sealed class SachCongController(KeSachService service, KhamPhaService khamPha, BoNhoDemNgan nhoDem) : ControllerBase
 {
     /// <summary>Khu 5 Khám phá sách / tìm kiếm (file 04): q (tên sách, tác giả, ISBN, từ khóa), thể loại, năm xb, còn sách, sắp xếp.</summary>
     [HttpGet]
@@ -123,7 +126,7 @@ public sealed class SachCongController(KeSachService service, KhamPhaService kha
 
     /// <summary>Khu 7 “Thư viện bằng số”.</summary>
     [HttpGet("so-lieu")]
-    public Task<SoLieuThuVien> SoLieu(CancellationToken ct) => khamPha.SoLieuAsync(ct);
+    public Task<SoLieuThuVien> SoLieu(CancellationToken ct) => nhoDem.LayAsync("so-lieu", khamPha.SoLieuAsync);
 
     [HttpGet("{maDauSach}")]
     public Task<SachPreviewDto> Sach(string maDauSach, CancellationToken ct) => service.SachAsync(maDauSach, ct);

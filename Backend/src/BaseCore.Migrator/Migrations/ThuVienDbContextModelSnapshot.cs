@@ -725,6 +725,8 @@ namespace BaseCore.Migrator.Migrations
                     b.HasIndex("SoPMuon")
                         .IsUnique();
 
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("SoPMuon"), new[] { "NgayTra" });
+
                     b.ToTable("PHIEUTRA", "muontra");
                 });
 

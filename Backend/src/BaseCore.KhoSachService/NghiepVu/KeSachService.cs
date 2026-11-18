@@ -51,20 +51,23 @@ public sealed class KeSachService(KhoSachDbContext db, IClock clock)
     {
         var n = Math.Clamp(gioiHan ?? GioiHanMacDinh, 1, 81);
         ke = (ke ?? KeMoi).Trim();
-        var coTheMuon = BanCoTheMuon.Query(db, clock.BayGio);
         var tu = TuNgayMuonNhieu;
+        // Hai truy vấn gộp nối trái một lần thay cho đếm tương quan từng đầu sách (Pha 8 hiệu năng)
+        var coThe = BanCoTheMuon.TheoDauSach(db, clock.BayGio);
+        var luot = BanCoTheMuon.LuotMuonTheoDauSach(db, tu);
         var goc = from d in db.DauSach.AsNoTracking()
                   where db.DauSachBanSach.Any(x => x.MaDauSach == d.MaDauSach)
                   join t in db.TheLoai on d.MaTheLoai equals t.MaTheLoai into tl
                   from t in tl.DefaultIfEmpty()
+                  join c in coThe on d.MaDauSach equals c.MaDauSach into gc
+                  from c in gc.DefaultIfEmpty()
+                  join l in luot on d.MaDauSach equals l.MaDauSach into gl
+                  from l in gl.DefaultIfEmpty()
                   select new
                   {
                       d.MaDauSach, d.TenSach, d.TacGia, d.NamXb, d.MaTheLoai, t.TenTheLoai, d.AnhBia, d.MauGay, d.NgayTao,
-                      SoBanCoTheMuon = db.DauSachBanSach.Count(x => x.MaDauSach == d.MaDauSach && coTheMuon.Contains(x.MaBanSach)),
-                      SoLuotMuon = (from cm in db.CtPhieuMuon
-                                    join x in db.DauSachBanSach on cm.MaBanSach equals x.MaBanSach
-                                    where x.MaDauSach == d.MaDauSach && cm.NgayMuon >= tu
-                                    select 1).Count()
+                      SoBanCoTheMuon = (int?)c.So ?? 0,
+                      SoLuotMuon = (int?)l.So ?? 0
                   };
 
         string ten, truc = "nam";

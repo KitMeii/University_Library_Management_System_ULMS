@@ -6,10 +6,12 @@ WORKDIR /src
 COPY Directory.Build.props Directory.Packages.props ./
 COPY Backend/src/BaseCore.Common/BaseCore.Common.csproj Backend/src/BaseCore.Common/
 COPY Frontend/ThuVien.Web/ThuVien.Web.csproj Frontend/ThuVien.Web/
-RUN dotnet restore Frontend/ThuVien.Web/ThuVien.Web.csproj
+# Chỉ lấy thư viện gốc (SkiaSharp…) của đúng kiến trúc máy chủ: bỏ ~400 MB native của nền tảng khác (Pha 8 – hiệu năng image)
+ARG TARGETARCH
+RUN echo "linux-$([ "$TARGETARCH" = "arm64" ] && echo arm64 || echo x64)" > /tmp/rid  && dotnet restore Frontend/ThuVien.Web/ThuVien.Web.csproj -r "$(cat /tmp/rid)"
 COPY Backend/src/BaseCore.Common/ Backend/src/BaseCore.Common/
 COPY Frontend/ThuVien.Web/ Frontend/ThuVien.Web/
-RUN dotnet publish Frontend/ThuVien.Web/ThuVien.Web.csproj -c Release -o /app --no-restore -p:UseAppHost=false
+RUN dotnet publish Frontend/ThuVien.Web/ThuVien.Web.csproj -c Release -o /app --no-restore -r "$(cat /tmp/rid)" --self-contained false -p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

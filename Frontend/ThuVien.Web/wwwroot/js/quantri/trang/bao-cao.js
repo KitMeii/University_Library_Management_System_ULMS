@@ -13,6 +13,29 @@ const muonTra = document.querySelector('[data-loai]').dataset.loai === 'muon-tra
 const bieuDo = {};
 document.querySelectorAll('.qt-bieu-do').forEach((h) => { bieuDo[h.id] = new BieuDo(h); });
 const kyDaTongHop = { gt: null };
+let kyDangXem = null;
+
+/**
+ * Bảng chi tiết khi xem trước (GIA_DINH D82): API trả trang đầu (≤ 50 dòng) + tổng số dòng.
+ * ≤ 50 dòng → lưới tĩnh đủ dòng như trước (giao diện không đổi – ảnh Bài 4 mục 4.5.1–4.5.2);
+ * > 50 dòng → lưới phân trang phía server qua /chi-tiet/{bang}, mỗi trang 50 dòng. Số liệu tổng hợp, biểu đồ luôn tính toàn kỳ.
+ */
+let coTrangChiTiet = 50; // theo coTrang server trả về (mặc định 50)
+async function ganBangChiTiet(l, trangDau, tongSo, bang) {
+  if (tongSo <= coTrangChiTiet) {
+    l.tc.url = undefined;
+    l.tc.duLieuTinh = trangDau.map((x, i) => ({ ...x, khoa: i }));
+    await l.tai();
+    return;
+  }
+  const ky = kyDangXem;
+  l.tc.duLieuTinh = null;
+  l.tc.url = `/api/quan-tri/bao-cao/${muonTra ? 'muon-tra' : 'vi-pham'}/chi-tiet/${bang}`;
+  l.tc.coTrang = coTrangChiTiet;
+  l.tc.thamSoThem = () => ({ tuNgay: ky.tuNgay, denNgay: ky.denNgay });
+  l.trang = 1;
+  l.ve(trangDau, tongSo); // trang 1 đã có trong kết quả tổng hợp – không gọi lại
+}
 
 function datSo(id, giaTri, dinhDang = so) {
   const el = $(id);
@@ -107,12 +130,16 @@ async function veMuonTra(d) {
     rong: d.tongLuotMuon + d.tongLuotGiaHan + d.tongLuotTra === 0,
     bang: { cot: ['Ngày', 'Lượt mượn', 'Lượt gia hạn (đồng ý)', 'Lượt trả'], dong: ds.map((x) => [ngayDayDu(x.ngay), so(x.muon), so(x.giaHan), so(x.tra)]) }
   });
-  const gan = async (ten, ds2) => {
-    LUOI_MT[ten].tc.duLieuTinh = ds2.map((x, i) => ({ ...x, khoa: i }));
-    await LUOI_MT[ten].tai();
-    document.querySelector(`[data-dem="${ten}"]`).textContent = `(${so(ds2.length)})`;
+  const gan = async (ten, bang, trangDau, tongSo) => {
+    await ganBangChiTiet(LUOI_MT[ten], trangDau, tongSo, bang);
+    document.querySelector(`[data-dem="${ten}"]`).textContent = `(${so(tongSo)})`;
   };
-  await Promise.all([gan('luotMuon', d.luotMuon), gan('luotGiaHan', d.luotGiaHan), gan('luotTra', d.luotTra), gan('sachQuaHan', d.sachQuaHan)]);
+  await Promise.all([
+    gan('luotMuon', 'luot-muon', d.luotMuon, d.soDongLuotMuon),
+    gan('luotGiaHan', 'luot-gia-han', d.luotGiaHan, d.soDongLuotGiaHan),
+    gan('luotTra', 'luot-tra', d.luotTra, d.soDongLuotTra),
+    gan('sachQuaHan', 'sach-qua-han', d.sachQuaHan, d.soDongSachQuaHan)
+  ]);
 }
 
 // ---------------- MB07 ----------------
@@ -170,9 +197,8 @@ async function veViPham(d) {
     bang: { cot: ['Khoản thu', 'Số trường hợp', 'Tổng tiền'], dong: kt.map((x) => [x.noiDungTt, so(x.soTruongHop), tienGon(x.tongTien)]) }
   });
   LUOI_VP.theoKhoanThu.tc.duLieuTinh = kt;
-  LUOI_VP.bienBan.tc.duLieuTinh = d.bienBan;
-  await Promise.all([LUOI_VP.theoKhoanThu.tai(), LUOI_VP.bienBan.tai()]);
-  document.querySelector('[data-dem="bienBan"]').textContent = `(${so(d.bienBan.length)})`;
+  await Promise.all([LUOI_VP.theoKhoanThu.tai(), ganBangChiTiet(LUOI_VP.bienBan, d.bienBan, d.soDongBienBan, 'bien-ban')]);
+  document.querySelector('[data-dem="bienBan"]').textContent = `(${so(d.soDongBienBan)})`;
 }
 
 // ---------------- btnTongHop ----------------
@@ -184,6 +210,8 @@ async function tongHop() {
   try {
     const d = await api.lay(`/api/quan-tri/bao-cao/${muonTra ? 'muon-tra' : 'vi-pham'}` + chuoiTruyVan(ky));
     $('khuKetQua').hidden = false;
+    kyDangXem = ky;
+    coTrangChiTiet = d.coTrang || 50;
     await (muonTra ? veMuonTra(d) : veViPham(d));
     kyDaTongHop.gt = ky;
     $('btnLapBaoCao').disabled = false;

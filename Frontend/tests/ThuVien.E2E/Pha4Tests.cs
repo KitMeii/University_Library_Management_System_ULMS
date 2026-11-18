@@ -98,7 +98,10 @@ public class Pha4Tests(TrinhDuyet td)
         await ChoKpiAsync(p);
         var tongMuon = int.Parse((await p.InnerTextAsync("#lblTongLuotMuon")).Replace(".", ""));
         Assert.True(tongMuon > 0);
-        Assert.Equal(tongMuon, await p.Locator("#dgvLuotMuon tbody tr[data-chi-so]").CountAsync()); // chi tiết = tổng (SPEC 6.4.5)
+        // Chi tiết khớp tổng (SPEC 6.4.5); xem trước phân trang 50 dòng khi dài hơn (GIA_DINH D82) – nhãn số dòng là tổng toàn kỳ
+        Assert.Equal(Math.Min(50, tongMuon), await p.Locator("#dgvLuotMuon tbody tr[data-chi-so]").CountAsync());
+        Assert.Equal(tongMuon <= 50 ? $"{tongMuon} dòng" : $"1–50 / {tongMuon:N0} dòng".Replace(",", "."),
+            (await p.InnerTextAsync("#dgvLuotMuon .qt-luoi__dem")).Trim());
         // Thẻ chi tiết: bàn phím → chuyển sang lượt gia hạn
         await p.FocusAsync("#tabLuotMuon");
         await p.Keyboard.PressAsync("ArrowRight");
@@ -172,7 +175,7 @@ public class Pha4Tests(TrinhDuyet td)
     public async Task CspThat_TrangIn_NhungKhungCungNguon_KhongViPham()
     {
         await using var ctx = await td.MayTinhCspThatAsync();
-        await ctx.AddInitScriptAsync("() => document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI + ' ' + (e.sample || '')))");
+        await ctx.AddInitScriptAsync("(() => document.addEventListener('securitypolicyviolation', (e) => (window.__csp ||= []).push(e.violatedDirective + ' ' + e.blockedURI + ' ' + (e.sample || ''))))()");
         var viPham = new List<string>();
         var p = await ctx.NewPageAsync();
         p.Console += (_, m) => { if (m.Text.Contains("Content Security Policy") || m.Text.Contains("Refused to")) viPham.Add(m.Text); };
@@ -234,5 +237,40 @@ public class Pha4Tests(TrinhDuyet td)
         var kq = await p.RunAxe();
         var loi = kq.Violations.Where(v => v.Impact is "critical" or "serious").ToList();
         Assert.True(loi.Count == 0, string.Join("\n", loi.Select(v => $"{v.Id}: {v.Help} – " + string.Join("; ", v.Nodes.Select(n => n.Target)))));
+    }
+    /// <summary>
+    /// GIA_DINH D82: xem trước MB06 phân trang bảng chi tiết theo cỡ trang server trả về (mặc định 50). Dữ liệu mẫu nhỏ nên ép
+    /// cỡ trang 4 bằng cách sửa yêu cầu tổng hợp (route) – lưới chuyển sang phân trang phía server; số liệu KPI không đổi khi đổi trang;
+    /// khung xem bản in vẫn tính đủ toàn kỳ.
+    /// </summary>
+    [Fact]
+    public async Task BaoCaoMuonTra_XemTruoc_PhanTrang_KpiKhongDoi_BanInDuKy()
+    {
+        await using var ctx = await td.MayTinhAsync();
+        await ctx.RouteAsync(new System.Text.RegularExpressions.Regex(@"/api/quan-tri/bao-cao/muon-tra\?"), (route) => route.ContinueAsync(new() { Url = route.Request.Url + "&coTrang=4" }));
+        var p = await MoAsync(ctx, "muontra", "/quan-tri/bao-cao/muon-tra?" + Ky60);
+        await p.WaitForSelectorAsync("#khuKetQua:not([hidden])");
+        await ChoKpiAsync(p);
+        var tongMuon = int.Parse((await p.InnerTextAsync("#lblTongLuotMuon")).Replace(".", ""));
+        Assert.True(tongMuon > 4, $"Dữ liệu mẫu cần > 4 lượt mượn trong 60 ngày (có {tongMuon})");
+        var luoi = p.Locator("#dgvLuotMuon");
+        Assert.Equal(4, await luoi.Locator("tbody tr[data-chi-so]").CountAsync());
+        Assert.Equal($"1–4 / {tongMuon:N0} dòng".Replace(",", "."), (await luoi.Locator(".qt-luoi__dem").InnerTextAsync()).Trim());
+        Assert.Contains($"({tongMuon:N0})".Replace(",", "."), await p.InnerTextAsync("#tabLuotMuon"));
+
+        // Trang 2: dòng 5–8, tổng không đổi, KPI không đổi
+        var dauTrang1 = await luoi.Locator("tbody tr[data-chi-so]").First.InnerTextAsync();
+        await luoi.Locator(".qt-luoi__trang button", new() { HasTextString = "2" }).First.ClickAsync();
+        await p.WaitForFunctionAsync("() => document.querySelector('#dgvLuotMuon .qt-luoi__dem').textContent.trim().startsWith('5–')");
+        Assert.Equal($"5–{Math.Min(8, tongMuon)} / {tongMuon:N0} dòng".Replace(",", "."), (await luoi.Locator(".qt-luoi__dem").InnerTextAsync()).Trim());
+        Assert.NotEqual(dauTrang1, await luoi.Locator("tbody tr[data-chi-so]").First.InnerTextAsync());
+        Assert.Equal(tongMuon, int.Parse((await p.InnerTextAsync("#lblTongLuotMuon")).Replace(".", "")));
+
+        // Bản in (khung xem trước của 01.04.03) vẫn tổng hợp đủ kỳ
+        await p.ClickAsync("#btnLapBaoCao");
+        await p.WaitForURLAsync(u => u.Contains("/quan-tri/bao-cao/muon-tra/lap"));
+        await p.WaitForFunctionAsync("() => !document.getElementById('btnIn').disabled");
+        Assert.Equal(tongMuon.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")),
+            (await p.FrameLocator("#khungXemTruoc").Locator(".in-tong-hop strong").First.InnerTextAsync()).Trim());
     }
 }

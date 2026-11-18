@@ -1042,3 +1042,32 @@ END;
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261118020740_ChiMucPhieuTraNgayTra'
+)
+BEGIN
+    DROP INDEX [IX_PHIEUTRA_so_pmuon] ON [muontra].[PHIEUTRA];
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261118020740_ChiMucPhieuTraNgayTra'
+)
+BEGIN
+    CREATE UNIQUE INDEX [IX_PHIEUTRA_so_pmuon] ON [muontra].[PHIEUTRA] ([so_pmuon]) INCLUDE ([ngaytra]);
+END;
+
+IF NOT EXISTS (
+    SELECT * FROM [__EFMigrationsHistory]
+    WHERE [MigrationId] = N'20261118020740_ChiMucPhieuTraNgayTra'
+)
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20261118020740_ChiMucPhieuTraNgayTra', N'10.0.14');
+END;
+
+COMMIT;
+GO
+

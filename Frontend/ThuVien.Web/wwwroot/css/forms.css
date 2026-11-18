@@ -6,6 +6,8 @@
 .qt-giao-dien__dau { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
 .qt-giao-dien__dau h1 { margin: 0; }
 .qt-giao-dien__phu { margin: 4px 0 0; color: var(--ink-2); font-size: 14px; }
+/* Liên kết trong dòng mô tả: đủ tương phản 4,5:1 trên nền trắng (axe – Pha 8) */
+.qt-giao-dien__phu a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 .qt-ma-tien-trinh {
   display: inline-block; padding: 2px 8px; border-radius: 6px; margin-right: 6px;
   background: var(--red-50); color: var(--red-700); font-weight: 600; font-size: 12px;

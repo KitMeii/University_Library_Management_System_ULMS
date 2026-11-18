@@ -48,6 +48,8 @@ public static class ThuVienServiceExtensions
         services.Configure<BaseCore.Common.NghiepVu.QuyDinhOptions>(builder.Configuration.GetSection(BaseCore.Common.NghiepVu.QuyDinhOptions.Muc));
         services.Configure<BaseCore.Common.NghiepVu.DatChoOptions>(builder.Configuration.GetSection(BaseCore.Common.NghiepVu.DatChoOptions.Muc));
         services.AddSingleton<IClock, DongHoHeThong>();
+        services.AddMemoryCache();
+        services.AddSingleton<BoNhoDemNgan>();
         services.AddSingleton<MocThuHoiPhien>();
         services.AddSingleton(sp => new MatKhauHasher(sp.GetRequiredService<IOptions<MatKhauOptions>>().Value.SoVongLap));
 

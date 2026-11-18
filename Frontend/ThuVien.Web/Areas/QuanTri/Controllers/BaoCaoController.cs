@@ -42,13 +42,13 @@ public sealed partial class BaoCaoController(GatewayClient gateway, IOptions<Thu
     [HttpGet("quan-tri/in/bao-cao-muon-tra")]
     [QuyenTrang("TT073")]
     public Task<IActionResult> InMuonTra(string? tuNgay, string? denNgay, CancellationToken ct) =>
-        InAsync<BaoCaoMuonTraIn>("/api/quan-tri/bao-cao/muon-tra", tuNgay, denNgay, "MB06", "BÁO CÁO TÌNH HÌNH MƯỢN TRẢ SÁCH", "InMuonTra", ct);
+        InAsync<BaoCaoMuonTraIn>("/api/quan-tri/bao-cao/muon-tra/in", tuNgay, denNgay, "MB06", "BÁO CÁO TÌNH HÌNH MƯỢN TRẢ SÁCH", "InMuonTra", ct);
 
     /// <summary>MB07 – A4, 01 bản (TT097 hiển thị chi tiết, TT098 in).</summary>
     [HttpGet("quan-tri/in/bao-cao-vi-pham")]
     [QuyenTrang("TT098")]
     public Task<IActionResult> InViPham(string? tuNgay, string? denNgay, CancellationToken ct) =>
-        InAsync<BaoCaoViPhamIn>("/api/quan-tri/bao-cao/vi-pham", tuNgay, denNgay, "MB07", "BÁO CÁO TÌNH HÌNH VI PHẠM MƯỢN TRẢ SÁCH", "InViPham", ct);
+        InAsync<BaoCaoViPhamIn>("/api/quan-tri/bao-cao/vi-pham/in", tuNgay, denNgay, "MB07", "BÁO CÁO TÌNH HÌNH VI PHẠM MƯỢN TRẢ SÁCH", "InViPham", ct);
 
     [GeneratedRegex(@"^\d{4}-\d{2}-\d{2}$")]
     private static partial Regex NgayIso();

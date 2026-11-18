@@ -122,6 +122,32 @@ public static class DuLieuMau
         return string.Join(", ", cum.Append(dau).Append(tl.Ten.ToLowerInvariant()).Distinct().Take(3));
     }
 
+    /// <summary>
+    /// GIA_DINH D77 (duyệt 18/11/2026): script chạy MỘT LẦN cho CSDL đang dùng (ThuVien) – đổi DAUSACH.tukhoa của đầu sách mẫu
+    /// sang từ khóa có nghĩa như bản nạp mới. Chỉ đụng cột tukhoa của đúng đầu sách mẫu: khớp mã + tên sách mẫu + giới thiệu
+    /// còn nhãn “[DỮ LIỆU MẪU]” (đầu sách thư viện đã sửa thành sách thật không bị đụng); một transaction, in số dòng.
+    /// </summary>
+    public static string SqlCapNhatTuKhoaMau()
+    {
+        static string N(string v) => "N'" + v.Replace("'", "''") + "'";
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("-- D77 – cập nhật từ khóa mẫu (sinh bởi: dotnet BaseCore.Migrator.dll --sql-tu-khoa-mau <tệp>). Chạy một lần trên CSDL ThuVien.");
+        sb.AppendLine("-- Chỉ cập nhật DAUSACH.tukhoa của đầu sách mẫu (mã + tên khớp dữ liệu mẫu, giới thiệu còn nhãn [DỮ LIỆU MẪU]).");
+        sb.AppendLine("SET NOCOUNT ON; SET XACT_ABORT ON; SET QUOTED_IDENTIFIER ON;");
+        sb.AppendLine("BEGIN TRANSACTION;");
+        sb.AppendLine("DECLARE @n int = 0;");
+        for (var i = 0; i < DauSachMau.Length; i++)
+        {
+            var d = DauSachMau[i];
+            sb.AppendLine($"UPDATE khosach.DAUSACH SET tukhoa = {N(TuKhoaMau(d.TenSach, d.TheLoai))} " +
+                          $"WHERE ma_dausach = '{"DS" + (i + 1).ToString("D4")}' AND ten_sach = {N(d.TenSach)} " +
+                          $"AND gioithieu LIKE N'[[]DỮ LIỆU MẪU]%' AND ISNULL(tukhoa, N'') <> {N(TuKhoaMau(d.TenSach, d.TheLoai))}; SET @n += @@ROWCOUNT;");
+        }
+        sb.AppendLine("COMMIT;");
+        sb.AppendLine($"PRINT N'D77: đã cập nhật ' + CAST(@n AS nvarchar(10)) + N' / {DauSachMau.Length} đầu sách mẫu (0 nếu đã chạy trước đó).';");
+        return sb.ToString();
+    }
+
     public static async Task NapAsync(ThuVienDbContext db, MatKhauHasher hasher, IClock clock)
     {
         var bayGio = clock.BayGio;

@@ -7,6 +7,7 @@ Tạo đúng 18 bảng ở `SPEC_NGHIEP_VU_BT4.md` mục 2: **tên bảng, tên 
 - Ràng buộc miền giá trị (SPEC mục 2, đoạn “Miền giá trị”) tạo thành `CHECK` constraint.
 - Khóa chính dạng chuỗi do hệ thống sinh: dùng bảng phụ trợ sinh số an toàn đồng thời (xem mục 4) hoặc `SEQUENCE` của SQL Server, định dạng `PMyyMM####`, `GHyyMM####`, `PTyyMM####`, `BByyMM####` (10 ký tự, đánh lại mỗi tháng – SPEC mục 4, GIA_DINH D4).
 - Tạo chỉ mục cho mọi khóa ngoại và các cột tìm kiếm (`ten_sach`, `tacgia`, `ma_svhvcb`, `hoten`, `ngaymuon`, `hantra`, `ngaytra`, `thoigian_lap`).
+  - *(Pha 8 – hiệu năng, GIA_DINH D82)* Chỉ mục duy nhất `IX_PHIEUTRA_so_pmuon` kèm cột `INCLUDE (ngaytra)` (migration `ChiMucPhieuTraNgayTra`) – chỉ đổi chỉ mục vật lý, không đổi cột/bảng: truy vấn “bản sách chưa trả tính đến ngày” (MB06, tổng quan N1) không phải tra khóa từng dòng.
 - Kiểm thử tự động `SchemaMatchesSpecTests`: đọc metadata SQL Server, so với danh sách bảng/cột trích từ SPEC mục 2 → phải khớp 100%.
 
 ## 2. 9 bảng mở rộng X01–X09 (chỉ có trong hệ thống, KHÔNG đưa vào hồ sơ Word BT1–BT4)

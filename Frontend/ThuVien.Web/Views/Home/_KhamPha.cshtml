@@ -80,7 +80,13 @@
         </form>
 
         <p class="kp-ket-qua" id="kpKetQua" aria-live="polite"></p>
-        <div class="kp-luoi" id="kpLuoi" aria-labelledby="khamPhaTieuDe" aria-busy="false"></div>
+        <div class="kp-luoi" id="kpLuoi" aria-labelledby="khamPhaTieuDe" aria-busy="false">
+            @* Khung giữ chỗ (đúng tỉ lệ thẻ sách) cho trang đầu – JS thay bằng thẻ thật; tránh dịch bố cục (CLS – file 11 mục 3) *@
+            @for (var i = 0; i < 12; i++)
+            {
+                <div class="the-sach-khung" aria-hidden="true"><span class="the-sach-khung__bia"></span><span class="the-sach-khung__tt"></span></div>
+            }
+        </div>
         <div class="kp-xem-them">
             <button type="button" class="cong-nut cong-nut--vien" id="btnXemThem" hidden><i class="bi bi-plus-lg" aria-hidden="true"></i>Xem thêm</button>
         </div>
